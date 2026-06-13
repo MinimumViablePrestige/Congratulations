@@ -1,0 +1,23 @@
+import type { FinalCardBlockId, FinalCardLayout, FinalCardStyleId } from "@/lib/final-card/types";
+
+const required = (id: FinalCardBlockId) => ({ id, required: true });
+const optional = (id: FinalCardBlockId) => ({ id, required: false });
+
+export const finalCardLayouts: Record<FinalCardStyleId, FinalCardLayout> = {
+  "warm-classic": {
+    style: "warm-classic",
+    blocks: [required("hero"), optional("summary"), optional("qualities"), required("messages"), optional("quotes"), required("closing")]
+  },
+  "team-modern": {
+    style: "team-modern",
+    blocks: [required("hero"), optional("summary"), optional("qualities"), required("messages"), optional("quotes"), required("closing")]
+  },
+  "bright-celebration": {
+    style: "bright-celebration",
+    blocks: [required("hero"), optional("summary"), required("messages"), optional("quotes"), required("closing")]
+  },
+  "gentle-personal": {
+    style: "gentle-personal",
+    blocks: [required("hero"), optional("summary"), optional("memories"), required("messages"), optional("quotes"), required("closing")]
+  }
+};
