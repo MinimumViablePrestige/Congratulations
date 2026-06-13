@@ -1,4 +1,6 @@
+import Link from "next/link";
 import styles from "./final-card.module.css";
+import type { Contribution } from "@/lib/cards/types";
 import type { FinalCardViewModel } from "@/lib/final-card/view-model";
 
 type Props = {
@@ -10,6 +12,59 @@ const styleClassMap = {
   "team-modern": styles["team-modern"],
   "bright-celebration": styles["bright-celebration"],
   "gentle-personal": styles["gentle-personal"]
+};
+
+const buildMessageColumns = (contributions: Contribution[]) => {
+  const columns: Contribution[][] = [];
+
+  contributions.forEach((item, index) => {
+    const columnIndex = Math.floor(index / 2);
+    if (!columns[columnIndex]) {
+      columns[columnIndex] = [];
+    }
+
+    columns[columnIndex].push(item);
+  });
+
+  return columns;
+};
+
+const renderMessageCard = (item: Contribution, index: number) => (
+  <article key={item.id} className={`${styles.card} ${index % 3 === 0 ? styles.cardAccent : ""}`}>
+    <div className={styles.cardHeader}>
+      <span className={styles.author}>{item.authorName}</span>
+      {item.authorRole ? <span className={styles.role}>{item.authorRole}</span> : null}
+    </div>
+    <p className={styles.message}>{item.message}</p>
+  </article>
+);
+
+const renderMessagesLayout = (model: FinalCardViewModel) => {
+  if (model.messageLayoutMode === "carousel-1") {
+    return (
+      <div className={styles.messageScroller} data-layout="carousel-1">
+        {model.contributions.map((item, index) => renderMessageCard(item, index))}
+      </div>
+    );
+  }
+
+  if (model.messageLayoutMode === "carousel-2") {
+    return (
+      <div className={styles.messageColumnScroller} data-layout="carousel-2">
+        {buildMessageColumns(model.contributions).map((column, columnIndex) => (
+          <div key={`column-${columnIndex}`} className={styles.messageColumn}>
+            {column.map((item, itemIndex) => renderMessageCard(item, columnIndex * 2 + itemIndex))}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${styles.grid} ${styles.messagesGrid}`}>
+      {model.contributions.map((item, index) => renderMessageCard(item, index))}
+    </div>
+  );
 };
 
 export const FinalCard = ({ model }: Props) => {
@@ -87,20 +142,15 @@ export const FinalCard = ({ model }: Props) => {
                     <span className={styles.sectionBadge}>{model.contributions.length} сообщений</span>
                   </div>
 
-                  <div className={`${styles.grid} ${styles.messagesGrid}`}>
-                    {model.contributions.map((item, index) => (
-                      <article
-                        key={item.id}
-                        className={`${styles.card} ${index % 3 === 0 ? styles.cardAccent : ""}`}
-                      >
-                        <div className={styles.cardHeader}>
-                          <span className={styles.author}>{item.authorName}</span>
-                          {item.authorRole ? <span className={styles.role}>{item.authorRole}</span> : null}
-                        </div>
-                        <p className={styles.message}>{item.message}</p>
-                      </article>
-                    ))}
-                  </div>
+                  {renderMessagesLayout(model)}
+
+                  {model.showAllMessagesLink ? (
+                    <div className={styles.sectionFooter}>
+                      <Link href={`/gift/${model.finalSlug}/messages`} className={styles.inlineLinkButton}>
+                        Смотреть все поздравления
+                      </Link>
+                    </div>
+                  ) : null}
                 </section>
               );
             }

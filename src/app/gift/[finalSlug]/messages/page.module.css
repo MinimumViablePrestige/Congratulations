@@ -1,0 +1,104 @@
+.page {
+  min-height: 100vh;
+  padding: 28px 16px 56px;
+  background: linear-gradient(180deg, #f7ecdf 0%, #efe2d3 100%);
+  color: #3b2b23;
+}
+
+.shell {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+}
+
+.hero,
+.card {
+  border: 1px solid rgba(92, 63, 45, 0.14);
+  border-radius: 28px;
+  background: rgba(255, 249, 243, 0.92);
+}
+
+.hero {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #c46f4d;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+.subtitle,
+.role,
+.message {
+  color: #715d4f;
+  line-height: 1.7;
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pill,
+.index {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(92, 63, 45, 0.14);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #c46f4d;
+  color: #fff9f5;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.list {
+  display: grid;
+  gap: 14px;
+}
+
+.card {
+  padding: 20px;
+}
+
+.cardHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.author {
+  font-weight: 800;
+}
+
+.message {
+  margin: 12px 0 0;
+  white-space: pre-wrap;
+}

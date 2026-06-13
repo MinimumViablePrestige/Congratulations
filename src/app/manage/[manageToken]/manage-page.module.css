@@ -116,6 +116,13 @@
   justify-content: space-between;
 }
 
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
 .author {
   font-weight: 700;
 }
@@ -147,6 +154,11 @@
   gap: 12px;
 }
 
+.settingGroup {
+  display: grid;
+  gap: 12px;
+}
+
 .blockCard {
   display: grid;
   gap: 6px;
@@ -171,6 +183,95 @@
 .blockDescription {
   color: var(--muted);
   line-height: 1.5;
+}
+
+.layoutOptionList {
+  display: grid;
+  gap: 12px;
+}
+
+.layoutOptionCard {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.previewScheme {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.previewSchemeHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.previewSchemeMeta,
+.previewSchemeHint {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.previewStructure {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.previewStructureBlock {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  font-weight: 700;
+}
+
+.previewMessagesMock {
+  display: grid;
+  gap: 10px;
+}
+
+.previewMessagesMock[data-layout="grid-2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.previewMessagesMock[data-layout="carousel-1"] {
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(120px, 1fr);
+  overflow: hidden;
+}
+
+.previewMessagesMock[data-layout="carousel-2"] {
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(140px, 1fr);
+  overflow: hidden;
+}
+
+.previewMessageColumn {
+  display: grid;
+  gap: 10px;
+}
+
+.previewMessageCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  padding: 12px;
+  border: 1px dashed rgba(92, 67, 51, 0.22);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
+  text-align: center;
 }
 
 .editorLabel {
@@ -252,6 +353,17 @@
   font-size: 0.85rem;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.7);
+}
+
+.sortBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: rgba(240, 225, 213, 0.9);
 }
 
 .empty {

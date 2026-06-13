@@ -4,13 +4,29 @@ import { revalidatePath } from "next/cache";
 import {
   getCardDraftById,
   getCardDraftByManageToken,
-  updateCardFinalBlockSettings,
+  moveContribution,
+  updateCardFinalPresentationSettings,
   updateContributionMessage,
   updateContributionStatus
 } from "@/lib/cards/repository";
 import { validateContributionMessage } from "@/lib/contributions/validation";
-import type { FinalCardBlockSettings, FinalCardOptionalBlockId } from "@/lib/final-card/types";
+import type {
+  FinalCardBlockSettings,
+  FinalCardMessageLayoutMode,
+  FinalCardMessageSettings,
+  FinalCardOptionalBlockId
+} from "@/lib/final-card/types";
 import { logger } from "@/lib/logger";
+
+const optionalBlockIds: FinalCardOptionalBlockId[] = ["summary", "qualities", "memories", "quotes"];
+const messageLayoutModes: FinalCardMessageLayoutMode[] = ["grid-2", "carousel-1", "carousel-2"];
+
+const revalidateCardSurfaces = (manageToken: string, publicSlug: string, finalSlug: string) => {
+  revalidatePath(`/manage/${manageToken}`);
+  revalidatePath(`/card/${publicSlug}`);
+  revalidatePath(`/gift/${finalSlug}`);
+  revalidatePath(`/gift/${finalSlug}/messages`);
+};
 
 export async function setContributionStatusAction(formData: FormData) {
   const contributionId = String(formData.get("contributionId") ?? "");
@@ -33,9 +49,10 @@ export async function setContributionStatusAction(formData: FormData) {
     status
   });
 
-  revalidatePath(`/manage/${manageToken}`);
   if (card) {
-    revalidatePath(`/card/${card.publicSlug}`);
+    revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
+  } else {
+    revalidatePath(`/manage/${manageToken}`);
   }
 }
 
@@ -71,23 +88,47 @@ export async function updateContributionMessageAction(
     contributionId: updated.id
   });
 
-  revalidatePath(`/manage/${manageToken}`);
-  revalidatePath(`/card/${card.publicSlug}`);
-  revalidatePath(`/gift/${card.finalSlug}`);
+  revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
 
   return { ok: true, message: "Текст поздравления обновлен." };
 }
 
-const optionalBlockIds: FinalCardOptionalBlockId[] = ["summary", "qualities", "memories", "quotes"];
+export async function moveContributionAction(formData: FormData) {
+  const contributionId = String(formData.get("contributionId") ?? "");
+  const manageToken = String(formData.get("manageToken") ?? "");
+  const direction = String(formData.get("direction") ?? "") as "up" | "down";
 
-export async function updateFinalBlockSettingsAction(
+  if (!contributionId || !manageToken || !direction) {
+    return;
+  }
+
+  const card = await getCardDraftByManageToken(manageToken);
+  if (!card) {
+    return;
+  }
+
+  const updated = await moveContribution(contributionId, direction);
+  if (!updated || updated.cardId !== card.id) {
+    return;
+  }
+
+  logger.info("manage.contribution_reordered", "Contribution order changed by organizer", {
+    cardId: card.id,
+    contributionId,
+    direction
+  });
+
+  revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
+}
+
+export async function updateFinalPresentationSettingsAction(
   _prevState: { ok: boolean; message: string },
   formData: FormData
 ) {
   const manageToken = String(formData.get("manageToken") ?? "");
 
   if (!manageToken) {
-    return { ok: false, message: "Не удалось сохранить настройки блоков." };
+    return { ok: false, message: "Не удалось сохранить настройки финального экрана." };
   }
 
   const card = await getCardDraftByManageToken(manageToken);
@@ -95,23 +136,33 @@ export async function updateFinalBlockSettingsAction(
     return { ok: false, message: "Секретная ссылка управления больше не актуальна." };
   }
 
+  const layoutModeValue = String(formData.get("layoutMode") ?? "");
+  const layoutMode = messageLayoutModes.includes(layoutModeValue as FinalCardMessageLayoutMode)
+    ? (layoutModeValue as FinalCardMessageLayoutMode)
+    : "grid-2";
+
   const finalBlockSettings = optionalBlockIds.reduce<FinalCardBlockSettings>((acc, blockId) => {
     acc[blockId] = formData.get(blockId) === "on";
     return acc;
   }, {});
 
-  const updated = await updateCardFinalBlockSettings(card.id, finalBlockSettings);
+  const finalMessageSettings: FinalCardMessageSettings = {
+    layoutMode,
+    showAllLink: formData.get("showAllLink") === "on"
+  };
+
+  const updated = await updateCardFinalPresentationSettings(card.id, finalBlockSettings, finalMessageSettings);
   if (!updated) {
     return { ok: false, message: "Не удалось сохранить состав финального экрана." };
   }
 
-  logger.info("manage.final_block_settings_updated", "Final card block settings updated by organizer", {
+  logger.info("manage.final_presentation_settings_updated", "Final presentation settings updated by organizer", {
     cardId: card.id,
-    finalBlockSettings
+    finalBlockSettings,
+    finalMessageSettings
   });
 
-  revalidatePath(`/manage/${manageToken}`);
-  revalidatePath(`/gift/${card.finalSlug}`);
+  revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
 
-  return { ok: true, message: "Состав финального экрана обновлен." };
+  return { ok: true, message: "Настройки финального экрана обновлены." };
 }

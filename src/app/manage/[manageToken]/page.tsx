@@ -9,7 +9,7 @@ import { finalCardLayouts } from "@/lib/final-card/layouts";
 import { buildFinalCardViewModel } from "@/lib/final-card/view-model";
 import type { FinalCardOptionalBlockId } from "@/lib/final-card/types";
 import { buildReminderText } from "@/lib/manage/reminder";
-import { setContributionStatusAction } from "./actions";
+import { moveContributionAction, setContributionStatusAction } from "./actions";
 import { BlockSettingsForm } from "./block-settings-form";
 import { ContributionEditor } from "./contribution-editor";
 import styles from "./manage-page.module.css";
@@ -41,7 +41,7 @@ export default async function ManagePage({ params }: Props) {
       description: "Короткое общее описание открытки и контекста."
     },
     qualities: {
-      label: "Какая ты / какой ты для нас",
+      label: "Какой ты для нас",
       description: "Блок с качествами, которые собраны из поздравлений."
     },
     memories: {
@@ -70,8 +70,8 @@ export default async function ManagePage({ params }: Props) {
           <p className={styles.eyebrow}>Секретная ссылка организатора</p>
           <h1 className={styles.title}>Управление открыткой для {card.recipientName}</h1>
           <p className={styles.subtitle}>
-            Здесь можно следить за поздравлениями, скрывать неподходящие сообщения и смотреть, как будет выглядеть
-            финальная открытка до оплаты и публикации.
+            Здесь можно следить за поздравлениями, менять их порядок, скрывать неудачные тексты и собирать финальный
+            экран до оплаты и публикации.
           </p>
           <div className={styles.stats}>
             <div className={styles.stat}>Повод: {card.occasionText}</div>
@@ -86,7 +86,7 @@ export default async function ManagePage({ params }: Props) {
           <section className={styles.panel}>
             <h2 className={styles.sectionTitle}>Поздравления</h2>
             <p className={styles.hint}>
-              На этом этапе уже можно скрыть или удалить сообщение, если оно не подходит по тону или качеству.
+              Здесь уже можно редактировать текст, переставлять карточки местами и убирать то, что не подходит по тону.
             </p>
 
             {allContributions.length === 0 ? (
@@ -100,14 +100,35 @@ export default async function ManagePage({ params }: Props) {
                         <span className={styles.author}>{contribution.authorName}</span>
                         {contribution.authorRole ? <span className={styles.meta}> · {contribution.authorRole}</span> : null}
                       </div>
-                      <span className={styles.statusBadge}>{contribution.status}</span>
+                      <div className={styles.badgeRow}>
+                        <span className={styles.sortBadge}>#{contribution.sortOrder + 1}</span>
+                        <span className={styles.statusBadge}>{contribution.status}</span>
+                      </div>
                     </div>
+
                     <ContributionEditor
                       contributionId={contribution.id}
                       manageToken={manageToken}
                       initialMessage={contribution.message}
                     />
+
                     <div className={styles.controls}>
+                      <form action={moveContributionAction}>
+                        <input type="hidden" name="manageToken" value={manageToken} />
+                        <input type="hidden" name="contributionId" value={contribution.id} />
+                        <input type="hidden" name="direction" value="up" />
+                        <button type="submit" className={styles.secondaryButton}>
+                          Выше
+                        </button>
+                      </form>
+                      <form action={moveContributionAction}>
+                        <input type="hidden" name="manageToken" value={manageToken} />
+                        <input type="hidden" name="contributionId" value={contribution.id} />
+                        <input type="hidden" name="direction" value="down" />
+                        <button type="submit" className={styles.secondaryButton}>
+                          Ниже
+                        </button>
+                      </form>
                       <form action={setContributionStatusAction}>
                         <input type="hidden" name="manageToken" value={manageToken} />
                         <input type="hidden" name="contributionId" value={contribution.id} />
@@ -149,16 +170,30 @@ export default async function ManagePage({ params }: Props) {
                 Финальный экран: <code>/gift/{card.finalSlug}</code>
               </p>
               <p className={styles.line}>
+                Экран всех поздравлений: <code>/gift/{card.finalSlug}/messages</code>
+              </p>
+              <p className={styles.line}>
                 Напоминание для чата: <code>{reminderText}</code>
               </p>
             </section>
 
             <section className={styles.actionsCard}>
               <h2 className={styles.sectionTitle}>Состав финального экрана</h2>
-              <p className={styles.line}>Здесь можно включать и выключать необязательные части финальной открытки.</p>
-              <BlockSettingsForm manageToken={manageToken} options={blockOptions} />
+              <p className={styles.line}>
+                Здесь можно включать и выключать необязательные части, менять формат блока поздравлений и сразу видеть
+                схему будущей открытки.
+              </p>
+              <BlockSettingsForm
+                manageToken={manageToken}
+                options={blockOptions}
+                initialLayoutMode={card.finalMessageSettings?.layoutMode ?? "grid-2"}
+                initialShowAllLink={card.finalMessageSettings?.showAllLink ?? true}
+              />
               <p className={styles.line}>
                 Сейчас в финальный экран попадают: <code>{currentBlockIds.join(", ")}</code>
+              </p>
+              <p className={styles.line}>
+                Формат поздравлений: <code>{card.finalMessageSettings?.layoutMode ?? "grid-2"}</code>
               </p>
             </section>
 

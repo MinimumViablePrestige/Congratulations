@@ -1,7 +1,11 @@
 import { cardTemplates } from "@/lib/cards/templates";
 import type { CardDraft, Contribution } from "@/lib/cards/types";
 import { buildFinalCardLayout } from "@/lib/final-card/planner";
-import type { FinalCardContentAvailability, FinalCardStyleId } from "@/lib/final-card/types";
+import type {
+  FinalCardContentAvailability,
+  FinalCardMessageLayoutMode,
+  FinalCardStyleId
+} from "@/lib/final-card/types";
 
 export type FinalCardViewModel = {
   style: FinalCardStyleId;
@@ -9,6 +13,7 @@ export type FinalCardViewModel = {
   occasionLabel: string;
   fromLabel: string;
   participantCount: number;
+  finalSlug: string;
   summaryTitle: string;
   summaryText: string;
   qualities: string[];
@@ -19,6 +24,8 @@ export type FinalCardViewModel = {
     title: string;
     caption: string;
   }>;
+  messageLayoutMode: FinalCardMessageLayoutMode;
+  showAllMessagesLink: boolean;
   blocks: ReturnType<typeof buildFinalCardLayout>["blocks"];
 };
 
@@ -87,12 +94,15 @@ export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribu
     occasionLabel: card.occasionText,
     fromLabel: card.fromLabel,
     participantCount: contributions.length,
+    finalSlug: card.finalSlug,
     summaryTitle: `${card.recipientName} глазами группы`,
     summaryText: buildSummaryText(card, contributions),
     qualities,
     quotes,
     contributions,
     memories,
+    messageLayoutMode: card.finalMessageSettings?.layoutMode ?? "grid-2",
+    showAllMessagesLink: card.finalMessageSettings?.showAllLink ?? true,
     blocks: buildFinalCardLayout(style, availability, card.finalBlockSettings).blocks
   };
 };

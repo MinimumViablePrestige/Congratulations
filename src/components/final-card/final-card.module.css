@@ -256,6 +256,32 @@
   gap: 16px;
 }
 
+.messageScroller,
+.messageColumnScroller {
+  display: grid;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.messageScroller {
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(280px, 86%);
+}
+
+.messageColumnScroller {
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(280px, 86%);
+}
+
+.messageColumn {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
 .card,
 .quoteCard,
 .memoryCard {
@@ -302,6 +328,12 @@
   margin: 12px 0 0;
   line-height: 1.75;
   white-space: pre-wrap;
+}
+
+.messageScroller .card,
+.messageColumnScroller .card {
+  height: 100%;
+  scroll-snap-align: start;
 }
 
 .quoteCard {
@@ -353,6 +385,25 @@
   gap: 12px;
 }
 
+.sectionFooter {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 18px;
+}
+
+.inlineLinkButton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--fc-line);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--fc-text);
+  font-weight: 800;
+  text-decoration: none;
+}
+
 .primaryButton,
 .secondaryButton {
   min-height: 50px;
@@ -391,6 +442,14 @@
 
   .messagesGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .messageScroller {
+    grid-auto-columns: minmax(340px, 420px);
+  }
+
+  .messageColumnScroller {
+    grid-auto-columns: minmax(340px, 420px);
   }
 
   .quotesGrid {
