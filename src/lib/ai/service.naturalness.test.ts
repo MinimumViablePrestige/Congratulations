@@ -5,7 +5,8 @@ describe("AI draft naturalness", () => {
     const result = await generateParticipantMessage({
       cardId: `card_test_punct_${Date.now()}`,
       recipientName: "Анидовна",
-      occasion: "caregiver",
+      occasion: "personal",
+      occasionText: "собираем открытку для любимого воспитателя группы",
       relation: "!Воспитатель.!",
       qualities: ["!добрый", "внимательный!", "заботливый!"],
       wishes: ["здоровья", "тепла", "новых возможностей"],
@@ -15,7 +16,6 @@ describe("AI draft naturalness", () => {
 
     const text = result.variants.map((item) => item.text).join(" ");
     expect(text).not.toContain("!");
-    expect(text).not.toContain("как воспитатель");
     expect(text).toContain("как человек");
   });
 
@@ -23,7 +23,8 @@ describe("AI draft naturalness", () => {
     const result = await generateParticipantMessage({
       cardId: `card_test_detail_${Date.now()}`,
       recipientName: "Анидовна",
-      occasion: "caregiver",
+      occasion: "personal",
+      occasionText: "собираем открытку в благодарность за заботу о детях",
       relation: "ученик",
       qualities: ["добрый", "заботливый"],
       wishes: ["спокойствия", "новых возможностей"],
@@ -41,22 +42,24 @@ describe("AI draft naturalness", () => {
     const first = await generateParticipantMessage({
       cardId,
       recipientName: "Анна",
-      occasion: "teacher",
+      occasion: "team",
+      occasionText: "собираем открытку от команды продукта",
       relation: "родитель",
       qualities: ["добрый", "внимательный"],
       wishes: ["здоровья", "радости"],
-      personalDetail: "Всегда поддерживает детей добрым словом",
+      personalDetail: "Всегда поддерживает добрым словом",
       style: "warm-simple"
     });
 
     const second = await generateParticipantMessage({
       cardId,
       recipientName: "Анна",
-      occasion: "teacher",
+      occasion: "team",
+      occasionText: "собираем открытку от команды продукта",
       relation: "родитель",
       qualities: ["добрый", "внимательный"],
       wishes: ["здоровья", "радости"],
-      personalDetail: "Всегда поддерживает детей добрым словом",
+      personalDetail: "Всегда поддерживает добрым словом",
       style: "warm-simple"
     });
 

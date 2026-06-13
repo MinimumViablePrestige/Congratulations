@@ -14,9 +14,10 @@ type Props = {
   publicSlug: string;
   recipientName: string;
   occasion: string;
+  occasionText: string;
 };
 
-export const ParticipantForm = ({ cardId, publicSlug, recipientName, occasion }: Props) => {
+export const ParticipantForm = ({ cardId, publicSlug, recipientName, occasion, occasionText }: Props) => {
   const [issues, setIssues] = useState<ValidationIssue[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -49,8 +50,8 @@ export const ParticipantForm = ({ cardId, publicSlug, recipientName, occasion }:
       <section className={styles.formCard}>
         <h2 className={styles.sectionTitle}>Добавить поздравление</h2>
         <p className={styles.hint}>
-          Можно написать самостоятельно или сначала попросить AI подготовить черновик. Слишком короткие и
-          пустые тексты теперь не пройдут.
+          Можно написать самостоятельно или сначала попросить AI подготовить черновик. Слишком короткие и пустые тексты
+          теперь не проходят.
         </p>
 
         <form
@@ -117,6 +118,7 @@ export const ParticipantForm = ({ cardId, publicSlug, recipientName, occasion }:
         cardId={cardId}
         recipientName={recipientName}
         occasion={occasion}
+        occasionText={occasionText}
         onUseText={(text) => {
           if (messageRef.current) {
             messageRef.current.value = text;

@@ -7,7 +7,8 @@ const card: CardDraft = {
   manageToken: "manage_1",
   finalSlug: "final_1",
   recipientName: "Анна",
-  occasion: "colleague",
+  occasion: "team",
+  occasionText: "собираем открытку от команды Product & Design",
   fromLabel: "команды Product & Design",
   organizerName: "Ирина",
   organizerEmail: "irina@example.com",
@@ -42,5 +43,6 @@ describe("buildFinalCardViewModel", () => {
     expect(viewModel.participantCount).toBe(1);
     expect(viewModel.blocks.length).toBeGreaterThan(0);
     expect(viewModel.summaryTitle).toContain("Анна");
+    expect(viewModel.occasionLabel).toBe("собираем открытку от команды Product & Design");
   });
 });

@@ -16,9 +16,10 @@ describe("validateAiGenerationFormData", () => {
       buildFormData({
         cardId: "card_1",
         recipientName: "Анна",
-        occasion: "teacher",
+        occasion: "personal",
+        occasionText: "благодарим за заботу о группе",
         relation: "родитель",
-        qualities: "добрая",
+        qualities: "добрый",
         wishes: "здоровья",
         personalDetail: "Спасибо за спокойствие и поддержку детей.",
         style: "warm-simple"
@@ -27,7 +28,8 @@ describe("validateAiGenerationFormData", () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.qualities).toEqual(["добрая"]);
+      expect(result.data.qualities).toEqual(["добрый"]);
+      expect(result.data.occasionText).toBe("благодарим за заботу о группе");
     }
   });
 
@@ -37,6 +39,7 @@ describe("validateAiGenerationFormData", () => {
         cardId: "",
         recipientName: "",
         occasion: "wrong",
+        occasionText: "",
         relation: "",
         qualities: "",
         wishes: "",
@@ -47,7 +50,7 @@ describe("validateAiGenerationFormData", () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.issues.length).toBeGreaterThanOrEqual(5);
+      expect(result.issues.length).toBeGreaterThanOrEqual(6);
     }
   });
 });

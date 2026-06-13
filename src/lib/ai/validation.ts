@@ -18,7 +18,7 @@ const normalizeMultiValue = (values: FormDataEntryValue[]) =>
     .filter(Boolean);
 
 const styles: AiStyle[] = ["warm-simple", "short-no-pathos", "humor", "touching", "respectful"];
-const occasions = ["teacher", "caregiver", "colleague"] as const;
+const occasions = ["personal", "team", "celebration", "teacher", "caregiver", "colleague"] as const;
 
 export const validateAiGenerationFormData = (formData: FormData): AiValidationResult => {
   const issues: AiValidationIssue[] = [];
@@ -26,6 +26,7 @@ export const validateAiGenerationFormData = (formData: FormData): AiValidationRe
   const cardId = normalizeText(formData.get("cardId"));
   const recipientName = normalizeText(formData.get("recipientName"));
   const occasion = normalizeText(formData.get("occasion"));
+  const occasionText = normalizeText(formData.get("occasionText"));
   const relation = normalizeText(formData.get("relation"));
   const qualities = normalizeMultiValue(formData.getAll("qualities"));
   const wishes = normalizeMultiValue(formData.getAll("wishes"));
@@ -33,7 +34,7 @@ export const validateAiGenerationFormData = (formData: FormData): AiValidationRe
   const style = normalizeText(formData.get("style"));
 
   if (!cardId) {
-    issues.push({ field: "cardId", message: "Не удалось определить открытку для AI-генерации." });
+    issues.push({ field: "cardId", message: "Не удалось определить открытку для AI-помощника." });
   }
 
   if (recipientName.length < 2) {
@@ -41,7 +42,11 @@ export const validateAiGenerationFormData = (formData: FormData): AiValidationRe
   }
 
   if (!occasions.includes(occasion as (typeof occasions)[number])) {
-    issues.push({ field: "occasion", message: "Повод для AI-помощника не распознан." });
+    issues.push({ field: "occasion", message: "Формат открытки для AI-помощника не распознан." });
+  }
+
+  if (occasionText.length < 2) {
+    issues.push({ field: "occasionText", message: "Нужен короткий контекст: кого и по какому поводу поздравляют." });
   }
 
   if (relation.length < 2) {
@@ -74,6 +79,7 @@ export const validateAiGenerationFormData = (formData: FormData): AiValidationRe
       cardId,
       recipientName,
       occasion: occasion as AiGenerationInput["occasion"],
+      occasionText,
       relation,
       qualities,
       wishes,

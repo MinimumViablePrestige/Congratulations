@@ -24,8 +24,8 @@ export const FinalCard = ({ model }: Props) => {
                   <p className={styles.eyebrow}>Открытка от всей группы</p>
                   <h1 className={styles.title}>{model.recipientName}</h1>
                   <p className={styles.subtitle}>
-                    Эту открытку для тебя собрали <strong>{model.fromLabel}</strong>. Здесь уже живут теплые
-                    слова, важные воспоминания и атмосфера общего подарка.
+                    Эту открытку для тебя собрали <strong>{model.fromLabel}</strong>. Здесь уже живут теплые слова,
+                    важные воспоминания и атмосфера общего подарка.
                   </p>
                   <div className={styles.heroMeta}>
                     <span className={styles.metaPill}>{model.participantCount} участников</span>
@@ -47,7 +47,7 @@ export const FinalCard = ({ model }: Props) => {
             if (block.id === "qualities") {
               return (
                 <section key={block.id} className={`${styles.qualities} ${styles.section}`}>
-                  <h2 className={styles.sectionTitle}>Какая ты для нас</h2>
+                  <h2 className={styles.sectionTitle}>Какой ты для нас</h2>
                   <div className={styles.chipList}>
                     {model.qualities.map((quality) => (
                       <span key={quality} className={styles.chip}>
@@ -114,8 +114,8 @@ export const FinalCard = ({ model }: Props) => {
                 <section key={block.id} className={styles.closing}>
                   <h2 className={styles.sectionTitle}>Спасибо, что вы вместе</h2>
                   <p className={styles.sectionText}>
-                    Это уже похоже не на список сообщений, а на собранный цифровой подарок. Дальше мы будем
-                    усиливать финальный вау-эффект, медиа и публикацию.
+                    Это уже похоже не на список сообщений, а на собранный цифровой подарок. Дальше мы будем усиливать
+                    финальный вау-эффект, медиа и публикацию.
                   </p>
                   <div className={styles.actions}>
                     <button type="button" className={styles.primaryButton}>

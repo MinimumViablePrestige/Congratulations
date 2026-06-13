@@ -5,9 +5,10 @@ describe("generateParticipantMessage", () => {
     const result = await generateParticipantMessage({
       cardId: `card_test_${Date.now()}`,
       recipientName: "Анна",
-      occasion: "teacher",
+      occasion: "personal",
+      occasionText: "благодарим за выпускной год в садике",
       relation: "родитель",
-      qualities: ["добрая", "внимательная"],
+      qualities: ["добрый", "внимательный"],
       wishes: ["здоровья", "радости"],
       personalDetail: "Спасибо за поддержку детей.",
       style: "warm-simple"

@@ -13,6 +13,7 @@ type Props = {
   cardId: string;
   recipientName: string;
   occasion: string;
+  occasionText: string;
   onUseText: (text: string) => void;
 };
 
@@ -29,7 +30,7 @@ const relationOptions = [
   { value: "другое", label: "Другое" }
 ];
 
-export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) => {
+export const AiHelper = ({ cardId, recipientName, occasion, occasionText, onUseText }: Props) => {
   const [issues, setIssues] = useState<string[]>([]);
   const [variants, setVariants] = useState<AiVariant[]>([]);
   const [remaining, setRemaining] = useState<number | null>(null);
@@ -66,8 +67,8 @@ export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) 
     <section className={styles.aiCard}>
       <h2 className={styles.sectionTitle}>Помочь с текстом через AI</h2>
       <p className={styles.hint}>
-        Ответьте на несколько коротких вопросов, и мы предложим 3 черновика поздравления. Потом можно
-        выбрать лучший и отредактировать его вручную.
+        Ответьте на несколько коротких вопросов, и мы предложим 3 черновика поздравления. Потом можно выбрать лучший и
+        отредактировать его вручную.
       </p>
 
       <form
@@ -76,6 +77,7 @@ export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) 
           formData.set("cardId", cardId);
           formData.set("recipientName", recipientName);
           formData.set("occasion", occasion);
+          formData.set("occasionText", occasionText);
 
           startTransition(async () => {
             await handleGenerate(formData);
@@ -85,6 +87,7 @@ export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) 
         <input type="hidden" name="cardId" value={cardId} />
         <input type="hidden" name="recipientName" value={recipientName} />
         <input type="hidden" name="occasion" value={occasion} />
+        <input type="hidden" name="occasionText" value={occasionText} />
 
         {issues.length > 0 ? (
           <div className={styles.errorBox} aria-live="polite">
@@ -106,9 +109,7 @@ export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) 
               </option>
             ))}
           </select>
-          <span className={styles.hint}>
-            Здесь выбирается именно ваша роль: например, ученик, родитель или коллега. Не роль получателя.
-          </span>
+          <span className={styles.hint}>Здесь выбирается именно ваша роль, а не профессия или статус получателя.</span>
         </div>
 
         <div className={styles.field}>
@@ -140,10 +141,10 @@ export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) 
           <textarea
             id="personalDetail"
             name="personalDetail"
-            placeholder="Например, за что вы особенно благодарны, какой теплый момент вспоминаете или что в человеке особенно цените."
+            placeholder="Например, за что вы особенно благодарны или какой теплый момент вспоминаете."
           />
           <span className={styles.hint}>
-            Лучше писать добрую и уместную деталь, а не критику или иронию — так результат будет заметно лучше.
+            AI будет опираться на контекст открытки: <strong>{occasionText}</strong>.
           </span>
         </div>
 

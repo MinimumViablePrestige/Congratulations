@@ -10,6 +10,7 @@ export type CardDraft = {
   finalSlug: string;
   recipientName: string;
   occasion: OccasionId;
+  occasionText: string;
   fromLabel: string;
   organizerName: string;
   organizerEmail: string;
@@ -25,6 +26,7 @@ export type CardDraft = {
 export type CreateCardInput = {
   recipientName: string;
   occasion: OccasionId;
+  occasionText: string;
   fromLabel: string;
   organizerName: string;
   organizerEmail: string;
@@ -37,6 +39,7 @@ export type CreateCardResult = {
   card: CardDraft;
   participantLink: string;
   manageLink: string;
+  finalLink: string;
   chatMessage: string;
 };
 

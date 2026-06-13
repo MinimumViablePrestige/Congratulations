@@ -22,12 +22,6 @@ export type FinalCardViewModel = {
   blocks: ReturnType<typeof buildFinalCardLayout>["blocks"];
 };
 
-const occasionLabelMap = {
-  teacher: "с теплым праздником",
-  caregiver: "с теплым праздником",
-  colleague: "с важным днем"
-} as const;
-
 const extractQualities = (contributions: Contribution[]) => {
   const tags = ["доброта", "забота", "внимание", "поддержка", "тепло", "мудрость", "надежность", "вдохновение"];
   const source = contributions.map((item) => item.message.toLowerCase()).join(" ");
@@ -47,13 +41,13 @@ const buildSummaryText = (card: CardDraft, contributions: Contribution[]) => {
   }
 
   if (contributions.length === 0) {
-    return `Эту открытку для ${card.recipientName} собирает ${card.fromLabel}. Скоро здесь появятся теплые слова от всей группы.`;
+    return `Эту открытку для ${card.recipientName} собирает ${card.fromLabel}. Повод: ${card.occasionText}. Скоро здесь появятся теплые слова от всей группы.`;
   }
 
-  return `Эту открытку для ${card.recipientName} уже собрали ${contributions.length} участников. Здесь будут жить теплые слова, важные воспоминания и лучшие фразы от ${card.fromLabel}.`;
+  return `Эту открытку для ${card.recipientName} уже собрали ${contributions.length} участников. Повод: ${card.occasionText}. Здесь будут жить теплые слова, важные воспоминания и лучшие фразы от ${card.fromLabel}.`;
 };
 
-const buildMemories = (card: CardDraft, contributions: Contribution[]) => {
+const buildMemories = (contributions: Contribution[]) => {
   if (contributions.length === 0) {
     return [];
   }
@@ -79,7 +73,7 @@ export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribu
   const style = resolveStyle(card.templateId);
   const qualities = extractQualities(contributions);
   const quotes = extractQuotes(contributions);
-  const memories = buildMemories(card, contributions);
+  const memories = buildMemories(contributions);
   const availability: FinalCardContentAvailability = {
     hasSummary: true,
     hasQualities: qualities.length > 0,
@@ -90,7 +84,7 @@ export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribu
   return {
     style,
     recipientName: card.recipientName,
-    occasionLabel: occasionLabelMap[card.occasion],
+    occasionLabel: card.occasionText,
     fromLabel: card.fromLabel,
     participantCount: contributions.length,
     summaryTitle: `${card.recipientName} глазами группы`,

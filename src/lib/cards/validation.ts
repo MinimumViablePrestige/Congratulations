@@ -52,6 +52,7 @@ export const validateCreateCardFormData = (formData: FormData): ValidationResult
 
   const recipientName = normalizeText(formData.get("recipientName"));
   const occasion = normalizeText(formData.get("occasion"));
+  const occasionText = normalizeText(formData.get("occasionText"));
   const fromLabel = normalizeText(formData.get("fromLabel"));
   const organizerName = normalizeText(formData.get("organizerName"));
   const organizerEmail = normalizeText(formData.get("organizerEmail"));
@@ -64,7 +65,11 @@ export const validateCreateCardFormData = (formData: FormData): ValidationResult
   }
 
   if (!isOccasionId(occasion)) {
-    pushIssue(issues, "occasion", "Выберите один из стартовых сценариев.");
+    pushIssue(issues, "occasion", "Выберите формат будущей открытки.");
+  }
+
+  if (!validateLength(occasionText, 2, 120)) {
+    pushIssue(issues, "occasionText", "Коротко опишите повод или контекст поздравления.");
   }
 
   if (!validateLength(fromLabel, 2, 80)) {
@@ -98,6 +103,7 @@ export const validateCreateCardFormData = (formData: FormData): ValidationResult
     data: {
       recipientName,
       occasion: validOccasion,
+      occasionText,
       fromLabel,
       organizerName,
       organizerEmail,

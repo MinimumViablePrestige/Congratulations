@@ -11,12 +11,6 @@ import type {
 
 const slug = (size = 8) => randomBytes(size).toString("hex");
 
-const occasionLabels: Record<CreateCardInput["occasion"], string> = {
-  teacher: "учителю",
-  caregiver: "воспитателю",
-  colleague: "коллеге"
-};
-
 export const createCardDraft = async (input: CreateCardInput): Promise<CreateCardResult> => {
   const now = new Date().toISOString();
 
@@ -27,6 +21,7 @@ export const createCardDraft = async (input: CreateCardInput): Promise<CreateCar
     finalSlug: slug(6),
     recipientName: input.recipientName,
     occasion: input.occasion,
+    occasionText: input.occasionText,
     fromLabel: input.fromLabel,
     organizerName: input.organizerName,
     organizerEmail: input.organizerEmail,
@@ -44,18 +39,21 @@ export const createCardDraft = async (input: CreateCardInput): Promise<CreateCar
   logger.info("funnel.card_created", "Card draft created", {
     cardId: card.id,
     occasion: card.occasion,
+    occasionText: card.occasionText,
     templateId: card.templateId,
     organizerEmail: card.organizerEmail
   });
 
   const participantLink = `/card/${card.publicSlug}`;
   const manageLink = `/manage/${card.manageToken}`;
-  const chatMessage = `Друзья, собираем поздравление ${occasionLabels[card.occasion]} для ${card.recipientName}. Перейдите по ссылке и напишите пару слов — можно с помощью AI, это займет минуту: ${participantLink}`;
+  const finalLink = `/gift/${card.finalSlug}`;
+  const chatMessage = `Друзья, собираем открытку для ${card.recipientName}. Повод: ${card.occasionText}. Перейдите по ссылке и напишите пару теплых слов, это займет минуту: ${participantLink}`;
 
   return {
     card,
     participantLink,
     manageLink,
+    finalLink,
     chatMessage
   };
 };

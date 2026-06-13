@@ -33,10 +33,11 @@ export default async function ManagePage({ params }: Props) {
           <p className={styles.eyebrow}>Секретная ссылка организатора</p>
           <h1 className={styles.title}>Управление открыткой для {card.recipientName}</h1>
           <p className={styles.subtitle}>
-            Здесь можно следить за поздравлениями, скрывать неподходящие сообщения и смотреть, как будет
-            выглядеть финальная открытка до оплаты и публикации.
+            Здесь можно следить за поздравлениями, скрывать неподходящие сообщения и смотреть, как будет выглядеть
+            финальная открытка до оплаты и публикации.
           </p>
           <div className={styles.stats}>
+            <div className={styles.stat}>Повод: {card.occasionText}</div>
             <div className={styles.stat}>Статус: {card.status}</div>
             <div className={styles.stat}>Оплата: {card.paymentStatus}</div>
             <div className={styles.stat}>Всего поздравлений: {allContributions.length}</div>
@@ -48,8 +49,7 @@ export default async function ManagePage({ params }: Props) {
           <section className={styles.panel}>
             <h2 className={styles.sectionTitle}>Поздравления</h2>
             <p className={styles.hint}>
-              На этом этапе уже можно скрыть или удалить сообщение, если оно не подходит по тону или
-              качеству.
+              На этом этапе уже можно скрыть или удалить сообщение, если оно не подходит по тону или качеству.
             </p>
 
             {allContributions.length === 0 ? (
@@ -61,9 +61,7 @@ export default async function ManagePage({ params }: Props) {
                     <div className={styles.row}>
                       <div>
                         <span className={styles.author}>{contribution.authorName}</span>
-                        {contribution.authorRole ? (
-                          <span className={styles.meta}> · {contribution.authorRole}</span>
-                        ) : null}
+                        {contribution.authorRole ? <span className={styles.meta}> · {contribution.authorRole}</span> : null}
                       </div>
                       <span className={styles.statusBadge}>{contribution.status}</span>
                     </div>
@@ -107,6 +105,9 @@ export default async function ManagePage({ params }: Props) {
                 Ссылка для участников: <code>/card/{card.publicSlug}</code>
               </p>
               <p className={styles.line}>
+                Финальный экран: <code>/gift/{card.finalSlug}</code>
+              </p>
+              <p className={styles.line}>
                 Напоминание для чата: <code>{reminderText}</code>
               </p>
             </section>
@@ -114,8 +115,10 @@ export default async function ManagePage({ params }: Props) {
             <section className={styles.previewCard}>
               <h2 className={styles.sectionTitle}>Предпросмотр</h2>
               <p className={styles.previewText}>
-                Получатель увидит открытку для <strong>{card.recipientName}</strong> от{" "}
-                <strong>{card.fromLabel}</strong>.
+                Получатель увидит открытку для <strong>{card.recipientName}</strong> от <strong>{card.fromLabel}</strong>.
+              </p>
+              <p className={styles.previewText}>
+                Контекст открытки: <strong>{card.occasionText}</strong>
               </p>
               {card.description ? <p className={styles.previewText}>{card.description}</p> : null}
               <p className={styles.previewText}>

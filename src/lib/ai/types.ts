@@ -11,6 +11,7 @@ export type AiGenerationInput = {
   cardId: string;
   recipientName: string;
   occasion: OccasionId;
+  occasionText: string;
   relation: string;
   qualities: string[];
   wishes: string[];
