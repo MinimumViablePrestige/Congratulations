@@ -25,7 +25,8 @@ const relationOptions = [
   { value: "друг", label: "Друг" },
   { value: "родственник", label: "Родственник" },
   { value: "руководитель", label: "Руководитель" },
-  { value: "знакомый", label: "Знакомый" }
+  { value: "знакомый", label: "Знакомый" },
+  { value: "другое", label: "Другое" }
 ];
 
 export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) => {
@@ -97,7 +98,7 @@ export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) 
         ) : null}
 
         <div className={styles.field}>
-          <label htmlFor="relation">Кем вам приходится этот человек</label>
+          <label htmlFor="relation">Какая у вас роль в этом поздравлении</label>
           <select id="relation" name="relation" defaultValue="родитель" required>
             {relationOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -105,6 +106,9 @@ export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) 
               </option>
             ))}
           </select>
+          <span className={styles.hint}>
+            Здесь выбирается именно ваша роль: например, ученик, родитель или коллега. Не роль получателя.
+          </span>
         </div>
 
         <div className={styles.field}>
