@@ -5,10 +5,41 @@ import { logger } from "@/lib/logger";
 
 const CARD_GENERATION_LIMIT = 50;
 
+const cleanText = (value: string) =>
+  value
+    .replace(/[!]+/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const sanitizeItems = (items: string[]) =>
+  items
+    .map((item) => cleanText(item).toLowerCase())
+    .filter(Boolean)
+    .slice(0, 3);
+
+const sanitizeSentence = (value?: string) => {
+  const cleaned = cleanText(value ?? "");
+  if (!cleaned) {
+    return "";
+  }
+
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+};
+
+const relationPrefix = (relation: string) => {
+  const cleaned = cleanText(relation).toLowerCase();
+
+  if (!cleaned) {
+    return "как человек, который вас ценит";
+  }
+
+  return `как ${cleaned}`;
+};
+
 const styleClosers: Record<AiStyle, string> = {
   "warm-simple": "Спасибо вам за то тепло, которое вы дарите людям рядом.",
   "short-no-pathos": "Пусть впереди будет больше спокойных и радостных дней.",
-  humor: "И пусть хорошее настроение у вас всегда приходит чуть раньше дедлайнов и забот.",
+  humor: "И пусть хорошее настроение у вас всегда приходит чуть раньше повседневных забот.",
   touching: "Очень хочется, чтобы вы чувствовали, как много доброго о вас думают.",
   respectful: "Пусть ваше внимание к людям возвращается к вам благодарностью и уважением."
 };
@@ -38,13 +69,21 @@ const joinItems = (items: string[]) => {
 };
 
 const buildVariants = (input: AiGenerationInput) => {
-  const qualities = joinItems(input.qualities.slice(0, 3));
-  const wishes = joinItems(input.wishes.slice(0, 3));
-  const detail = input.personalDetail ? ` Особенно хочется вспомнить: ${input.personalDetail}` : "";
+  const cleanedRecipientName = sanitizeSentence(input.recipientName);
+  const cleanedQualities = sanitizeItems(input.qualities);
+  const cleanedWishes = sanitizeItems(input.wishes);
+  const cleanedDetail = sanitizeSentence(input.personalDetail);
+  const cleanedRelation = relationPrefix(input.relation);
 
-  const short = `${input.recipientName}, спасибо за то, что вы ${qualities}. Желаю вам ${wishes} и много светлых моментов впереди.`;
-  const heartfelt = `${openingForOccasion(input.occasion, input.recipientName)} Для меня вы ${qualities}.${detail} От души желаю вам ${wishes}. ${styleClosers[input.style]}`;
-  const styled = `${input.recipientName}, хочу поздравить вас как ${input.relation}. Вы человек, рядом с которым особенно чувствуются ${qualities}.${detail} Пусть в вашей жизни будет больше ${wishes}. ${styleClosers[input.style]}`;
+  const qualities = joinItems(cleanedQualities);
+  const wishes = joinItems(cleanedWishes);
+  const detail = cleanedDetail
+    ? ` Особенно хочется отметить ${cleanedDetail.charAt(0).toLowerCase()}${cleanedDetail.slice(1)}.`
+    : "";
+
+  const short = `${cleanedRecipientName}, спасибо за то, что вы такой ${qualities}. Желаю вам ${wishes} и много светлых моментов впереди.`;
+  const heartfelt = `${openingForOccasion(input.occasion, cleanedRecipientName)} Для многих вы человек, с которым ассоциируются ${qualities}.${detail} От души желаю вам ${wishes}. ${styleClosers[input.style]}`;
+  const styled = `${cleanedRecipientName}, хочу поздравить вас ${cleanedRelation}. Рядом с вами особенно чувствуются ${qualities}.${detail} Пусть в вашей жизни будет больше ${wishes}. ${styleClosers[input.style]}`;
 
   return [
     { id: "short", label: "Короткий вариант", text: short },
@@ -69,7 +108,7 @@ export const generateParticipantMessage = async (input: AiGenerationInput): Prom
     generationType: "participant_message",
     inputJson: JSON.stringify(input),
     outputText: JSON.stringify(variants),
-    model: "local-template-v1",
+    model: "local-template-v2",
     createdAt: new Date().toISOString()
   };
 

@@ -40,7 +40,7 @@ export type CreateCardResult = {
   chatMessage: string;
 };
 
-export type ContributionStatus = "visible";
+export type ContributionStatus = "visible" | "hidden" | "deleted";
 export type ContributionSource = "manual";
 
 export type Contribution = {
@@ -60,4 +60,9 @@ export type CreateContributionInput = {
   authorName: string;
   authorRole?: string;
   message: string;
+};
+
+export type ContributionStatusUpdate = {
+  contributionId: string;
+  status: Exclude<ContributionStatus, "visible"> | "visible";
 };

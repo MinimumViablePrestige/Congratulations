@@ -40,6 +40,16 @@ export const getCardDraftByPublicSlug = async (publicSlug: string) => {
   return cards.find((card) => card.publicSlug === publicSlug) ?? null;
 };
 
+export const getCardDraftByManageToken = async (manageToken: string) => {
+  const cards = await readCards();
+  return cards.find((card) => card.manageToken === manageToken) ?? null;
+};
+
+export const getCardDraftById = async (cardId: string) => {
+  const cards = await readCards();
+  return cards.find((card) => card.id === cardId) ?? null;
+};
+
 const readContributions = async (): Promise<Contribution[]> => {
   await ensureJsonFile(contributionsFilePath);
   const raw = await readFile(contributionsFilePath, "utf8");
@@ -61,4 +71,31 @@ export const saveContribution = async (contribution: Contribution) => {
 export const listContributionsByCardId = async (cardId: string) => {
   const contributions = await readContributions();
   return contributions.filter((item) => item.cardId === cardId && item.status === "visible");
+};
+
+export const listAllContributionsByCardId = async (cardId: string) => {
+  const contributions = await readContributions();
+  return contributions.filter((item) => item.cardId === cardId);
+};
+
+export const updateContributionStatus = async (
+  contributionId: string,
+  status: Contribution["status"]
+) => {
+  const contributions = await readContributions();
+  const index = contributions.findIndex((item) => item.id === contributionId);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const updated = {
+    ...contributions[index],
+    status,
+    updatedAt: new Date().toISOString()
+  };
+
+  contributions[index] = updated;
+  await writeFile(contributionsFilePath, JSON.stringify(contributions, null, 2), "utf8");
+  return updated;
 };
