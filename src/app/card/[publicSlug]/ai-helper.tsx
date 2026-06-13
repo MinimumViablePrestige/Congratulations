@@ -18,6 +18,15 @@ type Props = {
 
 const qualityOptions = ["добрый", "внимательный", "надежный", "мудрый", "заботливый", "вдохновляющий"];
 const wishOptions = ["здоровья", "радости", "спокойствия", "успехов", "тепла", "новых возможностей"];
+const relationOptions = [
+  { value: "ученик", label: "Ученик" },
+  { value: "родитель", label: "Родитель" },
+  { value: "коллега", label: "Коллега" },
+  { value: "друг", label: "Друг" },
+  { value: "родственник", label: "Родственник" },
+  { value: "руководитель", label: "Руководитель" },
+  { value: "знакомый", label: "Знакомый" }
+];
 
 export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) => {
   const [issues, setIssues] = useState<string[]>([]);
@@ -89,7 +98,13 @@ export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) 
 
         <div className={styles.field}>
           <label htmlFor="relation">Кем вам приходится этот человек</label>
-          <input id="relation" name="relation" placeholder="Например, родитель, коллега, ученик" required />
+          <select id="relation" name="relation" defaultValue="родитель" required>
+            {relationOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className={styles.field}>
@@ -121,8 +136,11 @@ export const AiHelper = ({ cardId, recipientName, occasion, onUseText }: Props) 
           <textarea
             id="personalDetail"
             name="personalDetail"
-            placeholder="Например, за что вы особенно благодарны, какую фразу часто вспоминаете или какой теплый момент хочется отметить."
+            placeholder="Например, за что вы особенно благодарны, какой теплый момент вспоминаете или что в человеке особенно цените."
           />
+          <span className={styles.hint}>
+            Лучше писать добрую и уместную деталь, а не критику или иронию — так результат будет заметно лучше.
+          </span>
         </div>
 
         <div className={styles.field}>

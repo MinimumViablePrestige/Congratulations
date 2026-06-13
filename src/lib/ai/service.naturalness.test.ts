@@ -15,7 +15,8 @@ describe("AI draft naturalness", () => {
 
     const text = result.variants.map((item) => item.text).join(" ");
     expect(text).not.toContain("!");
-    expect(text).toContain("как воспитатель");
+    expect(text).not.toContain("как воспитатель");
+    expect(text).toContain("как человек");
   });
 
   it("does not insert negative personal detail into the final text", async () => {
@@ -33,5 +34,35 @@ describe("AI draft naturalness", () => {
     const text = result.variants.map((item) => item.text).join(" ").toLowerCase();
     expect(text).not.toContain("крич");
     expect(text).not.toContain("работать");
+  });
+
+  it("produces different drafts for repeated generations on the same card", async () => {
+    const cardId = `card_test_repeat_${Date.now()}`;
+    const first = await generateParticipantMessage({
+      cardId,
+      recipientName: "Анна",
+      occasion: "teacher",
+      relation: "родитель",
+      qualities: ["добрый", "внимательный"],
+      wishes: ["здоровья", "радости"],
+      personalDetail: "Всегда поддерживает детей добрым словом",
+      style: "warm-simple"
+    });
+
+    const second = await generateParticipantMessage({
+      cardId,
+      recipientName: "Анна",
+      occasion: "teacher",
+      relation: "родитель",
+      qualities: ["добрый", "внимательный"],
+      wishes: ["здоровья", "радости"],
+      personalDetail: "Всегда поддерживает детей добрым словом",
+      style: "warm-simple"
+    });
+
+    const firstJoined = first.variants.map((item) => item.text).join(" ");
+    const secondJoined = second.variants.map((item) => item.text).join(" ");
+
+    expect(firstJoined).not.toBe(secondJoined);
   });
 });
