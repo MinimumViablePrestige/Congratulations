@@ -22,4 +22,23 @@ describe("buildFinalCardLayout", () => {
 
     expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "summary", "memories", "messages", "quotes", "closing"]);
   });
+
+  it("respects organizer block settings for optional sections", () => {
+    const layout = buildFinalCardLayout(
+      "team-modern",
+      {
+        hasSummary: true,
+        hasQualities: true,
+        hasMemories: false,
+        hasQuotes: true
+      },
+      {
+        summary: false,
+        qualities: true,
+        quotes: false
+      }
+    );
+
+    expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "qualities", "messages", "closing"]);
+  });
 });

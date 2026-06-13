@@ -15,6 +15,7 @@ const card: CardDraft = {
   eventDate: null,
   description: "Спасибо за поддержку, энергию и человеческое тепло.",
   templateId: "team-modern",
+  finalBlockSettings: null,
   status: "draft",
   paymentStatus: "unpaid",
   createdAt: "2026-01-01T00:00:00.000Z",
@@ -44,5 +45,20 @@ describe("buildFinalCardViewModel", () => {
     expect(viewModel.blocks.length).toBeGreaterThan(0);
     expect(viewModel.summaryTitle).toContain("Анна");
     expect(viewModel.occasionLabel).toBe("собираем открытку от команды Product & Design");
+  });
+
+  it("hides optional blocks that organizer disabled", () => {
+    const viewModel = buildFinalCardViewModel(
+      {
+        ...card,
+        finalBlockSettings: {
+          summary: false,
+          quotes: false
+        }
+      },
+      contributions
+    );
+
+    expect(viewModel.blocks.map((block) => block.id)).toEqual(["hero", "qualities", "messages", "closing"]);
   });
 });

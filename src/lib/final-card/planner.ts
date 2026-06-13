@@ -1,5 +1,11 @@
 import { finalCardLayouts } from "@/lib/final-card/layouts";
-import type { FinalCardContentAvailability, FinalCardLayout, FinalCardStyleId } from "@/lib/final-card/types";
+import type {
+  FinalCardOptionalBlockId,
+  FinalCardBlockSettings,
+  FinalCardContentAvailability,
+  FinalCardLayout,
+  FinalCardStyleId
+} from "@/lib/final-card/types";
 
 const isBlockAvailable = (blockId: string, availability: FinalCardContentAvailability) => {
   if (blockId === "summary") {
@@ -23,12 +29,21 @@ const isBlockAvailable = (blockId: string, availability: FinalCardContentAvailab
 
 export const buildFinalCardLayout = (
   style: FinalCardStyleId,
-  availability: FinalCardContentAvailability
+  availability: FinalCardContentAvailability,
+  settings?: FinalCardBlockSettings | null
 ): FinalCardLayout => {
   const layout = finalCardLayouts[style];
 
   return {
     style: layout.style,
-    blocks: layout.blocks.filter((block) => block.required || isBlockAvailable(block.id, availability))
+    blocks: layout.blocks.filter((block) => {
+      if (block.required) {
+        return true;
+      }
+
+      const optionalBlockId = block.id as FinalCardOptionalBlockId;
+      const isEnabled = settings?.[optionalBlockId] ?? true;
+      return isEnabled && isBlockAvailable(block.id, availability);
+    })
   };
 };

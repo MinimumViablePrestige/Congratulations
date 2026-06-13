@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { CardDraft, Contribution } from "@/lib/cards/types";
+import type { FinalCardBlockSettings } from "@/lib/final-card/types";
 
 const cardsFilePath = join(process.cwd(), "data", "cards.json");
 const contributionsFilePath = join(process.cwd(), "data", "contributions.json");
@@ -48,6 +49,28 @@ export const getCardDraftByManageToken = async (manageToken: string) => {
 export const getCardDraftById = async (cardId: string) => {
   const cards = await readCards();
   return cards.find((card) => card.id === cardId) ?? null;
+};
+
+export const updateCardFinalBlockSettings = async (
+  cardId: string,
+  finalBlockSettings: FinalCardBlockSettings
+) => {
+  const cards = await readCards();
+  const index = cards.findIndex((card) => card.id === cardId);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const updated = {
+    ...cards[index],
+    finalBlockSettings,
+    updatedAt: new Date().toISOString()
+  };
+
+  cards[index] = updated;
+  await writeFile(cardsFilePath, JSON.stringify(cards, null, 2), "utf8");
+  return updated;
 };
 
 const readContributions = async (): Promise<Contribution[]> => {

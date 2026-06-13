@@ -28,6 +28,7 @@ export const createCardDraft = async (input: CreateCardInput): Promise<CreateCar
     eventDate: input.eventDate ?? null,
     description: input.description ?? null,
     templateId: input.templateId,
+    finalBlockSettings: null,
     status: "draft",
     paymentStatus: "unpaid",
     createdAt: now,

@@ -7,6 +7,8 @@ export type FinalCardBlockId =
   | "quotes"
   | "closing";
 
+export type FinalCardOptionalBlockId = Exclude<FinalCardBlockId, "hero" | "messages" | "closing">;
+
 export type FinalCardStyleId =
   | "warm-classic"
   | "team-modern"
@@ -29,3 +31,5 @@ export type FinalCardContentAvailability = {
   hasMemories: boolean;
   hasQuotes: boolean;
 };
+
+export type FinalCardBlockSettings = Partial<Record<FinalCardOptionalBlockId, boolean>>;

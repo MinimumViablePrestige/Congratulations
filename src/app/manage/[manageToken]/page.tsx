@@ -4,8 +4,13 @@ import {
   listAllContributionsByCardId,
   listContributionsByCardId
 } from "@/lib/cards/repository";
+import { cardTemplates } from "@/lib/cards/templates";
+import { finalCardLayouts } from "@/lib/final-card/layouts";
+import { buildFinalCardViewModel } from "@/lib/final-card/view-model";
+import type { FinalCardOptionalBlockId } from "@/lib/final-card/types";
 import { buildReminderText } from "@/lib/manage/reminder";
 import { setContributionStatusAction } from "./actions";
+import { BlockSettingsForm } from "./block-settings-form";
 import { ContributionEditor } from "./contribution-editor";
 import styles from "./manage-page.module.css";
 
@@ -26,6 +31,37 @@ export default async function ManagePage({ params }: Props) {
   const allContributions = await listAllContributionsByCardId(card.id);
   const visibleContributions = await listContributionsByCardId(card.id);
   const reminderText = buildReminderText(card, visibleContributions.length);
+  const model = buildFinalCardViewModel(card, visibleContributions);
+  const availableModel = buildFinalCardViewModel({ ...card, finalBlockSettings: null }, visibleContributions);
+  const style = cardTemplates.find((template) => template.id === card.templateId)?.id ?? "warm-classic";
+  const optionalLayoutBlocks = finalCardLayouts[style].blocks.filter((block) => !block.required);
+  const blockMeta: Record<FinalCardOptionalBlockId, { label: string; description: string }> = {
+    summary: {
+      label: "Вводный блок",
+      description: "Короткое общее описание открытки и контекста."
+    },
+    qualities: {
+      label: "Какая ты / какой ты для нас",
+      description: "Блок с качествами, которые собраны из поздравлений."
+    },
+    memories: {
+      label: "Теплые воспоминания",
+      description: "Небольшие выделенные истории и фрагменты из поздравлений."
+    },
+    quotes: {
+      label: "Лучшие фразы",
+      description: "Короткие сильные цитаты из поздравлений."
+    }
+  };
+  const currentBlockIds = model.blocks.map((block) => block.id);
+  const availableBlockIds = availableModel.blocks.map((block) => block.id);
+  const blockOptions = optionalLayoutBlocks.map((block) => ({
+    id: block.id as FinalCardOptionalBlockId,
+    label: blockMeta[block.id as FinalCardOptionalBlockId].label,
+    description: blockMeta[block.id as FinalCardOptionalBlockId].description,
+    checked: card.finalBlockSettings?.[block.id as FinalCardOptionalBlockId] ?? true,
+    disabled: !availableBlockIds.includes(block.id)
+  }));
 
   return (
     <main className={styles.page}>
@@ -119,11 +155,10 @@ export default async function ManagePage({ params }: Props) {
 
             <section className={styles.actionsCard}>
               <h2 className={styles.sectionTitle}>Состав финального экрана</h2>
+              <p className={styles.line}>Здесь можно включать и выключать необязательные части финальной открытки.</p>
+              <BlockSettingsForm manageToken={manageToken} options={blockOptions} />
               <p className={styles.line}>
-                Выбор блоков будет жить здесь, на странице организатора, рядом с предпросмотром.
-              </p>
-              <p className={styles.line}>
-                Следующий шаг: дать возможность включать и выключать блоки вроде `summary`, `quotes`, `memories`.
+                Сейчас в финальный экран попадают: <code>{currentBlockIds.join(", ")}</code>
               </p>
             </section>
 

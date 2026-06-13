@@ -1,4 +1,5 @@
 import type { CardTemplateId, OccasionId } from "@/lib/cards/templates";
+import type { FinalCardBlockSettings } from "@/lib/final-card/types";
 
 export type CardStatus = "draft";
 export type PaymentStatus = "unpaid";
@@ -17,6 +18,7 @@ export type CardDraft = {
   eventDate: string | null;
   description: string | null;
   templateId: CardTemplateId;
+  finalBlockSettings: FinalCardBlockSettings | null;
   status: CardStatus;
   paymentStatus: PaymentStatus;
   createdAt: string;

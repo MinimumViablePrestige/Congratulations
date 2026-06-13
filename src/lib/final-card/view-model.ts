@@ -93,6 +93,6 @@ export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribu
     quotes,
     contributions,
     memories,
-    blocks: buildFinalCardLayout(style, availability).blocks
+    blocks: buildFinalCardLayout(style, availability, card.finalBlockSettings).blocks
   };
 };
