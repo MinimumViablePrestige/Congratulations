@@ -89,7 +89,8 @@ export type CardMediaAsset = {
   fileName: string;
   mimeType: string;
   sizeBytes: number;
-  caption: string;
+  captionTitle: string;
+  captionSubtitle: string;
   createdAt: string;
   updatedAt: string;
 };

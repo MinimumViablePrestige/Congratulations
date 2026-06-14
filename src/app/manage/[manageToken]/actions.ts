@@ -194,7 +194,8 @@ export async function saveCardMediaAction(
 ) {
   const manageToken = String(formData.get("manageToken") ?? "");
   const slot = String(formData.get("slot") ?? "") as CardMediaSlot;
-  const caption = String(formData.get("caption") ?? "").trim().slice(0, 160);
+  const captionTitle = String(formData.get("captionTitle") ?? "").trim().slice(0, 60);
+  const captionSubtitle = String(formData.get("captionSubtitle") ?? "").trim().slice(0, 120);
   const existingAssetId = String(formData.get("assetId") ?? "");
   const file = formData.get("file");
 
@@ -231,7 +232,8 @@ export async function saveCardMediaAction(
       fileName: file.name,
       mimeType: file.type,
       sizeBytes: file.size,
-      caption,
+      captionTitle,
+      captionSubtitle,
       createdAt: now,
       updatedAt: now
     };
@@ -259,7 +261,7 @@ export async function saveCardMediaAction(
     return { ok: false, message: "Выберите файл для загрузки." };
   }
 
-  const updated = await updateCardMediaAssetCaption(existingAssetId, caption);
+  const updated = await updateCardMediaAssetCaption(existingAssetId, captionTitle, captionSubtitle);
   if (!updated || updated.cardId !== card.id) {
     return { ok: false, message: "Не удалось обновить подпись к фото." };
   }

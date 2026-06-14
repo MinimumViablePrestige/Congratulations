@@ -20,6 +20,16 @@ describe("card media helpers", () => {
     expect(fileName.endsWith(".png")).toBe(true);
   });
 
+  it("keeps support for two-line captions in stored assets", () => {
+    const asset = {
+      captionTitle: "Наш выпускной",
+      captionSubtitle: "День, который хочется вспоминать"
+    };
+
+    expect(asset.captionTitle).toBe("Наш выпускной");
+    expect(asset.captionSubtitle).toContain("вспоминать");
+  });
+
   it("rejects unsupported files and oversize uploads", () => {
     const invalidType = new File([new Uint8Array([1, 2, 3])], "photo.gif", { type: "image/gif" });
     const tooLarge = new File([new Uint8Array(CARD_MEDIA_MAX_BYTES + 1)], "photo.jpg", { type: "image/jpeg" });

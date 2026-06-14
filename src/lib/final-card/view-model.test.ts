@@ -48,7 +48,8 @@ const mediaAssets: CardMediaAsset[] = [
     fileName: "portrait.jpg",
     mimeType: "image/jpeg",
     sizeBytes: 1024,
-    caption: "Командное фото",
+    captionTitle: "Командное фото",
+    captionSubtitle: "День, который хочется помнить",
     createdAt: "2026-01-01T00:00:00.000Z",
     updatedAt: "2026-01-01T00:00:00.000Z"
   }
@@ -108,5 +109,7 @@ describe("buildFinalCardViewModel", () => {
 
     expect(viewModel.mediaAssets).toHaveLength(1);
     expect(viewModel.mediaAssets[0]?.slot).toBe("portrait");
+    expect(viewModel.mediaAssets[0]?.captionTitle).toBe("Командное фото");
+    expect(viewModel.mediaAssets[0]?.captionSubtitle).toContain("помнить");
   });
 });

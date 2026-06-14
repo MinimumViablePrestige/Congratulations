@@ -7,6 +7,7 @@ coverage/
 data/cards.json
 data/contributions.json
 data/ai-generations.json
+public/uploads/
 
 # Python
 __pycache__/

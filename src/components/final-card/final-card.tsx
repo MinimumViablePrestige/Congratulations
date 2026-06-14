@@ -31,13 +31,44 @@ const renderMessageCard = (item: Contribution, index: number, maxChars: number) 
 const getMediaAssetBySlot = (mediaAssets: CardMediaAsset[], slot: CardMediaAsset["slot"]) =>
   mediaAssets.find((item) => item.slot === slot);
 
-const renderMediaFigure = (asset: CardMediaAsset | undefined, title: string, fallbackText: string, className: string) => (
-  <figure className={className}>
+const getPhotoFrameClassName = (slot: CardMediaAsset["slot"], baseClassName: string) => {
+  if (slot === "portrait") {
+    return `${baseClassName} ${styles.mediaFrameTiltLeft}`;
+  }
+
+  if (slot === "landscape-a") {
+    return `${baseClassName} ${styles.mediaFrameTiltLeft}`;
+  }
+
+  if (slot === "landscape-b") {
+    return `${baseClassName} ${styles.mediaFrameTiltRight}`;
+  }
+
+  return baseClassName;
+};
+
+const renderMediaFigure = (
+  asset: CardMediaAsset | undefined,
+  slot: CardMediaAsset["slot"],
+  title: string,
+  fallbackText: string,
+  className: string
+) => (
+  <figure className={getPhotoFrameClassName(slot, className)}>
     {asset ? (
       <>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={asset.publicUrl} alt={asset.caption || title} className={styles.mediaImage} />
-        <figcaption className={styles.mediaCaption}>{asset.caption || title}</figcaption>
+        <img
+          src={asset.publicUrl}
+          alt={asset.captionTitle || asset.captionSubtitle || title}
+          className={styles.mediaImage}
+        />
+        <figcaption className={styles.mediaCaption}>
+          {asset.captionTitle ? <strong className={styles.mediaCaptionTitle}>{asset.captionTitle}</strong> : null}
+          <span className={styles.mediaCaptionSubtitle}>
+            {asset.captionSubtitle || asset.captionTitle || title}
+          </span>
+        </figcaption>
       </>
     ) : (
       <>
@@ -54,12 +85,14 @@ const renderMediaRail = (model: FinalCardViewModel) => {
       <div className={styles.mediaRail}>
         {renderMediaFigure(
           getMediaAssetBySlot(model.mediaAssets, "landscape-a"),
+          "landscape-a",
           "Горизонтальное фото A",
           "Здесь может появиться первое горизонтальное фото.",
           styles.mediaCardLandscape
         )}
         {renderMediaFigure(
           getMediaAssetBySlot(model.mediaAssets, "landscape-b"),
+          "landscape-b",
           "Горизонтальное фото B",
           "Здесь может появиться второе горизонтальное фото.",
           styles.mediaCardLandscape
@@ -72,6 +105,7 @@ const renderMediaRail = (model: FinalCardViewModel) => {
     <div className={styles.mediaRail}>
       {renderMediaFigure(
         getMediaAssetBySlot(model.mediaAssets, "portrait"),
+        "portrait",
         "Вертикальное фото",
         "Здесь предусмотрено место под одно заметное вертикальное фото.",
         styles.mediaCardPortrait
@@ -201,11 +235,27 @@ export const FinalCard = ({ model }: Props) => {
                   <h2 className={styles.sectionTitle}>Воспоминания, которые хочется сохранить</h2>
                   <div className={`${styles.grid} ${styles.memoriesGrid}`}>
                     {model.mediaAssets.length > 0
-                      ? model.mediaAssets.map((asset) => (
-                          <article key={asset.id} className={styles.memoryPhotoCard}>
+                      ? model.mediaAssets.map((asset, index) => (
+                          <article
+                            key={asset.id}
+                            className={`${styles.memoryPhotoCard} ${
+                              index % 2 === 0 ? styles.memoryCardTilt : styles.memoryCardTiltAlt
+                            }`}
+                          >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={asset.publicUrl} alt={asset.caption || "Фото открытки"} className={styles.memoryPhotoImage} />
-                            <p className={styles.memoryPhotoCaption}>{asset.caption || "Фото для открытки"}</p>
+                            <img
+                              src={asset.publicUrl}
+                              alt={asset.captionTitle || asset.captionSubtitle || "Фото открытки"}
+                              className={styles.memoryPhotoImage}
+                            />
+                            <div className={styles.memoryPhotoCaptionWrap}>
+                              {asset.captionTitle ? (
+                                <strong className={styles.memoryPhotoCaptionTitle}>{asset.captionTitle}</strong>
+                              ) : null}
+                              <p className={styles.memoryPhotoCaption}>
+                                {asset.captionSubtitle || asset.captionTitle || "Фото для открытки"}
+                              </p>
+                            </div>
                           </article>
                         ))
                       : model.memories.map((item, index) => (

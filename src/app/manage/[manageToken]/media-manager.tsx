@@ -74,7 +74,11 @@ const MediaSlotCard = ({
       <div className={styles.mediaPreview}>
         {asset ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={asset.publicUrl} alt={asset.caption || title} className={styles.mediaPreviewImage} />
+          <img
+            src={asset.publicUrl}
+            alt={asset.captionTitle || asset.captionSubtitle || title}
+            className={styles.mediaPreviewImage}
+          />
         ) : (
           <div className={styles.mediaPreviewEmpty}>Фото пока не загружено</div>
         )}
@@ -85,16 +89,29 @@ const MediaSlotCard = ({
         <input type="hidden" name="slot" value={slot} />
         <input type="hidden" name="assetId" value={asset?.id ?? ""} />
 
-        <label className={styles.editorLabel} htmlFor={`caption-${slot}`}>
-          Подпись
+        <label className={styles.editorLabel} htmlFor={`caption-title-${slot}`}>
+          Подпись, строка 1
         </label>
         <input
-          id={`caption-${slot}`}
-          name="caption"
-          defaultValue={asset?.caption ?? ""}
+          id={`caption-title-${slot}`}
+          name="captionTitle"
+          defaultValue={asset?.captionTitle ?? ""}
           className={styles.mediaInput}
-          placeholder="Короткая подпись к фото"
-          maxLength={160}
+          placeholder="Например: Наш выпускной"
+          maxLength={60}
+        />
+
+        <label className={styles.editorLabel} htmlFor={`caption-subtitle-${slot}`}>
+          Подпись, строка 2
+        </label>
+        <textarea
+          id={`caption-subtitle-${slot}`}
+          name="captionSubtitle"
+          defaultValue={asset?.captionSubtitle ?? ""}
+          className={styles.mediaTextarea}
+          placeholder="Короткое пояснение или теплый контекст"
+          rows={2}
+          maxLength={120}
         />
 
         <label className={styles.editorLabel} htmlFor={`file-${slot}`}>
@@ -140,7 +157,7 @@ export const MediaManager = ({ manageToken, mediaAssets, mediaLayout }: Props) =
       <div>
         <h2 className={styles.sectionTitle}>Фото для открытки</h2>
         <p className={styles.hint}>
-          Первая рабочая версия медиа-блока: загружаем реальные фото и сразу используем их на финальном экране.
+          Загружаем реальные фото, задаем подпись в две строки и сразу используем это в финальной композиции.
         </p>
       </div>
       <span className={styles.infoBadge}>{mediaAssets.length} файлов</span>

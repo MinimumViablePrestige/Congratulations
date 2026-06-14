@@ -82,7 +82,22 @@ const readMediaAssets = async (): Promise<CardMediaAsset[]> => {
 
   try {
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as CardMediaAsset[]) : [];
+    return Array.isArray(parsed)
+      ? (parsed as Array<Partial<CardMediaAsset>>).map((item) => ({
+          id: item.id ?? "",
+          cardId: item.cardId ?? "",
+          slot: item.slot ?? "portrait",
+          publicUrl: item.publicUrl ?? "",
+          storagePath: item.storagePath ?? "",
+          fileName: item.fileName ?? "",
+          mimeType: item.mimeType ?? "",
+          sizeBytes: item.sizeBytes ?? 0,
+          captionTitle: item.captionTitle ?? "",
+          captionSubtitle: item.captionSubtitle ?? (item as { caption?: string }).caption ?? "",
+          createdAt: item.createdAt ?? new Date().toISOString(),
+          updatedAt: item.updatedAt ?? new Date().toISOString()
+        }))
+      : [];
   } catch {
     return [];
   }
@@ -186,7 +201,11 @@ export const upsertCardMediaAsset = async (asset: CardMediaAsset) => {
   return asset;
 };
 
-export const updateCardMediaAssetCaption = async (assetId: string, caption: string) => {
+export const updateCardMediaAssetCaption = async (
+  assetId: string,
+  captionTitle: string,
+  captionSubtitle: string
+) => {
   const assets = await readMediaAssets();
   const index = assets.findIndex((item) => item.id === assetId);
 
@@ -196,7 +215,8 @@ export const updateCardMediaAssetCaption = async (assetId: string, caption: stri
 
   const updated = {
     ...assets[index],
-    caption,
+    captionTitle,
+    captionSubtitle,
     updatedAt: new Date().toISOString()
   };
 
