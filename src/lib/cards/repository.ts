@@ -1,10 +1,11 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import type { CardDraft, Contribution } from "@/lib/cards/types";
+import type { CardDraft, CardMediaAsset, Contribution } from "@/lib/cards/types";
 import type { FinalCardBlockSettings, FinalCardMessageSettings } from "@/lib/final-card/types";
 
 const cardsFilePath = join(process.cwd(), "data", "cards.json");
 const contributionsFilePath = join(process.cwd(), "data", "contributions.json");
+const mediaAssetsFilePath = join(process.cwd(), "data", "media-assets.json");
 
 const defaultFinalMessageSettings: FinalCardMessageSettings = {
   layoutMode: "grid-2",
@@ -75,6 +76,26 @@ const readCards = async (): Promise<CardDraft[]> => {
   }
 };
 
+const readMediaAssets = async (): Promise<CardMediaAsset[]> => {
+  await ensureJsonFile(mediaAssetsFilePath);
+  const raw = await readFile(mediaAssetsFilePath, "utf8");
+
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as CardMediaAsset[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+const removeStoredMediaFile = async (storagePath: string) => {
+  try {
+    await unlink(storagePath);
+  } catch {
+    // Ignore missing files so organizer actions stay resilient.
+  }
+};
+
 export const saveCardDraft = async (card: CardDraft) => {
   const existingCards = await readCards();
   existingCards.push(card);
@@ -142,6 +163,60 @@ export const updateCardFinalPresentationSettings = async (
   cards[index] = updated;
   await writeFile(cardsFilePath, JSON.stringify(cards, null, 2), "utf8");
   return updated;
+};
+
+export const listCardMediaAssetsByCardId = async (cardId: string) => {
+  const assets = await readMediaAssets();
+  return assets
+    .filter((item) => item.cardId === cardId)
+    .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
+};
+
+export const upsertCardMediaAsset = async (asset: CardMediaAsset) => {
+  const assets = await readMediaAssets();
+  const existing = assets.find((item) => item.cardId === asset.cardId && item.slot === asset.slot);
+  const nextAssets = assets.filter((item) => item.id !== existing?.id);
+
+  if (existing && existing.storagePath !== asset.storagePath) {
+    await removeStoredMediaFile(existing.storagePath);
+  }
+
+  nextAssets.push(asset);
+  await writeFile(mediaAssetsFilePath, JSON.stringify(nextAssets, null, 2), "utf8");
+  return asset;
+};
+
+export const updateCardMediaAssetCaption = async (assetId: string, caption: string) => {
+  const assets = await readMediaAssets();
+  const index = assets.findIndex((item) => item.id === assetId);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const updated = {
+    ...assets[index],
+    caption,
+    updatedAt: new Date().toISOString()
+  };
+
+  assets[index] = updated;
+  await writeFile(mediaAssetsFilePath, JSON.stringify(assets, null, 2), "utf8");
+  return updated;
+};
+
+export const deleteCardMediaAsset = async (assetId: string) => {
+  const assets = await readMediaAssets();
+  const current = assets.find((item) => item.id === assetId);
+
+  if (!current) {
+    return null;
+  }
+
+  const nextAssets = assets.filter((item) => item.id !== assetId);
+  await removeStoredMediaFile(current.storagePath);
+  await writeFile(mediaAssetsFilePath, JSON.stringify(nextAssets, null, 2), "utf8");
+  return current;
 };
 
 const readContributions = async (): Promise<Contribution[]> => {

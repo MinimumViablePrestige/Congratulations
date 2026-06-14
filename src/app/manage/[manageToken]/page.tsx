@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import {
   getCardDraftByManageToken,
+  listCardMediaAssetsByCardId,
   listAllContributionsByCardId,
   listContributionsByCardId
 } from "@/lib/cards/repository";
@@ -12,6 +13,7 @@ import { buildFinalCardViewModel } from "@/lib/final-card/view-model";
 import { buildReminderText } from "@/lib/manage/reminder";
 import { BlockSettingsForm } from "./block-settings-form";
 import { ContributionEditor } from "./contribution-editor";
+import { MediaManager } from "./media-manager";
 import { moveContributionAction, setContributionStatusAction } from "./actions";
 import styles from "./manage-page.module.css";
 
@@ -31,9 +33,10 @@ export default async function ManagePage({ params }: Props) {
 
   const allContributions = await listAllContributionsByCardId(card.id);
   const visibleContributions = await listContributionsByCardId(card.id);
+  const mediaAssets = await listCardMediaAssetsByCardId(card.id);
   const reminderText = buildReminderText(card, visibleContributions.length);
-  const model = buildFinalCardViewModel(card, visibleContributions);
-  const availableModel = buildFinalCardViewModel({ ...card, finalBlockSettings: null }, visibleContributions);
+  const model = buildFinalCardViewModel(card, visibleContributions, mediaAssets);
+  const availableModel = buildFinalCardViewModel({ ...card, finalBlockSettings: null }, visibleContributions, mediaAssets);
   const style = cardTemplates.find((template) => template.id === card.templateId)?.id ?? "warm-classic";
   const layoutProfile = getFinalCardMessageLayoutProfile(card.finalMessageSettings?.layoutMode ?? "grid-2");
   const optionalLayoutBlocks = finalCardLayouts[style].blocks.filter((block) => !block.required);
@@ -230,6 +233,12 @@ export default async function ManagePage({ params }: Props) {
           </section>
 
           <div className={styles.layoutRight}>
+            <MediaManager
+              manageToken={manageToken}
+              mediaAssets={mediaAssets}
+              mediaLayout={card.finalMessageSettings?.mediaLayout ?? "portrait"}
+            />
+
             <section className={styles.actionsCard}>
               <h2 className={styles.sectionTitle}>Быстрые ссылки</h2>
               <div className={styles.linksList}>

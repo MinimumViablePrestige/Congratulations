@@ -1,4 +1,4 @@
-import type { CardDraft, Contribution } from "@/lib/cards/types";
+import type { CardDraft, CardMediaAsset, Contribution } from "@/lib/cards/types";
 import { buildFinalCardViewModel } from "@/lib/final-card/view-model";
 
 const card: CardDraft = {
@@ -33,6 +33,22 @@ const contributions: Contribution[] = [
     sortOrder: 0,
     status: "visible",
     source: "manual",
+    createdAt: "2026-01-01T00:00:00.000Z",
+    updatedAt: "2026-01-01T00:00:00.000Z"
+  }
+];
+
+const mediaAssets: CardMediaAsset[] = [
+  {
+    id: "media_1",
+    cardId: "card_1",
+    slot: "portrait",
+    publicUrl: "/uploads/cards/card_1/portrait.jpg",
+    storagePath: "C:/Project/Поздравления/public/uploads/cards/card_1/portrait.jpg",
+    fileName: "portrait.jpg",
+    mimeType: "image/jpeg",
+    sizeBytes: 1024,
+    caption: "Командное фото",
     createdAt: "2026-01-01T00:00:00.000Z",
     updatedAt: "2026-01-01T00:00:00.000Z"
   }
@@ -85,5 +101,12 @@ describe("buildFinalCardViewModel", () => {
     expect(viewModel.messageLayoutMode).toBe("carousel-2");
     expect(viewModel.messageMediaLayout).toBe("landscape-pair");
     expect(viewModel.showAllMessagesLink).toBe(false);
+  });
+
+  it("keeps uploaded media assets in the final model", () => {
+    const viewModel = buildFinalCardViewModel(card, contributions, mediaAssets);
+
+    expect(viewModel.mediaAssets).toHaveLength(1);
+    expect(viewModel.mediaAssets[0]?.slot).toBe("portrait");
   });
 });

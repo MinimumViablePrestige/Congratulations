@@ -6,7 +6,8 @@ describe("buildFinalCardLayout", () => {
       hasSummary: false,
       hasQualities: false,
       hasMemories: false,
-      hasQuotes: false
+      hasQuotes: false,
+      hasAiSummary: false
     });
 
     expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "messages", "closing"]);
@@ -17,7 +18,8 @@ describe("buildFinalCardLayout", () => {
       hasSummary: true,
       hasQualities: false,
       hasMemories: true,
-      hasQuotes: true
+      hasQuotes: true,
+      hasAiSummary: false
     });
 
     expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "summary", "memories", "messages", "quotes", "closing"]);
@@ -30,7 +32,8 @@ describe("buildFinalCardLayout", () => {
         hasSummary: true,
         hasQualities: true,
         hasMemories: false,
-        hasQuotes: true
+        hasQuotes: true,
+        hasAiSummary: true
       },
       {
         summary: false,
@@ -39,6 +42,6 @@ describe("buildFinalCardLayout", () => {
       }
     );
 
-    expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "qualities", "messages", "closing"]);
+    expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "qualities", "messages", "ai-summary", "closing"]);
   });
 });

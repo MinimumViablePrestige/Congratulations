@@ -1,14 +1,23 @@
 "use server";
 
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import {
+  deleteCardMediaAsset,
   getCardDraftById,
   getCardDraftByManageToken,
+  listCardMediaAssetsByCardId,
   moveContribution,
   updateCardFinalPresentationSettings,
+  updateCardMediaAssetCaption,
   updateContributionMessage,
-  updateContributionStatus
+  updateContributionStatus,
+  upsertCardMediaAsset
 } from "@/lib/cards/repository";
+import { buildCardMediaFileName, validateCardMediaFile } from "@/lib/cards/media";
+import type { CardMediaAsset, CardMediaSlot } from "@/lib/cards/types";
 import { validateContributionMessage } from "@/lib/contributions/validation";
 import type {
   FinalCardBlockSettings,
@@ -19,14 +28,10 @@ import type {
 } from "@/lib/final-card/types";
 import { logger } from "@/lib/logger";
 
-const optionalBlockIds: FinalCardOptionalBlockId[] = ["summary", "qualities", "memories", "quotes"];
-const messageLayoutModes: FinalCardMessageLayoutMode[] = [
-  "grid-2",
-  "carousel-1",
-  "carousel-2",
-  "column-media"
-];
+const optionalBlockIds: FinalCardOptionalBlockId[] = ["summary", "qualities", "memories", "quotes", "ai-summary"];
+const messageLayoutModes: FinalCardMessageLayoutMode[] = ["grid-2", "carousel-1", "carousel-2", "column-media"];
 const mediaLayouts: FinalCardMessageMediaLayout[] = ["portrait", "landscape-pair"];
+const mediaSlots: CardMediaSlot[] = ["portrait", "landscape-a", "landscape-b"];
 
 const revalidateCardSurfaces = (manageToken: string, publicSlug: string, finalSlug: string) => {
   revalidatePath(`/manage/${manageToken}`);
@@ -83,6 +88,7 @@ export async function updateContributionMessageAction(
   const issues = validateContributionMessage(message, {
     layoutMode: card.finalMessageSettings?.layoutMode ?? "grid-2"
   });
+
   if (issues.length > 0) {
     return { ok: false, message: issues[0]?.message ?? "Текст нужно поправить." };
   }
@@ -180,4 +186,121 @@ export async function updateFinalPresentationSettingsAction(
   revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
 
   return { ok: true, message: "Настройки финального экрана обновлены." };
+}
+
+export async function saveCardMediaAction(
+  _prevState: { ok: boolean; message: string },
+  formData: FormData
+) {
+  const manageToken = String(formData.get("manageToken") ?? "");
+  const slot = String(formData.get("slot") ?? "") as CardMediaSlot;
+  const caption = String(formData.get("caption") ?? "").trim().slice(0, 160);
+  const existingAssetId = String(formData.get("assetId") ?? "");
+  const file = formData.get("file");
+
+  if (!manageToken || !mediaSlots.includes(slot)) {
+    return { ok: false, message: "Не удалось определить слот для фото." };
+  }
+
+  const card = await getCardDraftByManageToken(manageToken);
+  if (!card) {
+    return { ok: false, message: "Секретная ссылка управления больше не актуальна." };
+  }
+
+  if (file instanceof File && file.size > 0) {
+    const issue = validateCardMediaFile(file);
+
+    if (issue) {
+      return { ok: false, message: issue };
+    }
+
+    const fileName = buildCardMediaFileName(slot, file.name, file.type);
+    const absolutePath = join(process.cwd(), "public", "uploads", "cards", card.id, fileName);
+    const publicUrl = `/uploads/cards/${card.id}/${fileName}`;
+    const now = new Date().toISOString();
+
+    await mkdir(dirname(absolutePath), { recursive: true });
+    await writeFile(absolutePath, Buffer.from(await file.arrayBuffer()));
+
+    const asset: CardMediaAsset = {
+      id: existingAssetId || randomUUID(),
+      cardId: card.id,
+      slot,
+      publicUrl,
+      storagePath: absolutePath,
+      fileName: file.name,
+      mimeType: file.type,
+      sizeBytes: file.size,
+      caption,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    const existingSlotAsset = (await listCardMediaAssetsByCardId(card.id)).find((item) => item.slot === slot);
+    if (existingSlotAsset) {
+      asset.id = existingSlotAsset.id;
+      asset.createdAt = existingSlotAsset.createdAt;
+    }
+
+    await upsertCardMediaAsset(asset);
+
+    logger.info("manage.card_media_saved", "Card media saved by organizer", {
+      cardId: card.id,
+      slot,
+      mimeType: file.type,
+      sizeBytes: file.size
+    });
+
+    revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
+    return { ok: true, message: "Фото сохранено." };
+  }
+
+  if (!existingAssetId) {
+    return { ok: false, message: "Выберите файл для загрузки." };
+  }
+
+  const updated = await updateCardMediaAssetCaption(existingAssetId, caption);
+  if (!updated || updated.cardId !== card.id) {
+    return { ok: false, message: "Не удалось обновить подпись к фото." };
+  }
+
+  logger.info("manage.card_media_caption_updated", "Card media caption updated by organizer", {
+    cardId: card.id,
+    slot: updated.slot,
+    assetId: updated.id
+  });
+
+  revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
+  return { ok: true, message: "Подпись к фото обновлена." };
+}
+
+export async function deleteCardMediaAction(
+  _prevState: { ok: boolean; message: string },
+  formData: FormData
+) {
+  const manageToken = String(formData.get("manageToken") ?? "");
+  const assetId = String(formData.get("assetId") ?? "");
+
+  if (!manageToken || !assetId) {
+    return { ok: false, message: "Не удалось удалить фото." };
+  }
+
+  const card = await getCardDraftByManageToken(manageToken);
+  if (!card) {
+    return { ok: false, message: "Секретная ссылка управления больше не актуальна." };
+  }
+
+  const deleted = await deleteCardMediaAsset(assetId);
+  if (!deleted || deleted.cardId !== card.id) {
+    return { ok: false, message: "Фото не найдено." };
+  }
+
+  logger.info("manage.card_media_deleted", "Card media deleted by organizer", {
+    cardId: card.id,
+    assetId: deleted.id,
+    slot: deleted.slot
+  });
+
+  revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
+  return { ok: true, message: "Фото удалено." };
 }

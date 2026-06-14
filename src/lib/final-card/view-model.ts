@@ -1,10 +1,10 @@
 import { cardTemplates } from "@/lib/cards/templates";
-import type { CardDraft, Contribution } from "@/lib/cards/types";
+import type { CardDraft, CardMediaAsset, Contribution } from "@/lib/cards/types";
 import { buildFinalCardLayout } from "@/lib/final-card/planner";
 import type {
   FinalCardContentAvailability,
-  FinalCardMessageMediaLayout,
   FinalCardMessageLayoutMode,
+  FinalCardMessageMediaLayout,
   FinalCardStyleId
 } from "@/lib/final-card/types";
 
@@ -27,6 +27,7 @@ export type FinalCardViewModel = {
     title: string;
     caption: string;
   }>;
+  mediaAssets: CardMediaAsset[];
   messageLayoutMode: FinalCardMessageLayoutMode;
   messageMediaLayout: FinalCardMessageMediaLayout;
   showAllMessagesLink: boolean;
@@ -84,15 +85,14 @@ const buildMemories = (contributions: Contribution[]) => {
 
 const resolveStyle = (templateId: CardDraft["templateId"]): FinalCardStyleId => {
   const matched = cardTemplates.find((item) => item.id === templateId);
-
-  if (!matched) {
-    return "warm-classic";
-  }
-
-  return matched.id;
+  return matched?.id ?? "warm-classic";
 };
 
-export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribution[]): FinalCardViewModel => {
+export const buildFinalCardViewModel = (
+  card: CardDraft,
+  contributions: Contribution[],
+  mediaAssets: CardMediaAsset[] = []
+): FinalCardViewModel => {
   const style = resolveStyle(card.templateId);
   const qualities = extractQualities(contributions);
   const quotes = extractQuotes(contributions);
@@ -100,7 +100,7 @@ export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribu
   const availability: FinalCardContentAvailability = {
     hasSummary: true,
     hasQualities: qualities.length > 0,
-    hasMemories: memories.length > 0,
+    hasMemories: memories.length > 0 || mediaAssets.length > 0,
     hasQuotes: quotes.length > 0,
     hasAiSummary: true
   };
@@ -120,6 +120,7 @@ export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribu
     quotes,
     contributions,
     memories,
+    mediaAssets,
     messageLayoutMode: card.finalMessageSettings?.layoutMode ?? "grid-2",
     messageMediaLayout: card.finalMessageSettings?.mediaLayout ?? "portrait",
     showAllMessagesLink: card.finalMessageSettings?.showAllLink ?? true,

@@ -1,8 +1,8 @@
 import Link from "next/link";
-import styles from "./final-card.module.css";
-import type { Contribution } from "@/lib/cards/types";
+import type { CardMediaAsset, Contribution } from "@/lib/cards/types";
 import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type { FinalCardViewModel } from "@/lib/final-card/view-model";
+import styles from "./final-card.module.css";
 
 type Props = {
   model: FinalCardViewModel;
@@ -16,7 +16,7 @@ const styleClassMap = {
 };
 
 const trimMessage = (message: string, maxChars: number) =>
-  message.length > maxChars ? `${message.slice(0, maxChars - 1).trimEnd()}…` : message;
+  message.length > maxChars ? `${message.slice(0, maxChars - 1).trimEnd()}...` : message;
 
 const renderMessageCard = (item: Contribution, index: number, maxChars: number) => (
   <article key={item.id} className={`${styles.card} ${index % 3 === 0 ? styles.cardAccent : ""}`}>
@@ -28,35 +28,54 @@ const renderMessageCard = (item: Contribution, index: number, maxChars: number) 
   </article>
 );
 
+const getMediaAssetBySlot = (mediaAssets: CardMediaAsset[], slot: CardMediaAsset["slot"]) =>
+  mediaAssets.find((item) => item.slot === slot);
+
+const renderMediaFigure = (asset: CardMediaAsset | undefined, title: string, fallbackText: string, className: string) => (
+  <figure className={className}>
+    {asset ? (
+      <>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={asset.publicUrl} alt={asset.caption || title} className={styles.mediaImage} />
+        <figcaption className={styles.mediaCaption}>{asset.caption || title}</figcaption>
+      </>
+    ) : (
+      <>
+        <span className={styles.mediaLabel}>{title}</span>
+        <p className={styles.mediaHint}>{fallbackText}</p>
+      </>
+    )}
+  </figure>
+);
+
 const renderMediaRail = (model: FinalCardViewModel) => {
   if (model.messageMediaLayout === "landscape-pair") {
     return (
       <div className={styles.mediaRail}>
-        <div className={styles.mediaCardLandscape}>
-          <span className={styles.mediaLabel}>Фото A</span>
-          <p className={styles.mediaHint}>
-            {model.memories[0]?.caption ?? "Здесь позже может появиться первое горизонтальное фото."}
-          </p>
-        </div>
-        <div className={styles.mediaCardLandscape}>
-          <span className={styles.mediaLabel}>Фото B</span>
-          <p className={styles.mediaHint}>
-            {model.memories[1]?.caption ?? "Здесь позже может появиться второе горизонтальное фото."}
-          </p>
-        </div>
+        {renderMediaFigure(
+          getMediaAssetBySlot(model.mediaAssets, "landscape-a"),
+          "Горизонтальное фото A",
+          "Здесь может появиться первое горизонтальное фото.",
+          styles.mediaCardLandscape
+        )}
+        {renderMediaFigure(
+          getMediaAssetBySlot(model.mediaAssets, "landscape-b"),
+          "Горизонтальное фото B",
+          "Здесь может появиться второе горизонтальное фото.",
+          styles.mediaCardLandscape
+        )}
       </div>
     );
   }
 
   return (
     <div className={styles.mediaRail}>
-      <div className={styles.mediaCardPortrait}>
-        <span className={styles.mediaLabel}>Вертикальное фото</span>
-        <p className={styles.mediaHint}>
-          {model.memories[0]?.caption ??
-            "Здесь предусмотрено место под одно заметное вертикальное фото или иллюстрацию."}
-        </p>
-      </div>
+      {renderMediaFigure(
+        getMediaAssetBySlot(model.mediaAssets, "portrait"),
+        "Вертикальное фото",
+        "Здесь предусмотрено место под одно заметное вертикальное фото.",
+        styles.mediaCardPortrait
+      )}
     </div>
   );
 };
@@ -84,11 +103,7 @@ const renderMessagesLayout = (model: FinalCardViewModel) => {
         ? styles.messageTrackRows2
         : styles.messageTrackRow1;
 
-  return (
-    <div className={scrollerClassName}>
-      {model.contributions.map((item, itemIndex) => renderMessageCard(item, itemIndex, profile.maxChars))}
-    </div>
-  );
+  return <div className={scrollerClassName}>{model.contributions.map((item, itemIndex) => renderMessageCard(item, itemIndex, profile.maxChars))}</div>;
 };
 
 export const FinalCard = ({ model }: Props) => {
@@ -185,15 +200,23 @@ export const FinalCard = ({ model }: Props) => {
                   <p className={styles.sectionEyebrow}>Теплые моменты</p>
                   <h2 className={styles.sectionTitle}>Воспоминания, которые хочется сохранить</h2>
                   <div className={`${styles.grid} ${styles.memoriesGrid}`}>
-                    {model.memories.map((item, index) => (
-                      <article
-                        key={item.id}
-                        className={`${styles.memoryCard} ${index % 2 === 0 ? styles.memoryCardTilt : ""}`}
-                      >
-                        <h3 className={styles.memoryTitle}>{item.title}</h3>
-                        <p className={styles.sectionText}>{item.caption}</p>
-                      </article>
-                    ))}
+                    {model.mediaAssets.length > 0
+                      ? model.mediaAssets.map((asset) => (
+                          <article key={asset.id} className={styles.memoryPhotoCard}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={asset.publicUrl} alt={asset.caption || "Фото открытки"} className={styles.memoryPhotoImage} />
+                            <p className={styles.memoryPhotoCaption}>{asset.caption || "Фото для открытки"}</p>
+                          </article>
+                        ))
+                      : model.memories.map((item, index) => (
+                          <article
+                            key={item.id}
+                            className={`${styles.memoryCard} ${index % 2 === 0 ? styles.memoryCardTilt : ""}`}
+                          >
+                            <h3 className={styles.memoryTitle}>{item.title}</h3>
+                            <p className={styles.sectionText}>{item.caption}</p>
+                          </article>
+                        ))}
                   </div>
                 </section>
               );
@@ -207,7 +230,7 @@ export const FinalCard = ({ model }: Props) => {
                   <div className={`${styles.grid} ${styles.quotesGrid}`}>
                     {model.quotes.map((quote) => (
                       <article key={quote} className={styles.quoteCard}>
-                        <span className={styles.quoteMark}>“</span>
+                        <span className={styles.quoteMark}>&quot;</span>
                         <p className={styles.message}>{quote}</p>
                       </article>
                     ))}

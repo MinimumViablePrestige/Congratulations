@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { listCardDrafts, listContributionsByCardId } from "@/lib/cards/repository";
+import { listCardDrafts, listCardMediaAssetsByCardId, listContributionsByCardId } from "@/lib/cards/repository";
 import { FinalCard } from "@/components/final-card/final-card";
 import { buildFinalCardViewModel } from "@/lib/final-card/view-model";
 
@@ -19,7 +19,8 @@ export default async function GiftPage({ params }: Props) {
   }
 
   const contributions = await listContributionsByCardId(card.id);
-  const model = buildFinalCardViewModel(card, contributions);
+  const mediaAssets = await listCardMediaAssetsByCardId(card.id);
+  const model = buildFinalCardViewModel(card, contributions, mediaAssets);
 
   return <FinalCard model={model} />;
 }

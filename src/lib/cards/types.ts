@@ -48,6 +48,7 @@ export type CreateCardResult = {
 
 export type ContributionStatus = "visible" | "hidden" | "deleted";
 export type ContributionSource = "manual";
+export type CardMediaSlot = "portrait" | "landscape-a" | "landscape-b";
 
 export type Contribution = {
   id: string;
@@ -77,4 +78,18 @@ export type ContributionStatusUpdate = {
 export type ContributionMessageUpdate = {
   contributionId: string;
   message: string;
+};
+
+export type CardMediaAsset = {
+  id: string;
+  cardId: string;
+  slot: CardMediaSlot;
+  publicUrl: string;
+  storagePath: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  caption: string;
+  createdAt: string;
+  updatedAt: string;
 };
