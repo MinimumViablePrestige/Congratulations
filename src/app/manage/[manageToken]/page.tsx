@@ -6,6 +6,7 @@ import {
 } from "@/lib/cards/repository";
 import { cardTemplates } from "@/lib/cards/templates";
 import { finalCardLayouts } from "@/lib/final-card/layouts";
+import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import { buildFinalCardViewModel } from "@/lib/final-card/view-model";
 import type { FinalCardOptionalBlockId } from "@/lib/final-card/types";
 import { buildReminderText } from "@/lib/manage/reminder";
@@ -34,6 +35,10 @@ export default async function ManagePage({ params }: Props) {
   const model = buildFinalCardViewModel(card, visibleContributions);
   const availableModel = buildFinalCardViewModel({ ...card, finalBlockSettings: null }, visibleContributions);
   const style = cardTemplates.find((template) => template.id === card.templateId)?.id ?? "warm-classic";
+  const layoutProfile = getFinalCardMessageLayoutProfile(
+    card.finalMessageSettings?.layoutMode ?? "grid-2",
+    model.blocks.map((block) => block.id)
+  );
   const optionalLayoutBlocks = finalCardLayouts[style].blocks.filter((block) => !block.required);
 
   const blockMeta: Record<FinalCardOptionalBlockId, { label: string; description: string }> = {
@@ -148,6 +153,7 @@ export default async function ManagePage({ params }: Props) {
                       contributionId={contribution.id}
                       manageToken={manageToken}
                       initialMessage={contribution.message}
+                      messageLimit={layoutProfile.maxChars}
                     />
 
                     <div className={styles.controls}>
@@ -225,6 +231,9 @@ export default async function ManagePage({ params }: Props) {
                 </p>
                 <p className={styles.previewText}>
                   В блок поздравлений попадет <strong>{visibleContributions.length}</strong> видимых сообщений.
+                </p>
+                <p className={styles.previewText}>
+                  Безопасный лимит для текущего формата: <strong>{layoutProfile.maxChars}</strong> символов на одно поздравление.
                 </p>
                 <p className={styles.previewText}>
                   Напоминание для чата: <code>{reminderText}</code>

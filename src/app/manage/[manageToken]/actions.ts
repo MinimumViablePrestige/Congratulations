@@ -80,7 +80,9 @@ export async function updateContributionMessageAction(
     return { ok: false, message: "Секретная ссылка управления больше не актуальна." };
   }
 
-  const issues = validateContributionMessage(message);
+  const issues = validateContributionMessage(message, {
+    layoutMode: card.finalMessageSettings?.layoutMode ?? "grid-2"
+  });
   if (issues.length > 0) {
     return { ok: false, message: issues[0]?.message ?? "Текст нужно поправить." };
   }

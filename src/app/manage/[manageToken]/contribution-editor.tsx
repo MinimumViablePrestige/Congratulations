@@ -8,6 +8,7 @@ type Props = {
   contributionId: string;
   manageToken: string;
   initialMessage: string;
+  messageLimit: number;
 };
 
 const initialState = {
@@ -15,7 +16,7 @@ const initialState = {
   message: ""
 };
 
-export const ContributionEditor = ({ contributionId, manageToken, initialMessage }: Props) => {
+export const ContributionEditor = ({ contributionId, manageToken, initialMessage, messageLimit }: Props) => {
   const [state, formAction, isPending] = useActionState(updateContributionMessageAction, initialState);
 
   return (
@@ -25,11 +26,13 @@ export const ContributionEditor = ({ contributionId, manageToken, initialMessage
       <label className={styles.editorLabel} htmlFor={`message-${contributionId}`}>
         Текст поздравления
       </label>
+      <p className={styles.editorHint}>Для текущего формата лучше держать текст в пределах {messageLimit} символов.</p>
       <textarea
         id={`message-${contributionId}`}
         name="message"
         defaultValue={initialMessage}
         className={styles.editorTextarea}
+        maxLength={1500}
       />
       <div className={styles.editorFooter}>
         <button type="submit" className={styles.button} disabled={isPending}>

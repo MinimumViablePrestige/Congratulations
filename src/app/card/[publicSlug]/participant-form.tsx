@@ -15,9 +15,17 @@ type Props = {
   recipientName: string;
   occasion: string;
   occasionText: string;
+  messageLimit: number;
 };
 
-export const ParticipantForm = ({ cardId, publicSlug, recipientName, occasion, occasionText }: Props) => {
+export const ParticipantForm = ({
+  cardId,
+  publicSlug,
+  recipientName,
+  occasion,
+  occasionText,
+  messageLimit
+}: Props) => {
   const [issues, setIssues] = useState<ValidationIssue[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -50,8 +58,8 @@ export const ParticipantForm = ({ cardId, publicSlug, recipientName, occasion, o
       <section className={styles.formCard}>
         <h2 className={styles.sectionTitle}>Добавить поздравление</h2>
         <p className={styles.hint}>
-          Можно написать самостоятельно или сначала попросить AI подготовить черновик. Слишком короткие и пустые тексты
-          теперь не проходят.
+          Можно написать самостоятельно или сначала попросить AI подготовить черновик. Для текущего формата открытки
+          лучше держать текст в пределах {messageLimit} символов, чтобы карточка красиво помещалась в финальный экран.
         </p>
 
         <form
@@ -103,6 +111,7 @@ export const ParticipantForm = ({ cardId, publicSlug, recipientName, occasion, o
               placeholder="Напишите несколько теплых слов. Сейчас просим хотя бы 3 слова и чуть больше конкретики, чем просто “Поздравляю!”."
               required
               ref={messageRef}
+              maxLength={1500}
             />
           </div>
 

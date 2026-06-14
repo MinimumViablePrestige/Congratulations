@@ -1,5 +1,4 @@
-import { validateContributionFormData } from "@/lib/contributions/validation";
-import { validateContributionMessage } from "@/lib/contributions/validation";
+import { validateContributionFormData, validateContributionMessage } from "@/lib/contributions/validation";
 
 const buildFormData = (entries: Record<string, string>) => {
   const formData = new FormData();
@@ -19,7 +18,8 @@ describe("validateContributionFormData", () => {
         authorName: "Ольга",
         authorRole: "родитель",
         message: "Спасибо вам за тепло, внимание и спокойствие, которое вы даете детям."
-      })
+      }),
+      { layoutMode: "carousel-1" }
     );
 
     expect(result.success).toBe(true);
@@ -62,6 +62,25 @@ describe("validateContributionFormData", () => {
 
     if (!result.success) {
       expect(result.issues.some((issue) => issue.message.includes("Ссылки"))).toBe(true);
+    }
+  });
+
+  it("applies current layout length limits", () => {
+    const result = validateContributionFormData(
+      buildFormData({
+        cardId: "card_123",
+        authorName: "Ольга",
+        authorRole: "родитель",
+        message:
+          "Спасибо вам за тепло, внимание и заботу. Мы очень ценим вашу поддержку, доброту, спокойствие и ту атмосферу, которую вы каждый день создаете вокруг детей. Пусть впереди будет много радости, здоровья, энергии, благодарности и красивых поводов для улыбки."
+      }),
+      { layoutMode: "grid-2" }
+    );
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.issues.some((issue) => issue.message.includes("сократить"))).toBe(true);
     }
   });
 

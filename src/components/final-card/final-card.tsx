@@ -1,6 +1,8 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import styles from "./final-card.module.css";
 import type { Contribution } from "@/lib/cards/types";
+import { getFinalCardMessageLayoutProfile, splitIntoMessagePages } from "@/lib/final-card/message-layout-rules";
 import type { FinalCardViewModel } from "@/lib/final-card/view-model";
 
 type Props = {
@@ -14,28 +16,16 @@ const styleClassMap = {
   "gentle-personal": styles["gentle-personal"]
 };
 
-const buildMessageColumns = (contributions: Contribution[]) => {
-  const columns: Contribution[][] = [];
+const trimMessage = (message: string, maxChars: number) =>
+  message.length > maxChars ? `${message.slice(0, maxChars - 1).trimEnd()}…` : message;
 
-  contributions.forEach((item, index) => {
-    const columnIndex = Math.floor(index / 2);
-    if (!columns[columnIndex]) {
-      columns[columnIndex] = [];
-    }
-
-    columns[columnIndex].push(item);
-  });
-
-  return columns;
-};
-
-const renderMessageCard = (item: Contribution, index: number) => (
+const renderMessageCard = (item: Contribution, index: number, maxChars: number) => (
   <article key={item.id} className={`${styles.card} ${index % 3 === 0 ? styles.cardAccent : ""}`}>
     <div className={styles.cardHeader}>
       <span className={styles.author}>{item.authorName}</span>
       {item.authorRole ? <span className={styles.role}>{item.authorRole}</span> : null}
     </div>
-    <p className={styles.message}>{item.message}</p>
+    <p className={styles.message}>{trimMessage(item.message, maxChars)}</p>
   </article>
 );
 
@@ -74,40 +64,45 @@ const renderMediaRail = (model: FinalCardViewModel) => {
 };
 
 const renderMessagesLayout = (model: FinalCardViewModel) => {
-  if (model.messageLayoutMode === "carousel-1") {
-    return (
-      <div className={styles.messageScroller} data-layout="carousel-1">
-        {model.contributions.map((item, index) => renderMessageCard(item, index))}
-      </div>
-    );
-  }
+  const profile = getFinalCardMessageLayoutProfile(
+    model.messageLayoutMode,
+    model.blocks.map((block) => block.id)
+  );
+  const pages = splitIntoMessagePages(model.contributions, profile.cardsPerPage);
 
-  if (model.messageLayoutMode === "carousel-2") {
+  if (profile.pageVariant === "column-media") {
     return (
-      <div className={styles.messageColumnScroller} data-layout="carousel-2">
-        {buildMessageColumns(model.contributions).map((column, columnIndex) => (
-          <div key={`column-${columnIndex}`} className={styles.messageColumn}>
-            {column.map((item, itemIndex) => renderMessageCard(item, columnIndex * 2 + itemIndex))}
+      <div className={styles.messagePageScroller}>
+        {pages.map((page, pageIndex) => (
+          <div key={`page-${pageIndex}`} className={styles.messageSplitPage}>
+            <div className={styles.messageColumnPage}>
+              {page.map((item, itemIndex) => renderMessageCard(item, pageIndex * profile.cardsPerPage + itemIndex, profile.maxChars))}
+            </div>
+            {renderMediaRail(model)}
           </div>
         ))}
       </div>
     );
   }
 
-  if (model.messageLayoutMode === "column-media") {
-    return (
-      <div className={styles.messageSplitLayout}>
-        <div className={styles.messageVerticalScroller}>
-          {model.contributions.map((item, index) => renderMessageCard(item, index))}
-        </div>
-        {renderMediaRail(model)}
-      </div>
-    );
-  }
-
   return (
-    <div className={`${styles.grid} ${styles.messagesGrid}`}>
-      {model.contributions.map((item, index) => renderMessageCard(item, index))}
+    <div className={styles.messagePageScroller}>
+      {pages.map((page, pageIndex) => (
+        <div
+          key={`page-${pageIndex}`}
+          className={`${styles.messageGridPage} ${
+            model.messageLayoutMode === "carousel-1" ? styles.messageGridPageRow : styles.messageGridPageMatrix
+          }`}
+          style={
+            {
+              ["--message-columns" as "--message-columns"]: String(profile.pageColumns),
+              ["--message-rows" as "--message-rows"]: String(profile.pageRows)
+            } as CSSProperties
+          }
+        >
+          {page.map((item, itemIndex) => renderMessageCard(item, pageIndex * profile.cardsPerPage + itemIndex, profile.maxChars))}
+        </div>
+      ))}
     </div>
   );
 };

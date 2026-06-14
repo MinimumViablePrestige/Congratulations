@@ -256,49 +256,53 @@
   gap: 16px;
 }
 
-.messageScroller,
-.messageColumnScroller {
+.messagePageScroller {
   display: grid;
-  gap: 16px;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  gap: 18px;
   overflow-x: auto;
   padding-bottom: 8px;
   scrollbar-width: thin;
-  scroll-snap-type: x proximity;
-}
-
-.messageScroller {
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(280px, 86%);
-}
-
-.messageColumnScroller {
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(280px, 86%);
-}
-
-.messageColumn {
-  display: grid;
-  gap: 16px;
-  align-content: start;
-}
-
-.messageSplitLayout {
-  display: grid;
-  gap: 16px;
-}
-
-.messageVerticalScroller {
-  display: grid;
-  gap: 16px;
-  max-height: 760px;
-  overflow-y: auto;
-  padding-right: 4px;
-  scrollbar-width: thin;
+  scroll-snap-type: x mandatory;
 }
 
 .mediaRail {
   display: grid;
   gap: 16px;
+}
+
+.messageGridPage,
+.messageSplitPage {
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.messageGridPage {
+  display: grid;
+  gap: 16px;
+}
+
+.messageGridPageMatrix {
+  grid-template-columns: repeat(var(--message-columns), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--message-rows), minmax(0, 1fr));
+  min-height: 560px;
+}
+
+.messageGridPageRow {
+  grid-template-columns: repeat(var(--message-columns), minmax(0, 1fr));
+  min-height: 300px;
+}
+
+.messageSplitPage {
+  display: grid;
+  gap: 16px;
+}
+
+.messageColumnPage {
+  display: grid;
+  gap: 16px;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
 }
 
 .mediaCardPortrait,
@@ -343,6 +347,11 @@
   box-shadow: 0 10px 30px rgba(61, 43, 32, 0.05);
 }
 
+.messageGridPage .card,
+.messageColumnPage .card {
+  height: 100%;
+}
+
 .cardAccent {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.94)),
@@ -378,12 +387,6 @@
   margin: 12px 0 0;
   line-height: 1.75;
   white-space: pre-wrap;
-}
-
-.messageScroller .card,
-.messageColumnScroller .card {
-  height: 100%;
-  scroll-snap-align: start;
 }
 
 .quoteCard {
@@ -490,21 +493,9 @@
     padding: 34px;
   }
 
-  .messagesGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .messageSplitLayout {
+  .messageSplitPage {
     grid-template-columns: minmax(0, 1.05fr) minmax(240px, 0.8fr);
     align-items: stretch;
-  }
-
-  .messageScroller {
-    grid-auto-columns: minmax(340px, 420px);
-  }
-
-  .messageColumnScroller {
-    grid-auto-columns: minmax(340px, 420px);
   }
 
   .quotesGrid {

@@ -1,4 +1,6 @@
 import type { CreateContributionInput } from "@/lib/cards/types";
+import type { FinalCardMessageLayoutMode } from "@/lib/final-card/types";
+import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 
 export type ContributionValidationIssue = {
   field: string;
@@ -9,6 +11,10 @@ export type ContributionValidationResult =
   | { success: true; data: CreateContributionInput }
   | { success: false; issues: ContributionValidationIssue[] };
 
+type ContributionValidationOptions = {
+  layoutMode?: FinalCardMessageLayoutMode;
+};
+
 const normalizeText = (value: FormDataEntryValue | null) =>
   typeof value === "string" ? value.trim() : "";
 
@@ -18,12 +24,36 @@ const pushIssue = (issues: ContributionValidationIssue[], field: string, message
 
 const hasSpamLikeContent = (message: string) => /(https?:\/\/|www\.|t\.me\/|bit\.ly)/i.test(message);
 const wordCount = (message: string) => message.split(/\s+/).filter(Boolean).length;
+
 const isTooGeneric = (message: string) => {
   const normalized = message.toLowerCase().replace(/[!.,?]+/g, "").trim();
   return ["поздравляю", "с праздником", "всего хорошего", "удачи"].includes(normalized);
 };
 
-export const validateContributionFormData = (formData: FormData): ContributionValidationResult => {
+const validateMessageAgainstRules = (
+  issues: ContributionValidationIssue[],
+  message: string,
+  options?: ContributionValidationOptions
+) => {
+  const profile = getFinalCardMessageLayoutProfile(options?.layoutMode ?? "grid-2");
+
+  if (message.length < 20 || message.length > 1500) {
+    pushIssue(issues, "message", "Текст поздравления должен быть от 20 до 1500 символов.");
+  }
+
+  if (message.length > profile.maxChars) {
+    pushIssue(
+      issues,
+      "message",
+      `Для текущего формата открытки текст стоит сократить до ${profile.maxChars} символов, чтобы карточка выглядела аккуратно.`
+    );
+  }
+};
+
+export const validateContributionFormData = (
+  formData: FormData,
+  options?: ContributionValidationOptions
+): ContributionValidationResult => {
   const issues: ContributionValidationIssue[] = [];
 
   const cardId = normalizeText(formData.get("cardId"));
@@ -43,9 +73,7 @@ export const validateContributionFormData = (formData: FormData): ContributionVa
     pushIssue(issues, "authorRole", "Подпись или роль должна быть не длиннее 80 символов.");
   }
 
-  if (message.length < 20 || message.length > 1500) {
-    pushIssue(issues, "message", "Текст поздравления должен быть от 20 до 1500 символов.");
-  }
+  validateMessageAgainstRules(issues, message, options);
 
   if (wordCount(message) < 3) {
     pushIssue(issues, "message", "Добавьте чуть больше смысла: хотя бы 3 слова.");
@@ -74,13 +102,14 @@ export const validateContributionFormData = (formData: FormData): ContributionVa
   };
 };
 
-export const validateContributionMessage = (message: string): ContributionValidationIssue[] => {
+export const validateContributionMessage = (
+  message: string,
+  options?: ContributionValidationOptions
+): ContributionValidationIssue[] => {
   const issues: ContributionValidationIssue[] = [];
   const normalizedMessage = message.trim();
 
-  if (normalizedMessage.length < 20 || normalizedMessage.length > 1500) {
-    pushIssue(issues, "message", "Текст поздравления должен быть от 20 до 1500 символов.");
-  }
+  validateMessageAgainstRules(issues, normalizedMessage, options);
 
   if (wordCount(normalizedMessage) < 3) {
     pushIssue(issues, "message", "Добавьте чуть больше смысла: хотя бы 3 слова.");

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCardDraftByPublicSlug, listContributionsByCardId } from "@/lib/cards/repository";
+import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import { ParticipantForm } from "./participant-form";
 import styles from "./participant-page.module.css";
 
@@ -18,6 +19,7 @@ export default async function ParticipantCardPage({ params }: Props) {
   }
 
   const contributions = await listContributionsByCardId(card.id);
+  const layoutProfile = getFinalCardMessageLayoutProfile(card.finalMessageSettings?.layoutMode ?? "grid-2");
 
   return (
     <main className={styles.page}>
@@ -33,6 +35,7 @@ export default async function ParticipantCardPage({ params }: Props) {
             <div className={styles.stat}>Повод: {card.occasionText}</div>
             <div className={styles.stat}>Уже собрано: {contributions.length}</div>
             <div className={styles.stat}>Шаблон: {card.templateId}</div>
+            <div className={styles.stat}>Лимит для текущего формата: {layoutProfile.maxChars} символов</div>
             {card.eventDate ? <div className={styles.stat}>Дата события: {card.eventDate}</div> : null}
           </div>
         </section>
@@ -44,13 +47,14 @@ export default async function ParticipantCardPage({ params }: Props) {
             recipientName={card.recipientName}
             occasion={card.occasion}
             occasionText={card.occasionText}
+            messageLimit={layoutProfile.maxChars}
           />
 
           <section className={styles.listCard}>
             <h2 className={styles.sectionTitle}>Что уже добавили</h2>
             <p className={styles.hint}>
-              Повод открытки: <strong>{card.occasionText}</strong>. AI-помощник ниже должен опираться именно на этот
-              контекст, а не на жесткий справочник ролей.
+              Повод открытки: <strong>{card.occasionText}</strong>. Ниже видны уже опубликованные поздравления, чтобы
+              можно было не повторяться.
             </p>
 
             {contributions.length === 0 ? (
