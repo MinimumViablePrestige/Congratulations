@@ -292,18 +292,20 @@
 .compactOptionGrid,
 .toggleGrid {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .compactOption,
 .toggleCard,
 .inlineToggle {
   display: grid;
-  gap: 6px;
-  padding: 14px;
+  gap: 5px;
+  padding: 12px;
   border: 1px solid rgba(98, 72, 58, 0.12);
-  border-radius: 18px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  position: relative;
 }
 
 .compactOption input,
@@ -311,6 +313,14 @@
 .inlineToggle input,
 .inlinePillOption input {
   margin: 0;
+}
+
+.compactOption input,
+.toggleCard input,
+.inlineToggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .compactOptionActive,
@@ -325,23 +335,31 @@
   opacity: 0.55;
 }
 
-.compactOptionTag {
-  color: #ad6b4e;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .compactOptionTitle,
 .toggleCardTitle {
   font-weight: 700;
+  color: #33231d;
 }
 
 .compactOptionDescription,
 .toggleCardDescription {
   color: #705c50;
   line-height: 1.5;
+  font-size: 0.96rem;
+}
+
+.compactOptionMeta,
+.inlineToggleMeta,
+.editorCounter {
+  color: #8a6b5a;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.inlineToggleActive {
+  border-color: rgba(173, 107, 78, 0.34);
+  box-shadow: inset 0 0 0 1px rgba(173, 107, 78, 0.16);
+  background: rgba(255, 248, 242, 0.92);
 }
 
 .inlineSettingsRow,
@@ -385,7 +403,7 @@
 }
 
 .contributionCard {
-  padding: 16px;
+  padding: 14px;
   border: 1px solid rgba(98, 72, 58, 0.12);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.62);
@@ -394,8 +412,8 @@
 .row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
+  gap: 8px 12px;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
@@ -404,6 +422,14 @@
 .summaryList {
   display: grid;
   gap: 10px;
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .author {
@@ -419,12 +445,20 @@
 
 .editorForm {
   display: grid;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .editorLabel {
   font-weight: 700;
+}
+
+.editorHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 .editorTextarea {
@@ -463,8 +497,8 @@
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .button,

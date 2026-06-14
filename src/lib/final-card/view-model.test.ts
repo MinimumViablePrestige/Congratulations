@@ -59,7 +59,8 @@ describe("buildFinalCardViewModel", () => {
         ...card,
         finalBlockSettings: {
           summary: false,
-          quotes: false
+          quotes: false,
+          "ai-summary": false
         }
       },
       contributions

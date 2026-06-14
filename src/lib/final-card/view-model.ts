@@ -17,6 +17,8 @@ export type FinalCardViewModel = {
   finalSlug: string;
   summaryTitle: string;
   summaryText: string;
+  aiSummaryTitle: string;
+  aiSummaryText: string;
   qualities: string[];
   quotes: string[];
   contributions: Contribution[];
@@ -56,6 +58,18 @@ const buildSummaryText = (card: CardDraft, contributions: Contribution[]) => {
   return `Эту открытку для ${card.recipientName} уже собрали ${contributions.length} участников. Повод: ${card.occasionText}. Здесь будут жить теплые слова, важные воспоминания и лучшие фразы от ${card.fromLabel}.`;
 };
 
+const buildAiSummaryText = (card: CardDraft, contributions: Contribution[]) => {
+  if (contributions.length === 0) {
+    return "Когда поздравления будут собраны, здесь появится общее теплое резюме от лица всей группы. Пока это заглушка под будущий AI-блок.";
+  }
+
+  if (contributions.length === 1) {
+    return `Пока здесь только одно поздравление для ${card.recipientName}. Когда сообщений станет больше, мы соберем из них единое общее послание.`;
+  }
+
+  return `Здесь позже появится общее поздравление для ${card.recipientName}, собранное по мотивам всех сообщений группы. Пока это аккуратная заглушка под будущий AI-результат.`;
+};
+
 const buildMemories = (contributions: Contribution[]) => {
   if (contributions.length === 0) {
     return [];
@@ -87,7 +101,8 @@ export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribu
     hasSummary: true,
     hasQualities: qualities.length > 0,
     hasMemories: memories.length > 0,
-    hasQuotes: quotes.length > 0
+    hasQuotes: quotes.length > 0,
+    hasAiSummary: true
   };
 
   return {
@@ -99,6 +114,8 @@ export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribu
     finalSlug: card.finalSlug,
     summaryTitle: `${card.recipientName} глазами группы`,
     summaryText: buildSummaryText(card, contributions),
+    aiSummaryTitle: "Общее поздравление",
+    aiSummaryText: buildAiSummaryText(card, contributions),
     qualities,
     quotes,
     contributions,

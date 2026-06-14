@@ -1,8 +1,7 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import styles from "./final-card.module.css";
 import type { Contribution } from "@/lib/cards/types";
-import { getFinalCardMessageLayoutProfile, splitIntoMessagePages } from "@/lib/final-card/message-layout-rules";
+import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type { FinalCardViewModel } from "@/lib/final-card/view-model";
 
 type Props = {
@@ -63,10 +62,7 @@ const renderMediaRail = (model: FinalCardViewModel) => {
 };
 
 const renderMessagesLayout = (model: FinalCardViewModel) => {
-  const profile = getFinalCardMessageLayoutProfile(
-    model.messageLayoutMode,
-    model.blocks.map((block) => block.id)
-  );
+  const profile = getFinalCardMessageLayoutProfile(model.messageLayoutMode);
 
   if (profile.pageVariant === "column-media") {
     return (
@@ -81,28 +77,16 @@ const renderMessagesLayout = (model: FinalCardViewModel) => {
     );
   }
 
-  const pages = splitIntoMessagePages(model.contributions, profile.cardsPerPage, profile.advanceBy);
+  const scrollerClassName =
+    model.messageLayoutMode === "grid-2"
+      ? styles.messageTrackGrid2
+      : model.messageLayoutMode === "carousel-2"
+        ? styles.messageTrackRows2
+        : styles.messageTrackRow1;
 
   return (
-    <div className={styles.messagePageScroller}>
-      {pages.map((page, pageIndex) => (
-        <div
-          key={`page-${pageIndex}`}
-          className={`${styles.messageGridPage} ${
-            model.messageLayoutMode === "carousel-1" ? styles.messageGridPageRow : styles.messageGridPageMatrix
-          }`}
-          style={
-            {
-              ["--message-columns" as "--message-columns"]: String(profile.pageColumns),
-              ["--message-rows" as "--message-rows"]: String(profile.pageRows)
-            } as CSSProperties
-          }
-        >
-          {page.map((item, itemIndex) =>
-            renderMessageCard(item, pageIndex * profile.advanceBy + itemIndex, profile.maxChars)
-          )}
-        </div>
-      ))}
+    <div className={scrollerClassName}>
+      {model.contributions.map((item, itemIndex) => renderMessageCard(item, itemIndex, profile.maxChars))}
     </div>
   );
 };
@@ -228,6 +212,16 @@ export const FinalCard = ({ model }: Props) => {
                       </article>
                     ))}
                   </div>
+                </section>
+              );
+            }
+
+            if (block.id === "ai-summary") {
+              return (
+                <section key={block.id} className={`${styles.summary} ${styles.section}`}>
+                  <p className={styles.sectionEyebrow}>Собрано из всех слов</p>
+                  <h2 className={styles.sectionTitle}>{model.aiSummaryTitle}</h2>
+                  <p className={styles.sectionText}>{model.aiSummaryText}</p>
                 </section>
               );
             }

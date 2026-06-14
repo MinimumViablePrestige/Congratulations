@@ -35,10 +35,7 @@ export default async function ManagePage({ params }: Props) {
   const model = buildFinalCardViewModel(card, visibleContributions);
   const availableModel = buildFinalCardViewModel({ ...card, finalBlockSettings: null }, visibleContributions);
   const style = cardTemplates.find((template) => template.id === card.templateId)?.id ?? "warm-classic";
-  const layoutProfile = getFinalCardMessageLayoutProfile(
-    card.finalMessageSettings?.layoutMode ?? "grid-2",
-    model.blocks.map((block) => block.id)
-  );
+  const layoutProfile = getFinalCardMessageLayoutProfile(card.finalMessageSettings?.layoutMode ?? "grid-2");
   const optionalLayoutBlocks = finalCardLayouts[style].blocks.filter((block) => !block.required);
 
   const blockMeta: Record<FinalCardOptionalBlockId, { label: string; description: string }> = {
@@ -48,15 +45,19 @@ export default async function ManagePage({ params }: Props) {
     },
     qualities: {
       label: "Качества",
-      description: "Ключевые слова и ощущение от человека."
+      description: "Ключевые слова и общее ощущение от человека."
     },
     memories: {
       label: "Моменты / фото",
-      description: "Место под истории, фрагменты или будущий медиаблок."
+      description: "Пока это место под будущий фото- или медиа-блок."
     },
     quotes: {
       label: "Лучшие фразы",
       description: "Короткие сильные выжимки из поздравлений."
+    },
+    "ai-summary": {
+      label: "Общее поздравление",
+      description: "Пока заглушка под будущий AI-блок, который резюмирует все поздравления."
     }
   };
 
@@ -126,7 +127,8 @@ export default async function ManagePage({ params }: Props) {
               <div>
                 <h2 className={styles.sectionTitle}>Поздравления</h2>
                 <p className={styles.hint}>
-                  Здесь редактируем текст, меняем последовательность и убираем слабые или лишние карточки.
+                  Здесь редактируем текст, меняем последовательность и сразу видим, насколько каждое поздравление
+                  укладывается в лимит текущей сетки.
                 </p>
               </div>
               <span className={styles.infoBadge}>{allContributions.length} записей</span>
@@ -145,6 +147,9 @@ export default async function ManagePage({ params }: Props) {
                       </div>
                       <div className={styles.badgeRow}>
                         <span className={styles.sortBadge}>#{contribution.sortOrder + 1}</span>
+                        <span className={styles.sortBadge}>
+                          {contribution.message.length} / {layoutProfile.maxChars}
+                        </span>
                         <span className={styles.statusBadge}>{contribution.status}</span>
                       </div>
                     </div>
@@ -233,7 +238,8 @@ export default async function ManagePage({ params }: Props) {
                   В блок поздравлений попадет <strong>{visibleContributions.length}</strong> видимых сообщений.
                 </p>
                 <p className={styles.previewText}>
-                  Безопасный лимит для текущего формата: <strong>{layoutProfile.maxChars}</strong> символов на одно поздравление.
+                  Безопасный лимит для текущего формата: <strong>{layoutProfile.maxChars}</strong> символов на одно
+                  поздравление.
                 </p>
                 <p className={styles.previewText}>
                   Напоминание для чата: <code>{reminderText}</code>
@@ -255,4 +261,4 @@ export default async function ManagePage({ params }: Props) {
       </div>
     </main>
   );
-}
+};

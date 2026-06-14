@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { updateContributionMessageAction } from "./actions";
 import styles from "./manage-page.module.css";
 
@@ -18,22 +18,35 @@ const initialState = {
 
 export const ContributionEditor = ({ contributionId, manageToken, initialMessage, messageLimit }: Props) => {
   const [state, formAction, isPending] = useActionState(updateContributionMessageAction, initialState);
+  const [message, setMessage] = useState(initialMessage);
 
   return (
     <form action={formAction} className={styles.editorForm}>
       <input type="hidden" name="manageToken" value={manageToken} />
       <input type="hidden" name="contributionId" value={contributionId} />
-      <label className={styles.editorLabel} htmlFor={`message-${contributionId}`}>
-        Текст поздравления
-      </label>
-      <p className={styles.editorHint}>Для текущего формата лучше держать текст в пределах {messageLimit} символов.</p>
+
+      <div className={styles.editorHeader}>
+        <label className={styles.editorLabel} htmlFor={`message-${contributionId}`}>
+          Текст поздравления
+        </label>
+        <span className={styles.editorCounter}>
+          {message.length} / {messageLimit}
+        </span>
+      </div>
+
+      <p className={styles.editorHint}>
+        Для текущего формата лучше держать текст в пределах {messageLimit} символов.
+      </p>
+
       <textarea
         id={`message-${contributionId}`}
         name="message"
-        defaultValue={initialMessage}
+        value={message}
+        onChange={(event) => setMessage(event.target.value)}
         className={styles.editorTextarea}
         maxLength={1500}
       />
+
       <div className={styles.editorFooter}>
         <button type="submit" className={styles.button} disabled={isPending}>
           {isPending ? "Сохраняем..." : "Сохранить текст"}

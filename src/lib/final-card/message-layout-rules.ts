@@ -1,4 +1,4 @@
-import type { FinalCardBlockId, FinalCardMessageLayoutMode } from "@/lib/final-card/types";
+import type { FinalCardMessageLayoutMode } from "@/lib/final-card/types";
 
 export type FinalCardMessageLayoutProfile = {
   cardsPerPage: number;
@@ -9,15 +9,9 @@ export type FinalCardMessageLayoutProfile = {
   pageVariant: "grid" | "column-media";
 };
 
-const countOptionalBlocks = (blockIds: FinalCardBlockId[]) =>
-  blockIds.filter((blockId) => blockId !== "hero" && blockId !== "messages" && blockId !== "closing").length;
-
 export const getFinalCardMessageLayoutProfile = (
-  layoutMode: FinalCardMessageLayoutMode,
-  blockIds: FinalCardBlockId[] = []
+  layoutMode: FinalCardMessageLayoutMode
 ): FinalCardMessageLayoutProfile => {
-  const optionalBlocks = countOptionalBlocks(blockIds);
-
   if (layoutMode === "carousel-1") {
     return {
       cardsPerPage: 3,
@@ -32,7 +26,7 @@ export const getFinalCardMessageLayoutProfile = (
   if (layoutMode === "carousel-2") {
     return {
       cardsPerPage: 6,
-      advanceBy: 3,
+      advanceBy: 1,
       maxChars: 170,
       pageColumns: 3,
       pageRows: 2,
@@ -51,31 +45,25 @@ export const getFinalCardMessageLayoutProfile = (
     };
   }
 
-  const expandedGrid = optionalBlocks <= 1;
-
   return {
-    cardsPerPage: expandedGrid ? 6 : 4,
-    advanceBy: 2,
-    maxChars: expandedGrid ? 180 : 220,
+    cardsPerPage: 4,
+    advanceBy: 1,
+    maxChars: 220,
     pageColumns: 2,
-    pageRows: expandedGrid ? 3 : 2,
+    pageRows: 2,
     pageVariant: "grid"
   };
 };
 
-export const splitIntoMessagePages = <T>(items: T[], cardsPerPage: number, advanceBy = cardsPerPage) => {
-  if (cardsPerPage <= 0 || advanceBy <= 0) {
+export const splitIntoMessagePages = <T>(items: T[], cardsPerPage: number) => {
+  if (cardsPerPage <= 0) {
     return [items];
   }
 
   const pages: T[][] = [];
 
-  for (let index = 0; index < items.length; index += advanceBy) {
+  for (let index = 0; index < items.length; index += cardsPerPage) {
     pages.push(items.slice(index, index + cardsPerPage));
-
-    if (index + cardsPerPage >= items.length) {
-      break;
-    }
   }
 
   return pages;

@@ -5,6 +5,7 @@ export type FinalCardBlockId =
   | "messages"
   | "memories"
   | "quotes"
+  | "ai-summary"
   | "closing";
 
 export type FinalCardOptionalBlockId = Exclude<FinalCardBlockId, "hero" | "messages" | "closing">;
@@ -30,6 +31,7 @@ export type FinalCardContentAvailability = {
   hasQualities: boolean;
   hasMemories: boolean;
   hasQuotes: boolean;
+  hasAiSummary: boolean;
 };
 
 export type FinalCardBlockSettings = Partial<Record<FinalCardOptionalBlockId, boolean>>;

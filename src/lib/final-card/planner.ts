@@ -24,6 +24,10 @@ const isBlockAvailable = (blockId: string, availability: FinalCardContentAvailab
     return availability.hasQuotes;
   }
 
+  if (blockId === "ai-summary") {
+    return availability.hasAiSummary;
+  }
+
   return true;
 };
 

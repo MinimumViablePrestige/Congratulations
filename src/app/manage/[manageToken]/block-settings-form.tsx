@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
+import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type {
   FinalCardMessageLayoutMode,
   FinalCardMessageMediaLayout,
@@ -33,32 +34,27 @@ const initialState = {
 const layoutOptions: Array<{
   id: FinalCardMessageLayoutMode;
   label: string;
-  shortLabel: string;
   description: string;
 }> = [
   {
     id: "grid-2",
-    label: "Сетка 2 на 2",
-    shortLabel: "2x2",
-    description: "Четыре карточки на экране, пролистывание по одному ряду."
+    label: 'Сетка "2 на 2"',
+    description: "4 карточки на экране, пролистывание по одному ряду."
   },
   {
     id: "carousel-1",
     label: "Один ряд",
-    shortLabel: "1 ряд",
-    description: "Карточки идут в одну линию и пролистываются по одной."
+    description: "3 карточки в линию, пролистывание по одной."
   },
   {
     id: "carousel-2",
     label: "Два ряда",
-    shortLabel: "2 ряда",
-    description: "Шесть карточек на экране, пролистывание по одной колонке."
+    description: "6 карточек на экране, пролистывание по одной колонке."
   },
   {
     id: "column-media",
-    label: "Колонка + медиа",
-    shortLabel: "1 колонка + фото",
-    description: "Слева четыре карточки в колонке с прокруткой вниз, справа фиксированное фото."
+    label: "1 колонка + фото",
+    description: "4 карточки слева с прокруткой вниз, справа фиксированный медиа-блок."
   }
 ];
 
@@ -77,6 +73,7 @@ const canvasBlockMeta: Record<string, { label: string; size: "hero" | "medium" |
   messages: { label: "Поздравления", size: "messages" },
   memories: { label: "Моменты / фото", size: "medium" },
   quotes: { label: "Лучшие фразы", size: "small" },
+  "ai-summary": { label: "Общее поздравление", size: "medium" },
   closing: { label: "Финал", size: "closing" }
 };
 
@@ -103,7 +100,7 @@ export const BlockSettingsForm = ({
   );
 
   const canvasBlocks = useMemo(() => buildCanvasBlocks(options, blockState), [blockState, options]);
-  const currentLayoutLabel = layoutOptions.find((option) => option.id === layoutMode)?.label ?? "Сетка 2 на 2";
+  const currentLayoutLabel = layoutOptions.find((option) => option.id === layoutMode)?.label ?? 'Сетка "2 на 2"';
 
   return (
     <form action={formAction} className={styles.studioForm}>
@@ -131,11 +128,6 @@ export const BlockSettingsForm = ({
             >
               <div className={styles.canvasBlockHeader}>
                 <span>{canvasBlockMeta[blockId].label}</span>
-                {blockId === "messages" ? (
-                  <span className={styles.canvasBlockMeta}>
-                    {layoutOptions.find((option) => option.id === layoutMode)?.shortLabel}
-                  </span>
-                ) : null}
               </div>
 
               {blockId === "messages" ? (
@@ -210,27 +202,31 @@ export const BlockSettingsForm = ({
         <div className={styles.controlCard}>
           <div className={styles.controlHeader}>
             <h3 className={styles.controlTitle}>Формат поздравлений</h3>
-            <p className={styles.controlHint}>Компактный выбор основного сценария чтения.</p>
+            <p className={styles.controlHint}>Выбираем не только вид, но и безопасный объем текста на карточку.</p>
           </div>
 
           <div className={styles.compactOptionGrid}>
-            {layoutOptions.map((option) => (
-              <label
-                key={option.id}
-                className={`${styles.compactOption} ${layoutMode === option.id ? styles.compactOptionActive : ""}`}
-              >
-                <input
-                  type="radio"
-                  name="layoutMode"
-                  value={option.id}
-                  defaultChecked={option.id === initialLayoutMode}
-                  onChange={() => setLayoutMode(option.id)}
-                />
-                <span className={styles.compactOptionTag}>{option.shortLabel}</span>
-                <span className={styles.compactOptionTitle}>{option.label}</span>
-                <span className={styles.compactOptionDescription}>{option.description}</span>
-              </label>
-            ))}
+            {layoutOptions.map((option) => {
+              const profile = getFinalCardMessageLayoutProfile(option.id);
+
+              return (
+                <label
+                  key={option.id}
+                  className={`${styles.compactOption} ${layoutMode === option.id ? styles.compactOptionActive : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="layoutMode"
+                    value={option.id}
+                    defaultChecked={option.id === initialLayoutMode}
+                    onChange={() => setLayoutMode(option.id)}
+                  />
+                  <span className={styles.compactOptionTitle}>{option.label}</span>
+                  <span className={styles.compactOptionDescription}>{option.description}</span>
+                  <span className={styles.compactOptionMeta}>До {profile.maxChars} символов на карточку</span>
+                </label>
+              );
+            })}
           </div>
 
           {layoutMode === "column-media" ? (
@@ -295,26 +291,20 @@ export const BlockSettingsForm = ({
         <div className={styles.controlCard}>
           <div className={styles.controlHeader}>
             <h3 className={styles.controlTitle}>Дополнительно</h3>
-            <p className={styles.controlHint}>Отдельные настройки, не связанные с форматом блока.</p>
+            <p className={styles.controlHint}>Отдельные настройки, не связанные с сеткой карточек.</p>
           </div>
 
-          <label className={styles.inlineToggle}>
+          <label className={`${styles.inlineToggle} ${showAllLink ? styles.inlineToggleActive : ""}`}>
             <input
               type="checkbox"
               name="showAllLink"
               defaultChecked={initialShowAllLink}
               onChange={(event) => setShowAllLink(event.target.checked)}
             />
-            <div>
-              <strong>Кнопка со всеми поздравлениями</strong>
-              <p className={styles.controlHint}>Открывает отдельный экран, где удобно читать сообщения подряд.</p>
-            </div>
+            <strong>Экран со всеми поздравлениями</strong>
+            <p className={styles.controlHint}>Открывает отдельную страницу, где удобно читать сообщения подряд.</p>
+            <span className={styles.inlineToggleMeta}>{showAllLink ? "Включено" : "Выключено"}</span>
           </label>
-
-          <div className={styles.stateRow}>
-            <span className={styles.stateLabel}>Сейчас:</span>
-            <span className={styles.infoBadge}>{showAllLink ? "кнопка включена" : "кнопка выключена"}</span>
-          </div>
         </div>
       </section>
 
