@@ -13,13 +13,20 @@ import { validateContributionMessage } from "@/lib/contributions/validation";
 import type {
   FinalCardBlockSettings,
   FinalCardMessageLayoutMode,
+  FinalCardMessageMediaLayout,
   FinalCardMessageSettings,
   FinalCardOptionalBlockId
 } from "@/lib/final-card/types";
 import { logger } from "@/lib/logger";
 
 const optionalBlockIds: FinalCardOptionalBlockId[] = ["summary", "qualities", "memories", "quotes"];
-const messageLayoutModes: FinalCardMessageLayoutMode[] = ["grid-2", "carousel-1", "carousel-2"];
+const messageLayoutModes: FinalCardMessageLayoutMode[] = [
+  "grid-2",
+  "carousel-1",
+  "carousel-2",
+  "column-media"
+];
+const mediaLayouts: FinalCardMessageMediaLayout[] = ["portrait", "landscape-pair"];
 
 const revalidateCardSurfaces = (manageToken: string, publicSlug: string, finalSlug: string) => {
   revalidatePath(`/manage/${manageToken}`);
@@ -141,6 +148,11 @@ export async function updateFinalPresentationSettingsAction(
     ? (layoutModeValue as FinalCardMessageLayoutMode)
     : "grid-2";
 
+  const mediaLayoutValue = String(formData.get("mediaLayout") ?? "");
+  const mediaLayout = mediaLayouts.includes(mediaLayoutValue as FinalCardMessageMediaLayout)
+    ? (mediaLayoutValue as FinalCardMessageMediaLayout)
+    : "portrait";
+
   const finalBlockSettings = optionalBlockIds.reduce<FinalCardBlockSettings>((acc, blockId) => {
     acc[blockId] = formData.get(blockId) === "on";
     return acc;
@@ -148,6 +160,7 @@ export async function updateFinalPresentationSettingsAction(
 
   const finalMessageSettings: FinalCardMessageSettings = {
     layoutMode,
+    mediaLayout,
     showAllLink: formData.get("showAllLink") === "on"
   };
 

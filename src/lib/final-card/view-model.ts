@@ -3,6 +3,7 @@ import type { CardDraft, Contribution } from "@/lib/cards/types";
 import { buildFinalCardLayout } from "@/lib/final-card/planner";
 import type {
   FinalCardContentAvailability,
+  FinalCardMessageMediaLayout,
   FinalCardMessageLayoutMode,
   FinalCardStyleId
 } from "@/lib/final-card/types";
@@ -25,6 +26,7 @@ export type FinalCardViewModel = {
     caption: string;
   }>;
   messageLayoutMode: FinalCardMessageLayoutMode;
+  messageMediaLayout: FinalCardMessageMediaLayout;
   showAllMessagesLink: boolean;
   blocks: ReturnType<typeof buildFinalCardLayout>["blocks"];
 };
@@ -102,6 +104,7 @@ export const buildFinalCardViewModel = (card: CardDraft, contributions: Contribu
     contributions,
     memories,
     messageLayoutMode: card.finalMessageSettings?.layoutMode ?? "grid-2",
+    messageMediaLayout: card.finalMessageSettings?.mediaLayout ?? "portrait",
     showAllMessagesLink: card.finalMessageSettings?.showAllLink ?? true,
     blocks: buildFinalCardLayout(style, availability, card.finalBlockSettings).blocks
   };

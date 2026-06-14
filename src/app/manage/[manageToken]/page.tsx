@@ -35,25 +35,26 @@ export default async function ManagePage({ params }: Props) {
   const availableModel = buildFinalCardViewModel({ ...card, finalBlockSettings: null }, visibleContributions);
   const style = cardTemplates.find((template) => template.id === card.templateId)?.id ?? "warm-classic";
   const optionalLayoutBlocks = finalCardLayouts[style].blocks.filter((block) => !block.required);
+
   const blockMeta: Record<FinalCardOptionalBlockId, { label: string; description: string }> = {
     summary: {
       label: "Вводный блок",
-      description: "Короткое общее описание открытки и контекста."
+      description: "Общий контекст и короткое вступление."
     },
     qualities: {
-      label: "Какой ты для нас",
-      description: "Блок с качествами, которые собраны из поздравлений."
+      label: "Качества",
+      description: "Ключевые слова и ощущение от человека."
     },
     memories: {
-      label: "Теплые воспоминания",
-      description: "Небольшие выделенные истории и фрагменты из поздравлений."
+      label: "Моменты / фото",
+      description: "Место под истории, фрагменты или будущий медиаблок."
     },
     quotes: {
       label: "Лучшие фразы",
-      description: "Короткие сильные цитаты из поздравлений."
+      description: "Короткие сильные выжимки из поздравлений."
     }
   };
-  const currentBlockIds = model.blocks.map((block) => block.id);
+
   const availableBlockIds = availableModel.blocks.map((block) => block.id);
   const blockOptions = optionalLayoutBlocks.map((block) => ({
     id: block.id as FinalCardOptionalBlockId,
@@ -67,27 +68,64 @@ export default async function ManagePage({ params }: Props) {
     <main className={styles.page}>
       <div className={styles.shell}>
         <section className={styles.hero}>
-          <p className={styles.eyebrow}>Секретная ссылка организатора</p>
-          <h1 className={styles.title}>Управление открыткой для {card.recipientName}</h1>
-          <p className={styles.subtitle}>
-            Здесь можно следить за поздравлениями, менять их порядок, скрывать неудачные тексты и собирать финальный
-            экран до оплаты и публикации.
-          </p>
+          <div className={styles.heroTop}>
+            <div>
+              <p className={styles.eyebrow}>Секретная ссылка организатора</p>
+              <h1 className={styles.title}>Управление открыткой для {card.recipientName}</h1>
+              <p className={styles.subtitle}>
+                Здесь мы собираем не просто тексты, а сам финальный подарок: порядок поздравлений, структуру экрана и
+                способ, которым человек будет читать открытку.
+              </p>
+            </div>
+            <div className={styles.heroSummary}>
+              <span className={styles.heroSummaryLabel}>Финальный формат поздравлений</span>
+              <strong>{card.finalMessageSettings?.layoutMode ?? "grid-2"}</strong>
+              <span className={styles.heroSummaryLabel}>
+                {card.finalMessageSettings?.showAllLink ? "Есть отдельный экран всех поздравлений" : "Без отдельного экрана"}
+              </span>
+            </div>
+          </div>
+
           <div className={styles.stats}>
             <div className={styles.stat}>Повод: {card.occasionText}</div>
-            <div className={styles.stat}>Статус: {card.status}</div>
-            <div className={styles.stat}>Оплата: {card.paymentStatus}</div>
+            <div className={styles.stat}>Шаблон: {style}</div>
             <div className={styles.stat}>Всего поздравлений: {allContributions.length}</div>
             <div className={styles.stat}>Видимых: {visibleContributions.length}</div>
           </div>
         </section>
 
+        <section className={styles.studioPanel}>
+          <div className={styles.studioPanelHeader}>
+            <div>
+              <p className={styles.eyebrow}>Конструктор финального экрана</p>
+              <h2 className={styles.sectionTitle}>Состав открытки и блок поздравлений</h2>
+            </div>
+            <p className={styles.studioLead}>
+              Здесь главное не список настроек, а наглядная схема: что стоит выше, что ниже и как именно будет выглядеть
+              центральный блок с поздравлениями.
+            </p>
+          </div>
+
+          <BlockSettingsForm
+            manageToken={manageToken}
+            options={blockOptions}
+            initialLayoutMode={card.finalMessageSettings?.layoutMode ?? "grid-2"}
+            initialMediaLayout={card.finalMessageSettings?.mediaLayout ?? "portrait"}
+            initialShowAllLink={card.finalMessageSettings?.showAllLink ?? true}
+          />
+        </section>
+
         <div className={styles.layout}>
           <section className={styles.panel}>
-            <h2 className={styles.sectionTitle}>Поздравления</h2>
-            <p className={styles.hint}>
-              Здесь уже можно редактировать текст, переставлять карточки местами и убирать то, что не подходит по тону.
-            </p>
+            <div className={styles.panelHeader}>
+              <div>
+                <h2 className={styles.sectionTitle}>Поздравления</h2>
+                <p className={styles.hint}>
+                  Здесь редактируем текст, меняем последовательность и убираем слабые или лишние карточки.
+                </p>
+              </div>
+              <span className={styles.infoBadge}>{allContributions.length} записей</span>
+            </div>
 
             {allContributions.length === 0 ? (
               <p className={styles.empty}>Пока поздравлений нет. Сначала участники должны добавить свои сообщения.</p>
@@ -162,62 +200,46 @@ export default async function ManagePage({ params }: Props) {
 
           <div className={styles.layoutRight}>
             <section className={styles.actionsCard}>
-              <h2 className={styles.sectionTitle}>Быстрые материалы</h2>
-              <p className={styles.line}>
-                Ссылка для участников: <code>/card/{card.publicSlug}</code>
-              </p>
-              <p className={styles.line}>
-                Финальный экран: <code>/gift/{card.finalSlug}</code>
-              </p>
-              <p className={styles.line}>
-                Экран всех поздравлений: <code>/gift/{card.finalSlug}/messages</code>
-              </p>
-              <p className={styles.line}>
-                Напоминание для чата: <code>{reminderText}</code>
-              </p>
+              <h2 className={styles.sectionTitle}>Быстрые ссылки</h2>
+              <div className={styles.linksList}>
+                <p className={styles.line}>
+                  Участники: <code>/card/{card.publicSlug}</code>
+                </p>
+                <p className={styles.line}>
+                  Финальная открытка: <code>/gift/{card.finalSlug}</code>
+                </p>
+                <p className={styles.line}>
+                  Все поздравления: <code>/gift/{card.finalSlug}/messages</code>
+                </p>
+              </div>
             </section>
 
             <section className={styles.actionsCard}>
-              <h2 className={styles.sectionTitle}>Состав финального экрана</h2>
-              <p className={styles.line}>
-                Здесь можно включать и выключать необязательные части, менять формат блока поздравлений и сразу видеть
-                схему будущей открытки.
-              </p>
-              <BlockSettingsForm
-                manageToken={manageToken}
-                options={blockOptions}
-                initialLayoutMode={card.finalMessageSettings?.layoutMode ?? "grid-2"}
-                initialShowAllLink={card.finalMessageSettings?.showAllLink ?? true}
-              />
-              <p className={styles.line}>
-                Сейчас в финальный экран попадают: <code>{currentBlockIds.join(", ")}</code>
-              </p>
-              <p className={styles.line}>
-                Формат поздравлений: <code>{card.finalMessageSettings?.layoutMode ?? "grid-2"}</code>
-              </p>
+              <h2 className={styles.sectionTitle}>Что видит получатель</h2>
+              <div className={styles.summaryList}>
+                <p className={styles.previewText}>
+                  Открытка для <strong>{card.recipientName}</strong> от <strong>{card.fromLabel}</strong>.
+                </p>
+                <p className={styles.previewText}>
+                  Повод: <strong>{card.occasionText}</strong>
+                </p>
+                <p className={styles.previewText}>
+                  В блок поздравлений попадет <strong>{visibleContributions.length}</strong> видимых сообщений.
+                </p>
+                <p className={styles.previewText}>
+                  Напоминание для чата: <code>{reminderText}</code>
+                </p>
+              </div>
             </section>
 
-            <section className={styles.previewCard}>
-              <h2 className={styles.sectionTitle}>Предпросмотр</h2>
+            <section className={styles.actionsCard}>
+              <h2 className={styles.sectionTitle}>Кратко по структуре</h2>
               <p className={styles.previewText}>
-                Получатель увидит открытку для <strong>{card.recipientName}</strong> от <strong>{card.fromLabel}</strong>.
+                Сейчас на финальном экране: <code>{model.blocks.map((block) => block.id).join(", ")}</code>
               </p>
               <p className={styles.previewText}>
-                Контекст открытки: <strong>{card.occasionText}</strong>
+                Основной режим поздравлений: <code>{card.finalMessageSettings?.layoutMode ?? "grid-2"}</code>
               </p>
-              {card.description ? <p className={styles.previewText}>{card.description}</p> : null}
-              <p className={styles.previewText}>
-                Пока видимых поздравлений: <strong>{visibleContributions.length}</strong>
-              </p>
-              {visibleContributions.slice(0, 3).map((item) => (
-                <article key={item.id} className={styles.contributionCard}>
-                  <div className={styles.row}>
-                    <span className={styles.author}>{item.authorName}</span>
-                    {item.authorRole ? <span className={styles.meta}>{item.authorRole}</span> : null}
-                  </div>
-                  <p className={styles.message}>{item.message}</p>
-                </article>
-              ))}
             </section>
           </div>
         </div>

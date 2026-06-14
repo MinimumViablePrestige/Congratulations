@@ -8,6 +8,7 @@ const contributionsFilePath = join(process.cwd(), "data", "contributions.json");
 
 const defaultFinalMessageSettings: FinalCardMessageSettings = {
   layoutMode: "grid-2",
+  mediaLayout: "portrait",
   showAllLink: true
 };
 
@@ -15,7 +16,12 @@ const normalizeCard = (card: CardDraft): CardDraft => ({
   ...card,
   occasionText: card.occasionText ?? card.description ?? card.occasion,
   finalBlockSettings: card.finalBlockSettings ?? null,
-  finalMessageSettings: card.finalMessageSettings ?? defaultFinalMessageSettings
+  finalMessageSettings: card.finalMessageSettings
+    ? {
+        ...defaultFinalMessageSettings,
+        ...card.finalMessageSettings
+      }
+    : defaultFinalMessageSettings
 });
 
 const compareContributions = (left: Contribution, right: Contribution) => {

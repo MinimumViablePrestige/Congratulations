@@ -34,9 +34,12 @@ export type FinalCardContentAvailability = {
 
 export type FinalCardBlockSettings = Partial<Record<FinalCardOptionalBlockId, boolean>>;
 
-export type FinalCardMessageLayoutMode = "grid-2" | "carousel-1" | "carousel-2";
+export type FinalCardMessageLayoutMode = "grid-2" | "carousel-1" | "carousel-2" | "column-media";
+
+export type FinalCardMessageMediaLayout = "portrait" | "landscape-pair";
 
 export type FinalCardMessageSettings = {
   layoutMode: FinalCardMessageLayoutMode;
+  mediaLayout: FinalCardMessageMediaLayout;
   showAllLink: boolean;
 };

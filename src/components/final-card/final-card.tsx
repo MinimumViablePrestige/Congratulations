@@ -39,6 +39,40 @@ const renderMessageCard = (item: Contribution, index: number) => (
   </article>
 );
 
+const renderMediaRail = (model: FinalCardViewModel) => {
+  if (model.messageMediaLayout === "landscape-pair") {
+    return (
+      <div className={styles.mediaRail}>
+        <div className={styles.mediaCardLandscape}>
+          <span className={styles.mediaLabel}>Фото A</span>
+          <p className={styles.mediaHint}>
+            {model.memories[0]?.caption ? model.memories[0].caption : "Здесь позже может появиться первое горизонтальное фото."}
+          </p>
+        </div>
+        <div className={styles.mediaCardLandscape}>
+          <span className={styles.mediaLabel}>Фото B</span>
+          <p className={styles.mediaHint}>
+            {model.memories[1]?.caption ? model.memories[1].caption : "Здесь позже может появиться второе горизонтальное фото."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.mediaRail}>
+      <div className={styles.mediaCardPortrait}>
+        <span className={styles.mediaLabel}>Вертикальное фото</span>
+        <p className={styles.mediaHint}>
+          {model.memories[0]?.caption
+            ? model.memories[0].caption
+            : "Здесь предусмотрено место под одно заметное вертикальное фото или иллюстрацию."}
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const renderMessagesLayout = (model: FinalCardViewModel) => {
   if (model.messageLayoutMode === "carousel-1") {
     return (
@@ -56,6 +90,17 @@ const renderMessagesLayout = (model: FinalCardViewModel) => {
             {column.map((item, itemIndex) => renderMessageCard(item, columnIndex * 2 + itemIndex))}
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (model.messageLayoutMode === "column-media") {
+    return (
+      <div className={styles.messageSplitLayout}>
+        <div className={styles.messageVerticalScroller}>
+          {model.contributions.map((item, index) => renderMessageCard(item, index))}
+        </div>
+        {renderMediaRail(model)}
       </div>
     );
   }

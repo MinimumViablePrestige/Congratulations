@@ -49,6 +49,7 @@ describe("buildFinalCardViewModel", () => {
     expect(viewModel.occasionLabel).toBe("собираем открытку от команды Product & Design");
     expect(viewModel.finalSlug).toBe("final_1");
     expect(viewModel.messageLayoutMode).toBe("grid-2");
+    expect(viewModel.messageMediaLayout).toBe("portrait");
     expect(viewModel.showAllMessagesLink).toBe(true);
   });
 
@@ -73,6 +74,7 @@ describe("buildFinalCardViewModel", () => {
         ...card,
         finalMessageSettings: {
           layoutMode: "carousel-2",
+          mediaLayout: "landscape-pair",
           showAllLink: false
         }
       },
@@ -80,6 +82,7 @@ describe("buildFinalCardViewModel", () => {
     );
 
     expect(viewModel.messageLayoutMode).toBe("carousel-2");
+    expect(viewModel.messageMediaLayout).toBe("landscape-pair");
     expect(viewModel.showAllMessagesLink).toBe(false);
   });
 });
