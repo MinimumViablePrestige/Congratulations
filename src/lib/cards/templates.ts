@@ -24,28 +24,28 @@ export const cardTemplates: CardTemplate[] = [
   {
     id: "warm-classic",
     name: "Теплый классический",
-    description: "Спокойный и уважительный стиль для душевной открытки без лишнего шума.",
+    description: "Спокойная светлая открытка с мягкими карточками и фокусом на тексте.",
     recommendedFor: ["personal", "teacher", "caregiver"],
     accent: "#bf6c47"
   },
   {
     id: "team-modern",
     name: "Командный современный",
-    description: "Чистый и собранный стиль, когда открытку делает команда, класс или группа.",
+    description: "Темный аккуратный стиль для сильной командной открытки без лишнего шума.",
     recommendedFor: ["team", "colleague"],
     accent: "#27566b"
   },
   {
     id: "bright-celebration",
     name: "Праздничный яркий",
-    description: "Более заметный и эффектный вариант для дней рождения, юбилеев и громких поводов.",
+    description: "Смелый праздничный стиль с энергией, наклейками и яркими акцентами.",
     recommendedFor: ["celebration", "teacher", "colleague"],
     accent: "#fb8500"
   },
   {
     id: "gentle-personal",
     name: "Нежный личный",
-    description: "Мягкий визуальный тон с акцентом на личность получателя и теплые детали.",
+    description: "Воздушная открытка с природными деталями и мягкой атмосферой близости.",
     recommendedFor: ["personal", "caregiver", "teacher"],
     accent: "#b97c73"
   }
