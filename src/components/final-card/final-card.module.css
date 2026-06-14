@@ -131,7 +131,7 @@
 
 .hero {
   display: grid;
-  gap: 26px;
+  gap: 18px;
   padding: 30px;
   background: var(--fc-hero);
 }
@@ -151,7 +151,7 @@
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 18px;
+  gap: 14px;
   align-content: start;
 }
 
@@ -175,9 +175,9 @@
 
 .subtitle {
   margin: 0;
-  max-width: 720px;
+  max-width: 620px;
   color: var(--fc-muted);
-  line-height: 1.8;
+  line-height: 1.65;
   font-size: 1.02rem;
 }
 
@@ -220,8 +220,8 @@
 
 .heroPhotoStack {
   position: relative;
-  min-height: 320px;
-  padding: 18px 8px 8px;
+  min-height: 292px;
+  padding: 8px 6px 6px;
 }
 
 .heroPhotoFrame {
@@ -244,8 +244,8 @@
 .heroPhotoSecondary {
   position: absolute;
   right: 0;
-  bottom: -4px;
-  width: 46%;
+  bottom: -2px;
+  width: 42%;
   transform: rotate(4.8deg);
 }
 
@@ -273,13 +273,13 @@
 .heroFactStrip {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .heroFact {
   display: grid;
   gap: 6px;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-radius: 20px;
   border: 1px solid var(--fc-line);
   background: rgba(255, 255, 255, 0.68);
@@ -318,14 +318,6 @@
   padding: 24px;
 }
 
-.summaryPanel,
-.qualitiesPanel,
-.aiSummaryPanel {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.64)),
-    var(--fc-surface);
-}
-
 .sectionHeader {
   display: flex;
   flex-wrap: wrap;
@@ -340,20 +332,6 @@
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.5rem;
   line-height: 1.15;
-}
-
-.sectionBadgeSoft {
-  display: inline-flex;
-  align-items: center;
-  justify-self: start;
-  min-height: 32px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid var(--fc-line);
-  color: var(--fc-muted);
-  font-size: 0.84rem;
-  font-weight: 700;
 }
 
 .sectionText {
@@ -646,6 +624,18 @@
   box-shadow: 0 2px 6px rgba(61, 43, 32, 0.08);
 }
 
+.summaryPanel,
+.qualitiesPanel,
+.aiSummaryPanel,
+.messages,
+.memories,
+.quotes,
+.closing {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.68)),
+    var(--fc-surface);
+}
+
 .memoryPhotoImage {
   display: block;
   width: 100%;
@@ -790,7 +780,7 @@
   .hero {
     grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.7fr);
     align-items: stretch;
-    padding: 34px;
+    padding: 32px;
   }
 
   .messageSplitFixed {

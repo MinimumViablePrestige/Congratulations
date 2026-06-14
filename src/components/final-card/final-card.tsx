@@ -33,7 +33,10 @@ const resolveHeroMedia = (mediaAssets: CardMediaAsset[]) => {
 };
 
 const renderMessageCard = (item: Contribution, index: number, maxChars: number) => (
-  <article key={item.id} className={`${styles.card} ${index === 0 ? styles.cardSpotlight : index % 3 === 0 ? styles.cardAccent : ""}`}>
+  <article
+    key={item.id}
+    className={`${styles.card} ${index === 0 ? styles.cardSpotlight : index % 3 === 0 ? styles.cardAccent : ""}`}
+  >
     <div className={styles.cardHeader}>
       <span className={styles.author}>{item.authorName}</span>
       {item.authorRole ? <span className={styles.role}>{item.authorRole}</span> : null}
@@ -43,9 +46,10 @@ const renderMessageCard = (item: Contribution, index: number, maxChars: number) 
 );
 
 const renderHeroAside = (model: FinalCardViewModel) => {
+  const allowHeroPhotos = model.style === "bright-celebration" || model.style === "gentle-personal";
   const { primary, secondary } = resolveHeroMedia(model.mediaAssets);
 
-  if (primary) {
+  if (allowHeroPhotos && primary) {
     return (
       <aside className={styles.heroAside}>
         <div className={styles.heroPhotoStack}>
@@ -242,8 +246,6 @@ export const FinalCard = ({ model }: Props) => {
             if (block.id === "summary") {
               return (
                 <section key={block.id} className={`${styles.summary} ${styles.section} ${styles.summaryPanel}`}>
-                  <div className={styles.sectionBadgeSoft}>Теплый контекст</div>
-                  <p className={styles.sectionEyebrow}>Общий взгляд</p>
                   <h2 className={styles.sectionTitle}>{model.summaryTitle}</h2>
                   <p className={styles.sectionText}>{model.summaryText}</p>
                 </section>
@@ -253,9 +255,7 @@ export const FinalCard = ({ model }: Props) => {
             if (block.id === "qualities") {
               return (
                 <section key={block.id} className={`${styles.qualities} ${styles.section} ${styles.qualitiesPanel}`}>
-                  <div className={styles.sectionBadgeSoft}>Чувства рядом</div>
-                  <p className={styles.sectionEyebrow}>Как тебя чувствуют рядом</p>
-                  <h2 className={styles.sectionTitle}>Какой ты для нас</h2>
+                  <h2 className={styles.sectionTitle}>Какая ты для нас</h2>
                   <div className={styles.chipList}>
                     {model.qualities.map((quality) => (
                       <span key={quality} className={styles.chip}>
@@ -271,16 +271,9 @@ export const FinalCard = ({ model }: Props) => {
               return (
                 <section key={block.id} className={`${styles.messages} ${styles.section}`}>
                   <div className={styles.sectionHeader}>
-                    <div>
-                      <p className={styles.sectionEyebrow}>Главное</p>
-                      <h2 className={styles.sectionTitle}>Поздравления</h2>
-                    </div>
+                    <h2 className={styles.sectionTitle}>Поздравления</h2>
                     <span className={styles.sectionBadge}>{model.contributions.length} сообщений</span>
                   </div>
-
-                  <p className={styles.messagesIntro}>
-                    Листай карточки и читай поздравления в том ритме, в котором их собирала группа.
-                  </p>
 
                   {renderMessagesLayout(model)}
 
@@ -298,8 +291,7 @@ export const FinalCard = ({ model }: Props) => {
             if (block.id === "memories") {
               return (
                 <section key={block.id} className={`${styles.memories} ${styles.section}`}>
-                  <p className={styles.sectionEyebrow}>Теплые моменты</p>
-                  <h2 className={styles.sectionTitle}>Воспоминания, которые хочется сохранить</h2>
+                  <h2 className={styles.sectionTitle}>Наши воспоминания</h2>
                   <div className={`${styles.grid} ${styles.memoriesGrid}`}>
                     {model.mediaAssets.length > 0
                       ? model.mediaAssets.map((asset, index) => (
@@ -342,7 +334,6 @@ export const FinalCard = ({ model }: Props) => {
             if (block.id === "quotes") {
               return (
                 <section key={block.id} className={`${styles.quotes} ${styles.section}`}>
-                  <p className={styles.sectionEyebrow}>Фразы, которые запоминаются</p>
                   <h2 className={styles.sectionTitle}>Лучшие фразы</h2>
                   <div className={`${styles.grid} ${styles.quotesGrid}`}>
                     {model.quotes.map((quote) => (
@@ -359,8 +350,6 @@ export const FinalCard = ({ model }: Props) => {
             if (block.id === "ai-summary") {
               return (
                 <section key={block.id} className={`${styles.summary} ${styles.section} ${styles.aiSummaryPanel}`}>
-                  <div className={styles.sectionBadgeSoft}>Общий итог</div>
-                  <p className={styles.sectionEyebrow}>Собрано из всех слов</p>
                   <h2 className={styles.sectionTitle}>{model.aiSummaryTitle}</h2>
                   <p className={styles.sectionText}>{model.aiSummaryText}</p>
                 </section>
@@ -371,7 +360,6 @@ export const FinalCard = ({ model }: Props) => {
               return (
                 <section key={block.id} className={styles.closing}>
                   <div className={styles.closingContent}>
-                    <p className={styles.sectionEyebrow}>Финальный аккорд</p>
                     <h2 className={styles.sectionTitle}>Спасибо, что вы вместе</h2>
                     <p className={styles.sectionText}>
                       Это уже не просто список сообщений, а собранный цифровой подарок. Дальше мы будем усиливать
