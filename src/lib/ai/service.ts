@@ -34,6 +34,32 @@ const hashText = (value: string) => {
 
 const pickBySeed = <T,>(items: T[], seed: number, offset = 0) => items[(seed + offset) % items.length];
 
+const fitTextToLimit = (text: string, messageLimit: number) => {
+  if (text.length <= messageLimit) {
+    return text;
+  }
+
+  const sentences = text
+    .split(/(?<=[.!?])\s+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (sentences.length > 1) {
+    let current = sentences.join(" ");
+
+    while (current.length > messageLimit && sentences.length > 1) {
+      sentences.pop();
+      current = sentences.join(" ");
+    }
+
+    if (current.length <= messageLimit) {
+      return current;
+    }
+  }
+
+  return `${text.slice(0, Math.max(0, messageLimit - 1)).trimEnd()}…`;
+};
+
 const splitDraftNotes = (draftNotes: string) =>
   cleanText(draftNotes)
     .split(/[.;\n]+/)
@@ -226,6 +252,7 @@ const buildStyledVariant = (
     .join(" ");
 
 const buildVariants = (input: AiGenerationInput, generationIndex: number) => {
+  const messageLimit = Number.isFinite(input.messageLimit) ? input.messageLimit : 240;
   const cleanedRecipientName = sanitizeSentence(input.recipientName);
   const cleanedNotes = splitDraftNotes(input.draftNotes);
   const wishClauses = extractWishClauses(cleanedNotes);
@@ -260,7 +287,10 @@ const buildVariants = (input: AiGenerationInput, generationIndex: number) => {
     { id: "short", label: "Короткий вариант", text: short },
     { id: "heartfelt", label: "Душевный вариант", text: heartfelt },
     { id: "styled", label: "В выбранном стиле", text: styled }
-  ];
+  ].map((variant) => ({
+    ...variant,
+    text: fitTextToLimit(variant.text, messageLimit)
+  }));
 };
 
 export const generateParticipantMessage = async (input: AiGenerationInput): Promise<AiGenerationResult> => {

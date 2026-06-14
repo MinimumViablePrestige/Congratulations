@@ -14,6 +14,7 @@ export type AiGenerationInput = {
   occasionText: string;
   draftNotes: string;
   style: AiStyle;
+  messageLimit: number;
 };
 
 export type AiVariant = {

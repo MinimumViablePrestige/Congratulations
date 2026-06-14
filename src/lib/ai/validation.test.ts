@@ -19,7 +19,8 @@ describe("validateAiGenerationFormData", () => {
         occasion: "personal",
         occasionText: "благодарим за заботу о группе",
         draftNotes: "Хочу пожелать любви и радости. Ценю скромность и то, как легко с тобой рядом.",
-        style: "warm-simple"
+        style: "warm-simple",
+        messageLimit: "220"
       })
     );
 
@@ -27,6 +28,7 @@ describe("validateAiGenerationFormData", () => {
     if (result.success) {
       expect(result.data.draftNotes).toContain("Хочу пожелать");
       expect(result.data.occasionText).toBe("благодарим за заботу о группе");
+      expect(result.data.messageLimit).toBe(220);
     }
   });
 
@@ -38,13 +40,14 @@ describe("validateAiGenerationFormData", () => {
         occasion: "wrong",
         occasionText: "",
         draftNotes: "коротко",
-        style: "none"
+        style: "none",
+        messageLimit: "0"
       })
     );
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.issues.length).toBeGreaterThanOrEqual(5);
+      expect(result.issues.length).toBeGreaterThanOrEqual(6);
     }
   });
 });

@@ -24,6 +24,8 @@ export const validateAiGenerationFormData = (formData: FormData): AiValidationRe
   const occasionText = normalizeText(formData.get("occasionText"));
   const draftNotes = normalizeText(formData.get("draftNotes"));
   const style = normalizeText(formData.get("style"));
+  const messageLimitValue = normalizeText(formData.get("messageLimit"));
+  const messageLimit = Number(messageLimitValue);
 
   if (!cardId) {
     issues.push({ field: "cardId", message: "Не удалось определить открытку для AI-помощника." });
@@ -52,6 +54,13 @@ export const validateAiGenerationFormData = (formData: FormData): AiValidationRe
     issues.push({ field: "style", message: "Выберите стиль поздравления." });
   }
 
+  if (!Number.isFinite(messageLimit) || messageLimit < 80 || messageLimit > 1500) {
+    issues.push({
+      field: "messageLimit",
+      message: "Не удалось определить допустимую длину поздравления для этой открытки."
+    });
+  }
+
   if (issues.length > 0) {
     return { success: false, issues };
   }
@@ -64,7 +73,8 @@ export const validateAiGenerationFormData = (formData: FormData): AiValidationRe
       occasion: occasion as AiGenerationInput["occasion"],
       occasionText,
       draftNotes,
-      style: style as AiStyle
+      style: style as AiStyle,
+      messageLimit
     }
   };
 };

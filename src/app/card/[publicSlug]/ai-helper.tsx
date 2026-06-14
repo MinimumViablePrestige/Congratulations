@@ -14,10 +14,11 @@ type Props = {
   recipientName: string;
   occasion: string;
   occasionText: string;
+  messageLimit: number;
   onUseText: (text: string) => void;
 };
 
-export const AiHelper = ({ cardId, recipientName, occasion, occasionText, onUseText }: Props) => {
+export const AiHelper = ({ cardId, recipientName, occasion, occasionText, messageLimit, onUseText }: Props) => {
   const [issues, setIssues] = useState<string[]>([]);
   const [variants, setVariants] = useState<AiVariant[]>([]);
   const [remaining, setRemaining] = useState<number | null>(null);
@@ -55,7 +56,7 @@ export const AiHelper = ({ cardId, recipientName, occasion, occasionText, onUseT
       <h2 className={styles.sectionTitle}>Помочь с текстом через AI</h2>
       <p className={styles.hint}>
         Напишите мысли своими словами, даже в сыром виде. AI аккуратно соберет их в 3 черновика поздравления, и вы
-        выберете лучший.
+        выберете лучший. Варианты сразу подстраиваются под лимит карточки: до {messageLimit} символов.
       </p>
 
       <form
@@ -65,6 +66,7 @@ export const AiHelper = ({ cardId, recipientName, occasion, occasionText, onUseT
           formData.set("recipientName", recipientName);
           formData.set("occasion", occasion);
           formData.set("occasionText", occasionText);
+          formData.set("messageLimit", String(messageLimit));
 
           startTransition(async () => {
             await handleGenerate(formData);
@@ -75,6 +77,7 @@ export const AiHelper = ({ cardId, recipientName, occasion, occasionText, onUseT
         <input type="hidden" name="recipientName" value={recipientName} />
         <input type="hidden" name="occasion" value={occasion} />
         <input type="hidden" name="occasionText" value={occasionText} />
+        <input type="hidden" name="messageLimit" value={messageLimit} />
 
         {issues.length > 0 ? (
           <div className={styles.errorBox} aria-live="polite">

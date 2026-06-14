@@ -40,25 +40,25 @@ const layoutOptions: Array<{
     id: "grid-2",
     label: "Сетка 2 на 2",
     shortLabel: "2x2",
-    description: "Четыре карточки на экране без прокрутки."
+    description: "Четыре карточки на экране, пролистывание по одному ряду."
   },
   {
     id: "carousel-1",
     label: "Один ряд",
     shortLabel: "1 ряд",
-    description: "Карточки идут в одну линию и пролистываются вбок."
+    description: "Карточки идут в одну линию и пролистываются по одной."
   },
   {
     id: "carousel-2",
     label: "Два ряда",
     shortLabel: "2 ряда",
-    description: "Колонки пролистываются вбок, в каждой по две карточки."
+    description: "Шесть карточек на экране, пролистывание по одной колонке."
   },
   {
     id: "column-media",
     label: "Колонка + медиа",
     shortLabel: "1 колонка + фото",
-    description: "Слева колонка поздравлений, справа отдельный медиаблок."
+    description: "Слева четыре карточки в колонке с прокруткой вниз, справа фиксированное фото."
   }
 ];
 
@@ -131,7 +131,11 @@ export const BlockSettingsForm = ({
             >
               <div className={styles.canvasBlockHeader}>
                 <span>{canvasBlockMeta[blockId].label}</span>
-                {blockId === "messages" ? <span className={styles.canvasBlockMeta}>{layoutOptions.find((option) => option.id === layoutMode)?.shortLabel}</span> : null}
+                {blockId === "messages" ? (
+                  <span className={styles.canvasBlockMeta}>
+                    {layoutOptions.find((option) => option.id === layoutMode)?.shortLabel}
+                  </span>
+                ) : null}
               </div>
 
               {blockId === "messages" ? (
@@ -197,7 +201,8 @@ export const BlockSettingsForm = ({
         </div>
 
         <p className={styles.canvasHint}>
-          Это не список блоков, а схема будущей открытки сверху вниз. По ней сразу видно, что окажется выше, ниже и как именно устроен блок поздравлений.
+          Это не список блоков, а схема будущей открытки сверху вниз. По ней сразу видно, что окажется выше, ниже и как
+          именно устроен блок поздравлений.
         </p>
       </section>
 

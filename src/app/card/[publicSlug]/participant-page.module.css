@@ -97,6 +97,19 @@
   gap: 8px;
 }
 
+.fieldLabelRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.counter,
+.note {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .field input,
 .field textarea,
 .field select {

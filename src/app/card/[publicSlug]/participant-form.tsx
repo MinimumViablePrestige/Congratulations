@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import styles from "./participant-page.module.css";
 import { AiHelper } from "./ai-helper";
 
@@ -28,8 +28,10 @@ export const ParticipantForm = ({
 }: Props) => {
   const [issues, setIssues] = useState<ValidationIssue[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
+  const [authorName, setAuthorName] = useState("");
+  const [authorRole, setAuthorRole] = useState("");
+  const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
-  const messageRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleSubmit = async (formData: FormData) => {
     setIssues([]);
@@ -51,6 +53,7 @@ export const ParticipantForm = ({
     }
 
     setSuccessMessage("Ваше поздравление добавлено. После обновления страницы оно появится в списке.");
+    setMessage("");
   };
 
   return (
@@ -94,25 +97,45 @@ export const ParticipantForm = ({
           <div className={styles.fieldGrid}>
             <div className={styles.field}>
               <label htmlFor="authorName">Ваше имя</label>
-              <input id="authorName" name="authorName" placeholder="Например, Ольга" required />
+              <input
+                id="authorName"
+                name="authorName"
+                placeholder="Например, Ольга"
+                required
+                value={authorName}
+                onChange={(event) => setAuthorName(event.target.value)}
+              />
             </div>
 
             <div className={styles.field}>
               <label htmlFor="authorRole">Подпись или роль</label>
-              <input id="authorRole" name="authorRole" placeholder="Например, родитель / коллега / ученик" />
+              <input
+                id="authorRole"
+                name="authorRole"
+                placeholder="Например, родитель / коллега / ученик"
+                value={authorRole}
+                onChange={(event) => setAuthorRole(event.target.value)}
+              />
             </div>
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="message">Текст поздравления</label>
+            <div className={styles.fieldLabelRow}>
+              <label htmlFor="message">Текст поздравления</label>
+              <span className={styles.counter}>{message.length} / {messageLimit}</span>
+            </div>
             <textarea
               id="message"
               name="message"
-              placeholder="Напишите несколько теплых слов. Сейчас просим хотя бы 3 слова и чуть больше конкретики, чем просто “Поздравляю!”."
+              placeholder="Напишите несколько теплых слов. Сейчас просим хотя бы 3 слова и чуть больше конкретики, чем просто «Поздравляю!»."
               required
-              ref={messageRef}
               maxLength={1500}
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
             />
+            <span className={styles.hint}>
+              Текст можно сначала набросать как есть, а потом отредактировать или уточнить через AI.
+            </span>
           </div>
 
           <div className={styles.actions}>
@@ -128,12 +151,8 @@ export const ParticipantForm = ({
         recipientName={recipientName}
         occasion={occasion}
         occasionText={occasionText}
-        onUseText={(text) => {
-          if (messageRef.current) {
-            messageRef.current.value = text;
-            messageRef.current.focus();
-          }
-        }}
+        messageLimit={messageLimit}
+        onUseText={(text) => setMessage(text)}
       />
     </>
   );

@@ -36,13 +36,13 @@ const renderMediaRail = (model: FinalCardViewModel) => {
         <div className={styles.mediaCardLandscape}>
           <span className={styles.mediaLabel}>Фото A</span>
           <p className={styles.mediaHint}>
-            {model.memories[0]?.caption ? model.memories[0].caption : "Здесь позже может появиться первое горизонтальное фото."}
+            {model.memories[0]?.caption ?? "Здесь позже может появиться первое горизонтальное фото."}
           </p>
         </div>
         <div className={styles.mediaCardLandscape}>
           <span className={styles.mediaLabel}>Фото B</span>
           <p className={styles.mediaHint}>
-            {model.memories[1]?.caption ? model.memories[1].caption : "Здесь позже может появиться второе горизонтальное фото."}
+            {model.memories[1]?.caption ?? "Здесь позже может появиться второе горизонтальное фото."}
           </p>
         </div>
       </div>
@@ -54,9 +54,8 @@ const renderMediaRail = (model: FinalCardViewModel) => {
       <div className={styles.mediaCardPortrait}>
         <span className={styles.mediaLabel}>Вертикальное фото</span>
         <p className={styles.mediaHint}>
-          {model.memories[0]?.caption
-            ? model.memories[0].caption
-            : "Здесь предусмотрено место под одно заметное вертикальное фото или иллюстрацию."}
+          {model.memories[0]?.caption ??
+            "Здесь предусмотрено место под одно заметное вертикальное фото или иллюстрацию."}
         </p>
       </div>
     </div>
@@ -68,22 +67,21 @@ const renderMessagesLayout = (model: FinalCardViewModel) => {
     model.messageLayoutMode,
     model.blocks.map((block) => block.id)
   );
-  const pages = splitIntoMessagePages(model.contributions, profile.cardsPerPage);
 
   if (profile.pageVariant === "column-media") {
     return (
-      <div className={styles.messagePageScroller}>
-        {pages.map((page, pageIndex) => (
-          <div key={`page-${pageIndex}`} className={styles.messageSplitPage}>
-            <div className={styles.messageColumnPage}>
-              {page.map((item, itemIndex) => renderMessageCard(item, pageIndex * profile.cardsPerPage + itemIndex, profile.maxChars))}
-            </div>
-            {renderMediaRail(model)}
+      <div className={styles.messageSplitFixed}>
+        <div className={styles.messageColumnScroller}>
+          <div className={styles.messageColumnPage}>
+            {model.contributions.map((item, itemIndex) => renderMessageCard(item, itemIndex, profile.maxChars))}
           </div>
-        ))}
+        </div>
+        {renderMediaRail(model)}
       </div>
     );
   }
+
+  const pages = splitIntoMessagePages(model.contributions, profile.cardsPerPage, profile.advanceBy);
 
   return (
     <div className={styles.messagePageScroller}>
@@ -100,7 +98,9 @@ const renderMessagesLayout = (model: FinalCardViewModel) => {
             } as CSSProperties
           }
         >
-          {page.map((item, itemIndex) => renderMessageCard(item, pageIndex * profile.cardsPerPage + itemIndex, profile.maxChars))}
+          {page.map((item, itemIndex) =>
+            renderMessageCard(item, pageIndex * profile.advanceBy + itemIndex, profile.maxChars)
+          )}
         </div>
       ))}
     </div>
