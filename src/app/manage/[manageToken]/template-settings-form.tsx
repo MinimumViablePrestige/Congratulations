@@ -19,7 +19,7 @@ type Props = {
   initialMediaLayout: FinalCardMessageMediaLayout;
   initialBlockOrder: FinalCardBlockId[];
   blockState: Record<FinalCardOptionalBlockId, boolean>;
-  variant?: "grid" | "compact";
+  variant?: "grid" | "hero";
 };
 
 const initialState = {
@@ -41,10 +41,11 @@ export const TemplateSettingsForm = ({
   const [selectedTemplateId, setSelectedTemplateId] = useState(initialTemplateId);
 
   return (
-    <form action={formAction} className={variant === "compact" ? styles.templateCompactForm : styles.templateForm}>
+    <form action={formAction} className={variant === "hero" ? styles.templateHeroForm : styles.templateForm}>
       <input type="hidden" name="manageToken" value={manageToken} />
       <input type="hidden" name="layoutMode" value={initialLayoutMode} />
       <input type="hidden" name="mediaLayout" value={initialMediaLayout} />
+
       {initialBlockOrder.map((blockId) => (
         <input key={blockId} type="hidden" name="blockOrder" value={blockId} />
       ))}
@@ -53,15 +54,15 @@ export const TemplateSettingsForm = ({
         <input key={blockId} type="hidden" name={blockId} value={enabled ? "on" : ""} />
       ))}
 
-      {variant === "compact" ? (
+      {variant === "hero" ? (
         <>
-          <label className={styles.templateCompactPicker}>
-            <span className={styles.templateCompactLabel}>Выберите другой</span>
+          <label className={styles.templateHeroPicker}>
+            <span className={styles.templateHeroPickerLabel}>Выбрать другой</span>
             <select
               name="templateId"
               value={selectedTemplateId}
               onChange={(event) => setSelectedTemplateId(event.target.value as CardTemplate["id"])}
-              className={styles.templateSelect}
+              className={styles.templateHeroSelect}
             >
               {templates.map((template) => (
                 <option key={template.id} value={template.id}>
@@ -71,7 +72,7 @@ export const TemplateSettingsForm = ({
             </select>
           </label>
 
-          <div className={styles.templateCompactFooter}>
+          <div className={styles.templateHeroActions}>
             <button type="submit" className={styles.secondaryButton} disabled={isPending}>
               {isPending ? "Применяем..." : "Применить"}
             </button>

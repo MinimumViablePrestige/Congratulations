@@ -51,26 +51,10 @@ const layoutOptions: Array<{
   label: string;
   description: string;
 }> = [
-  {
-    id: "grid-2",
-    label: "Сетка 2 на 2",
-    description: "Карточки стоят компактной сеткой 2х2."
-  },
-  {
-    id: "carousel-1",
-    label: "Один ряд",
-    description: "Все карточки идут в одну горизонтальную ленту."
-  },
-  {
-    id: "carousel-2",
-    label: "Два ряда",
-    description: "Карточки читаются в две полосы, плотнее и короче."
-  },
-  {
-    id: "column-media",
-    label: "Колонка + фото",
-    description: "Слева поздравления, справа закреплённый фотоблок."
-  }
+  { id: "grid-2", label: "Сетка 2 на 2", description: "Карточки в сетке 2х2." },
+  { id: "carousel-1", label: "Один ряд", description: "Карточки в одну линию." },
+  { id: "carousel-2", label: "Два ряда", description: "Сначала один ряд, затем второй." },
+  { id: "column-media", label: "Колонка + фото", description: "Текст поздравления справа, фото слева." }
 ];
 
 const mediaLayoutOptions: Array<{
@@ -85,59 +69,49 @@ const blockMeta: Record<
   FinalCardBlockId,
   {
     label: string;
-    icon: string;
     summary: string;
     details: string;
-    fixed?: boolean;
   }
 > = {
   hero: {
     label: "Обложка",
-    icon: "О",
     summary: "Первый экран с именем получателя и настроением открытки.",
     details: "Обязательный блок. Он открывает открытку и задаёт первое впечатление."
   },
   summary: {
     label: "Вводный блок",
-    icon: "В",
-    summary: "Коротко объясняет, по какому поводу собрана открытка.",
-    details: "Подходит для контекста, пояснения ситуации или короткого вступления от группы."
+    summary: "Коротко вступление и повод, по которому собрана открытка.",
+    details: "Помогает задать контекст до поздравлений и делает открытие открытки более личным."
   },
   qualities: {
     label: "Качества",
-    icon: "К",
     summary: "Показывает, за что именно любят и ценят человека.",
-    details: "Собирает повторяющиеся тёплые слова и превращает их в отдельный ритмичный блок."
+    details: "Собирает повторяющиеся тёплые формулировки и превращает их в отдельный ритмичный блок."
   },
   messages: {
     label: "Поздравления",
-    icon: "П",
-    summary: "Главный блок с карточками участников.",
+    summary: "Главный блок с карточками поздравлений от участников.",
     details: "Обязательный блок. Здесь настраивается сетка поздравлений и медиаблок рядом с ними."
   },
   memories: {
     label: "Моменты / фото",
-    icon: "Ф",
-    summary: "Блок временно скрыт из конструктора.",
-    details: "Сейчас не используется в этой версии конструктора."
+    summary: "В этой версии конструктора блок временно скрыт.",
+    details: "Будет возвращён позже, когда доработаем отдельную механику медиаисторий."
   },
   quotes: {
     label: "Лучшие фразы",
-    icon: "Ц",
-    summary: "Выносит самые сильные короткие строки из поздравлений.",
-    details: "Работает как эмоциональная пауза между основными частями открытки."
+    summary: "Сильные и тёплые строки из поздравлений участников.",
+    details: "Подходит как акцентный эмоциональный блок между основными секциями открытки."
   },
   "ai-summary": {
     label: "Общее поздравление",
-    icon: "А",
-    summary: "Собирает общий голос группы в один сводный аккорд.",
-    details: "Подходит для общего финального абзаца, когда хочется объединить настроение всех поздравлений."
+    summary: "Общее обращение от всей группы.",
+    details: "Сводный аккорд, который собирает настроение всех поздравлений в один тёплый текст."
   },
   closing: {
     label: "Финал",
-    icon: "Ф",
-    summary: "Завершает открытку и собирает общее ощущение подарка.",
-    details: "Обязательный блок. Он фиксирует тёплое завершение сценария."
+    summary: "Завершение открытки и общее тёплое пожелание.",
+    details: "Обязательный блок. Он завершает сценарий и оставляет финальное впечатление."
   }
 };
 
@@ -174,13 +148,147 @@ const buildCanvasBlocks = (options: BlockOption[], blockState: Record<string, bo
 ];
 
 const initialExpandedState: ExpandedState = {
-  hero: false,
-  summary: false,
-  qualities: false,
-  messages: true,
-  quotes: false,
-  "ai-summary": false,
-  closing: false
+  messages: true
+};
+
+const iconStrokeProps = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.8,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const
+};
+
+const GripIcon = () => (
+  <svg viewBox="0 0 20 20" aria-hidden="true">
+    <path d="M7 4.5h.01M7 10h.01M7 15.5h.01M13 4.5h.01M13 10h.01M13 15.5h.01" {...iconStrokeProps} />
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg viewBox="0 0 20 20" aria-hidden="true">
+    <rect x="4.5" y="9" width="11" height="7" rx="2.2" {...iconStrokeProps} />
+    <path d="M7 9V7.4A3 3 0 0 1 10 4.5a3 3 0 0 1 3 2.9V9" {...iconStrokeProps} />
+  </svg>
+);
+
+const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
+  <svg viewBox="0 0 20 20" aria-hidden="true" className={expanded ? styles.chevronIconExpanded : ""}>
+    <path d="m5.5 7.5 4.5 4.5 4.5-4.5" {...iconStrokeProps} />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg viewBox="0 0 20 20" aria-hidden="true">
+    <path d="m5.5 10.2 2.8 2.8 6.2-6.2" {...iconStrokeProps} />
+  </svg>
+);
+
+const BlockIcon = ({ blockId }: { blockId: FinalCardBlockId }) => {
+  if (blockId === "hero") {
+    return (
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <rect x="3.5" y="4.5" width="13" height="11" rx="2.5" {...iconStrokeProps} />
+        <path d="M6.5 12 9 9.5 11.3 11.7 13.5 9.5l2 2.5" {...iconStrokeProps} />
+        <circle cx="7.2" cy="7.5" r="1.1" {...iconStrokeProps} />
+      </svg>
+    );
+  }
+
+  if (blockId === "summary") {
+    return (
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M5 6.2A2.7 2.7 0 0 1 7.7 3.5h4.6A2.7 2.7 0 0 1 15 6.2v4.1a2.7 2.7 0 0 1-2.7 2.7H9l-3.2 2V13A2.7 2.7 0 0 1 5 10.4Z" {...iconStrokeProps} />
+      </svg>
+    );
+  }
+
+  if (blockId === "quotes") {
+    return (
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M6.8 8.3c0-2 1.1-3.4 2.7-4.3-.6 1-.8 1.8-.8 2.8 0 1.2.8 2.1 2 2.1a2.2 2.2 0 0 1 2.1 2.4 2.8 2.8 0 0 1-2.9 2.9c-1.8 0-3.1-1.4-3.1-3.9Zm6.4 0c0-2 1.1-3.4 2.7-4.3-.6 1-.8 1.8-.8 2.8 0 1.2.8 2.1 2 2.1a2.2 2.2 0 0 1 2.1 2.4 2.8 2.8 0 0 1-2.9 2.9c-1.8 0-3.1-1.4-3.1-3.9Z" {...iconStrokeProps} />
+      </svg>
+    );
+  }
+
+  if (blockId === "ai-summary") {
+    return (
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M6.1 9.1a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2Zm7.8 0a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2ZM2.8 15.5c.5-2.2 2.3-3.4 4.3-3.4s3.8 1.2 4.3 3.4M8.6 15.5c.5-2.2 2.3-3.4 4.3-3.4s3.8 1.2 4.3 3.4" {...iconStrokeProps} />
+      </svg>
+    );
+  }
+
+  if (blockId === "messages") {
+    return (
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M10 16.2s-5.7-3.4-5.7-7.7a3.1 3.1 0 0 1 5.2-2.3l.5.5.5-.5a3.1 3.1 0 0 1 5.2 2.3c0 4.3-5.7 7.7-5.7 7.7Z" {...iconStrokeProps} />
+      </svg>
+    );
+  }
+
+  if (blockId === "closing") {
+    return (
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="m10 3.5 1.2 3.4L14.5 8l-3.3 1.1L10 12.5 8.8 9.1 5.5 8l3.3-1.1L10 3.5Zm5 9 0 0M15 12.5l.5 1.4 1.5.5-1.5.5-.5 1.6-.5-1.6-1.5-.5 1.5-.5.5-1.4ZM4.5 11.8l.4 1 1 .4-1 .3-.4 1.1-.3-1.1-1.1-.3 1.1-.4.3-1Z" {...iconStrokeProps} />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M4.5 10h11M10 4.5v11" {...iconStrokeProps} />
+    </svg>
+  );
+};
+
+const LayoutDiagram = ({ mode }: { mode: FinalCardMessageLayoutMode }) => {
+  if (mode === "grid-2") {
+    return (
+      <div className={styles.layoutDiagramGrid}>
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
+    );
+  }
+
+  if (mode === "carousel-1") {
+    return (
+      <div className={styles.layoutDiagramRow}>
+        <span />
+        <span />
+        <span />
+      </div>
+    );
+  }
+
+  if (mode === "carousel-2") {
+    return (
+      <div className={styles.layoutDiagramRows}>
+        <div>
+          <span />
+          <span />
+        </div>
+        <div>
+          <span />
+          <span />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.layoutDiagramColumnMedia}>
+      <div className={styles.layoutDiagramColumnMediaPhoto} />
+      <div className={styles.layoutDiagramColumnMediaText}>
+        <span />
+        <span />
+        <span />
+      </div>
+    </div>
+  );
 };
 
 export const BlockSettingsForm = ({
@@ -260,11 +368,11 @@ export const BlockSettingsForm = ({
     setDropTarget(null);
     event.dataTransfer.effectAllowed = "move";
 
-    const blockCard = event.currentTarget.closest("article");
+    const card = event.currentTarget.closest("article");
 
-    if (blockCard instanceof HTMLElement) {
-      const rect = blockCard.getBoundingClientRect();
-      event.dataTransfer.setDragImage(blockCard, rect.width / 2, 36);
+    if (card instanceof HTMLElement) {
+      const rect = card.getBoundingClientRect();
+      event.dataTransfer.setDragImage(card, rect.width / 2, 32);
     }
   };
 
@@ -316,10 +424,10 @@ export const BlockSettingsForm = ({
     }));
   };
 
-  const toggleBlock = (blockId: FinalCardBlockId, checked: boolean) => {
+  const toggleBlock = (blockId: FinalCardBlockId, nextValue: boolean) => {
     setBlockState((current) => ({
       ...current,
-      [blockId]: checked
+      [blockId]: nextValue
     }));
   };
 
@@ -338,11 +446,11 @@ export const BlockSettingsForm = ({
       ))}
 
       <section className={styles.studioCanvasCard}>
-        <div className={styles.studioCanvasIntro}>
-          <p className={styles.studioLead}>
+        <div className={styles.compositionToolbar}>
+          <p className={styles.compositionToolbarText}>
             Перетаскивайте блоки, чтобы менять их порядок. Обязательные блоки отключить нельзя.
           </p>
-          <button type="button" className={styles.inlineHelpLink}>
+          <button type="button" className={styles.compositionHelpLink}>
             Как это работает?
           </button>
         </div>
@@ -350,19 +458,20 @@ export const BlockSettingsForm = ({
         <div className={styles.compositionList}>
           {canvasBlocks.map((block) => {
             const isExpanded = Boolean(expandedBlocks[block.id]);
+            const isRequired = requiredBlockIds.includes(block.id);
             const isFixed = fixedBlockIds.includes(block.id);
-            const isEnabled = isFixed || blockState[block.id];
+            const isEnabled = isRequired || blockState[block.id];
 
             return (
               <article
                 key={block.id}
                 className={[
-                  styles.compositionCard,
-                  draggedBlockId === block.id ? styles.compositionCardDragging : "",
-                  dropTarget?.blockId === block.id ? styles.compositionCardDropTarget : "",
-                  dropTarget?.blockId === block.id && dropTarget.position === "before" ? styles.compositionCardDropBefore : "",
-                  dropTarget?.blockId === block.id && dropTarget.position === "after" ? styles.compositionCardDropAfter : "",
-                  isExpanded ? styles.compositionCardExpanded : ""
+                  styles.compositionRow,
+                  draggedBlockId === block.id ? styles.compositionRowDragging : "",
+                  dropTarget?.blockId === block.id ? styles.compositionRowDropTarget : "",
+                  dropTarget?.blockId === block.id && dropTarget.position === "before" ? styles.compositionRowDropBefore : "",
+                  dropTarget?.blockId === block.id && dropTarget.position === "after" ? styles.compositionRowDropAfter : "",
+                  isExpanded ? styles.compositionRowExpanded : ""
                 ]
                   .filter(Boolean)
                   .join(" ")}
@@ -370,11 +479,11 @@ export const BlockSettingsForm = ({
                 onDragLeave={(event) => handleDragLeave(event, block.id)}
                 onDrop={(event) => handleDrop(event, block.id)}
               >
-                <div className={styles.compositionCardTop}>
-                  <div className={styles.compositionCardLead}>
+                <div className={styles.compositionRowHeader}>
+                  <div className={styles.compositionRowLead}>
                     <button
                       type="button"
-                      className={styles.compositionDragHandle}
+                      className={styles.compositionGrip}
                       draggable={!isFixed}
                       disabled={isFixed}
                       onDragStart={(event) => handleDragStart(event, block.id)}
@@ -384,69 +493,78 @@ export const BlockSettingsForm = ({
                       }}
                       aria-label={isFixed ? `${block.label} зафиксирован` : `Перетащить блок ${block.label}`}
                     >
-                      ⋮⋮
+                      <GripIcon />
                     </button>
 
-                    <span className={styles.compositionBlockIcon}>{blockMeta[block.id].icon}</span>
+                    <span className={styles.compositionIconBox}>
+                      <BlockIcon blockId={block.id} />
+                    </span>
 
-                    <div className={styles.compositionBlockText}>
-                      <div className={styles.compositionBlockTitleRow}>
-                        <strong>{block.label}</strong>
-                        <span className={styles.compositionBlockStatus}>
-                          {isFixed || block.id === "messages" ? "Обязательный" : "Включён"}
-                        </span>
-                      </div>
-                      <p className={styles.compositionBlockSummary}>{block.description}</p>
+                    <div className={styles.compositionText}>
+                      <strong className={styles.compositionTitle}>{block.label}</strong>
+                      <p className={styles.compositionDescription}>{block.description}</p>
                     </div>
                   </div>
 
-                  <div className={styles.compositionCardActions}>
-                    {block.removable ? (
+                  <div className={styles.compositionControls}>
+                    {isRequired ? (
+                      <>
+                        <span className={styles.requiredBadge}>Обязательный</span>
+                        <span className={styles.lockIconWrap}>
+                          <LockIcon />
+                        </span>
+                      </>
+                    ) : (
                       <button
                         type="button"
-                        className={`${styles.toggleSwitch} ${isEnabled ? styles.toggleSwitchActive : ""}`}
+                        className={`${styles.modernToggle} ${isEnabled ? styles.modernToggleActive : ""}`}
                         onClick={() => toggleBlock(block.id, !isEnabled)}
                         aria-pressed={isEnabled}
-                        aria-label={isEnabled ? `Убрать блок ${block.label}` : `Вернуть блок ${block.label}`}
+                        aria-label={isEnabled ? `Отключить блок ${block.label}` : `Включить блок ${block.label}`}
                       >
-                        <span className={styles.toggleKnob} />
+                        <span className={styles.modernToggleKnob} />
                       </button>
-                    ) : null}
+                    )}
 
                     <button
                       type="button"
-                      className={styles.compositionExpandButton}
+                      className={styles.chevronButton}
                       onClick={() => toggleExpanded(block.id)}
                       aria-expanded={isExpanded}
-                      aria-label={isExpanded ? `Свернуть блок ${block.label}` : `Развернуть блок ${block.label}`}
+                      aria-label={isExpanded ? `Свернуть ${block.label}` : `Развернуть ${block.label}`}
                     >
-                      {isExpanded ? "⌃" : "⌄"}
+                      <ChevronIcon expanded={isExpanded} />
                     </button>
                   </div>
                 </div>
 
-                {isExpanded ? (
-                  <div className={styles.compositionCardBody}>
-                    <p className={styles.compositionBlockDetails}>{blockMeta[block.id].details}</p>
+                <div className={`${styles.compositionAccordion} ${isExpanded ? styles.compositionAccordionOpen : ""}`}>
+                  <div className={styles.compositionAccordionInner}>
+                    <p className={styles.compositionDetails}>{blockMeta[block.id].details}</p>
 
                     {block.id === "messages" ? (
-                      <div className={styles.messagesConfigurator}>
-                        <div className={styles.messagesConfiguratorGroup}>
-                          <span className={styles.messagesConfiguratorLabel}>Выберите вид отображения поздравлений</span>
-                          <div className={styles.layoutPresetGrid}>
+                      <div className={styles.messageSettings}>
+                        <div className={styles.messageSettingsGroup}>
+                          <h4 className={styles.messageSettingsTitle}>Выберите вид отображения поздравлений</h4>
+                          <div className={styles.layoutCardGrid}>
                             {layoutOptions.map((option) => {
                               const profile = getFinalCardMessageLayoutProfile(option.id);
+                              const selected = layoutMode === option.id;
 
                               return (
                                 <button
                                   key={option.id}
                                   type="button"
-                                  className={`${styles.layoutPresetCard} ${layoutMode === option.id ? styles.layoutPresetCardActive : ""}`}
+                                  className={`${styles.layoutCard} ${selected ? styles.layoutCardActive : ""}`}
                                   onClick={() => setLayoutMode(option.id)}
                                 >
-                                  <span className={styles.layoutPresetTitle}>{option.label}</span>
-                                  <span className={styles.layoutPresetHint}>{option.description}</span>
-                                  <span className={styles.layoutPresetMeta}>До {profile.maxChars} символов</span>
+                                  <span className={styles.layoutCardCheck}>{selected ? <CheckIcon /> : null}</span>
+                                  <span className={styles.layoutCardDiagram}>
+                                    <LayoutDiagram mode={option.id} />
+                                  </span>
+                                  <span className={styles.layoutCardTitle}>{option.label}</span>
+                                  <span className={styles.layoutCardDescription}>{option.description}</span>
+                                  <span className={styles.layoutCardMeta}>До {profile.maxChars} символов</span>
                                 </button>
                               );
                             })}
@@ -454,16 +572,14 @@ export const BlockSettingsForm = ({
                         </div>
 
                         {layoutMode === "column-media" ? (
-                          <div className={styles.messagesConfiguratorGroup}>
-                            <span className={styles.messagesConfiguratorLabel}>
-                              Как выглядит медиаблок рядом с поздравлением
-                            </span>
-                            <div className={styles.mediaLayoutPills}>
+                          <div className={styles.messageSettingsGroup}>
+                            <h4 className={styles.messageSettingsTitle}>Как выглядит медиаблок рядом с поздравлением</h4>
+                            <div className={styles.mediaVariantTabs}>
                               {mediaLayoutOptions.map((option) => (
                                 <button
                                   key={option.id}
                                   type="button"
-                                  className={`${styles.mediaLayoutPill} ${mediaLayout === option.id ? styles.mediaLayoutPillActive : ""}`}
+                                  className={`${styles.mediaVariantTab} ${mediaLayout === option.id ? styles.mediaVariantTabActive : ""}`}
                                   onClick={() => setMediaLayout(option.id)}
                                 >
                                   {option.label}
@@ -475,7 +591,7 @@ export const BlockSettingsForm = ({
                       </div>
                     ) : null}
                   </div>
-                ) : null}
+                </div>
               </article>
             );
           })}
@@ -484,31 +600,38 @@ export const BlockSettingsForm = ({
         <div className={styles.restoreZone}>
           <div className={styles.restoreZoneHeader}>
             <h4 className={styles.restoreZoneTitle}>Добавить необязательный блок</h4>
-            <p className={styles.controlHint}>Удалённые блоки можно вернуть отсюда в любой момент.</p>
           </div>
 
           {removedOptionalBlocks.length === 0 ? (
-            <p className={styles.empty}>Сейчас все доступные дополнительные блоки уже включены в открытку.</p>
+            <p className={styles.restoreEmptyText}>Сейчас все доступные дополнительные блоки уже включены в открытку.</p>
           ) : (
-            <div className={styles.restoreChipList}>
-              {removedOptionalBlocks.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  className={`${styles.restoreChip} ${option.disabled ? styles.restoreChipDisabled : ""}`}
-                  onClick={() => toggleBlock(option.id, true)}
-                  disabled={option.disabled}
-                >
-                  <span className={styles.restoreChipIcon}>{blockMeta[option.id].icon}</span>
-                  <span className={styles.restoreChipText}>
-                    <span className={styles.restoreChipLabel}>{option.label}</span>
-                    <span className={styles.restoreChipDescription}>
-                      {option.disabled ? "Сначала нужен контент для этого блока." : option.description}
+            <>
+              <div className={styles.restoreAddButton}>
+                <span>+</span>
+                <span>Добавить необязательный блок</span>
+              </div>
+              <div className={styles.restoreChipList}>
+                {removedOptionalBlocks.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    className={`${styles.restoreChip} ${option.disabled ? styles.restoreChipDisabled : ""}`}
+                    onClick={() => toggleBlock(option.id, true)}
+                    disabled={option.disabled}
+                  >
+                    <span className={styles.restoreChipIcon}>
+                      <BlockIcon blockId={option.id} />
                     </span>
-                  </span>
-                </button>
-              ))}
-            </div>
+                    <span className={styles.restoreChipText}>
+                      <span className={styles.restoreChipLabel}>{option.label}</span>
+                      <span className={styles.restoreChipDescription}>
+                        {option.disabled ? "Сначала нужен контент для этого блока." : option.description}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </section>

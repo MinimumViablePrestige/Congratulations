@@ -35,26 +35,32 @@ const tabItems = [
   { id: "content", label: "Поздравления и фото" }
 ] as const;
 
-const starterSteps = [
-  "Заполните, для кого создаётся открытка, от кого она и по какому поводу собирается.",
-  "Настройте состав открытки: какие блоки будут видны, как они идут и как выглядят поздравления.",
-  "Проверьте справа общий вид открытки и только потом переходите к поздравлениям и фото."
-];
+const stepItems = [
+  {
+    id: 1,
+    title: "Основа открытки",
+    subtitle: "Заполните основные данные"
+  },
+  {
+    id: 2,
+    title: "Состав открытки",
+    subtitle: "Настройте структуру и блоки"
+  }
+] as const;
 
 const managedBlockIds: FinalCardBlockId[] = ["hero", "summary", "qualities", "messages", "quotes", "ai-summary", "closing"];
 
 const layoutModeLabels: Record<string, string> = {
-  "grid-2": "Сетка 2 на 2",
-  "carousel-1": "Один ряд",
-  "carousel-2": "Два ряда",
-  "column-media": "Колонка + фото"
+  "grid-2": "grid-2",
+  "carousel-1": "carousel-1",
+  "carousel-2": "carousel-2",
+  "column-media": "column-media"
 };
 
 const blockPreviewLabels: Partial<Record<FinalCardBlockId, string>> = {
   summary: "Вводный блок",
-  qualities: "Качества",
   quotes: "Лучшие фразы",
-  "ai-summary": "Общее поздравление"
+  messages: "Поздравления"
 };
 
 const formatEventDate = (value: string | null) => {
@@ -136,16 +142,13 @@ export default async function ManagePage({ params, searchParams }: Props) {
   const savedBlockOrder = card.finalBlockOrder?.filter((blockId) => managedBlockIds.includes(blockId)) ?? [];
   const initialBlockOrder = [...savedBlockOrder, ...managedBlockIds.filter((blockId) => !savedBlockOrder.includes(blockId))];
 
-  const recipientName = card.recipientName.trim() || "нового получателя";
-  const occasionText = card.occasionText.trim() || "пока не указан";
-  const previewRecipient = card.recipientName.trim() || "Кристина";
-  const previewFromLabel = card.fromLabel.trim() || "вашей группы";
-  const previewOccasion = card.occasionText.trim() || "Повод появится после заполнения основы";
+  const recipientName = card.recipientName.trim() || "Кристина";
+  const occasionText = card.occasionText.trim() || "За выпускной";
   const previewDescription =
-    card.description?.trim() || `Собираем красивую открытку для ${previewRecipient}, где каждое поздравление складывается в один тёплый подарок.`;
-  const previewMessages = visibleContributions.slice(0, Math.min(2, layoutProfile.cardsPerPage));
-  const previewBlocks = model.blocks.filter((block) => block.id !== "hero" && block.id !== "messages" && block.id !== "closing");
-  const visibleBlockCount = model.blocks.length;
+    card.description?.trim() || `Собираем красивую открытку для ${recipientName}, где каждое поздравление складывается в один тёплый подарок.`;
+  const previewMessages = visibleContributions.slice(0, 1);
+  const quotePreview = model.quotes[0] || "Спасибо тебе за твою доброту, поддержку и за то, что ты такая, какая есть.";
+  const previewMessage = previewMessages[0];
   const formattedEventDate = formatEventDate(card.eventDate ?? null);
 
   return (
@@ -155,13 +158,13 @@ export default async function ManagePage({ params, searchParams }: Props) {
           <div className={styles.heroTop}>
             <div className={styles.heroContent}>
               <p className={styles.heroBreadcrumbs}>
-                <span>Организатор: {card.organizerName.trim() || "не указан"}</span>
+                <span>Организатор: {card.organizerName.trim() || "Евсей"}</span>
                 <span>Повод: {occasionText}</span>
               </p>
               <h1 className={styles.title}>Открытка для {recipientName}</h1>
               <p className={styles.subtitle}>
-                Создайте красивую открытку и соберите искренние поздравления от всех участников. Всё сохраняется в
-                одном месте и не теряется между шагами.
+                Создайте красивую открытку и соберите искренние поздравления от всех участников. Всё сохранится,
+                ничего не потеряется между шагами.
               </p>
 
               <div className={styles.stats}>
@@ -185,15 +188,22 @@ export default async function ManagePage({ params, searchParams }: Props) {
             </div>
 
             <aside className={styles.heroTemplateCard}>
-              <span className={styles.heroTemplateLabel}>Текущий шаблон</span>
-              <strong className={styles.heroTemplateName}>{selectedTemplate.name}</strong>
+              <div className={styles.heroTemplateInfo}>
+                <span className={styles.heroTemplateLabel}>Текущий шаблон</span>
+                <strong className={styles.heroTemplateName}>{selectedTemplate.name}</strong>
+              </div>
+
               <div
-                className={styles.heroTemplatePreview}
-                style={{ background: selectedTemplate.accent }}
+                className={styles.heroTemplateThumb}
+                style={
+                  {
+                    "--template-accent": selectedTemplate.accent
+                  } as CSSProperties
+                }
                 aria-hidden="true"
               >
-                <div className={styles.heroTemplatePaper}>
-                  <span>{previewRecipient}</span>
+                <div className={styles.heroTemplateThumbPaper}>
+                  <span>{recipientName}</span>
                 </div>
               </div>
 
@@ -205,7 +215,7 @@ export default async function ManagePage({ params, searchParams }: Props) {
                 initialMediaLayout={mediaLayout}
                 initialBlockOrder={initialBlockOrder}
                 blockState={blockState}
-                variant="compact"
+                variant="hero"
               />
             </aside>
           </div>
@@ -214,21 +224,28 @@ export default async function ManagePage({ params, searchParams }: Props) {
         {activeTab === "design" ? (
           <div className={styles.designStudio}>
             <div className={styles.designMain}>
-              <section className={styles.welcomeCard}>
-                <div className={styles.welcomeSteps}>
-                  {starterSteps.map((step, index) => (
-                    <article key={step} className={styles.welcomeStep}>
-                      <span className={styles.welcomeStepNumber}>{index + 1}</span>
-                      <p className={styles.previewText}>{step}</p>
-                    </article>
+              <section className={styles.stepperCard}>
+                <div className={styles.stepperGrid}>
+                  {stepItems.map((item, index) => (
+                    <div key={item.id} className={styles.stepperItem}>
+                      <div className={`${styles.stepperDot} ${index === 0 ? styles.stepperDotActive : ""}`}>{item.id}</div>
+                      <div className={styles.stepperText}>
+                        <strong>{item.title}</strong>
+                        <span>{item.subtitle}</span>
+                      </div>
+                    </div>
                   ))}
+                </div>
+                <div className={styles.stepperLine}>
+                  <span className={styles.stepperLineFill} />
+                  <span className={styles.stepperLineKnob} />
                 </div>
               </section>
 
               <section className={styles.panel} id="basics-section">
                 <div className={styles.sectionStepHeader}>
                   <span className={styles.sectionStepNumber}>1</span>
-                  <div>
+                  <div className={styles.sectionStepText}>
                     <h2 className={styles.sectionTitle}>Основа открытки</h2>
                   </div>
                 </div>
@@ -239,11 +256,8 @@ export default async function ManagePage({ params, searchParams }: Props) {
               <section className={styles.studioPanel} id="composition-section">
                 <div className={styles.sectionStepHeader}>
                   <span className={styles.sectionStepNumber}>2</span>
-                  <div>
+                  <div className={styles.sectionStepText}>
                     <h2 className={styles.sectionTitle}>Состав открытки</h2>
-                    <p className={styles.studioLead}>
-                      Настройте структуру и блоки. У обязательных блоков можно посмотреть детали, но отключить их нельзя.
-                    </p>
                   </div>
                 </div>
 
@@ -262,9 +276,11 @@ export default async function ManagePage({ params, searchParams }: Props) {
                 <div className={styles.previewPanelHeader}>
                   <div>
                     <h2 className={styles.sectionTitle}>Предпросмотр</h2>
-                    <p className={styles.hint}>Предпросмотр обновляется автоматически</p>
+                    <p className={styles.previewStatusLine}>
+                      <span className={styles.previewStatusDot} />
+                      <span>Предпросмотр обновляется автоматически</span>
+                    </p>
                   </div>
-                  <span className={styles.previewStatus}>● Черновик сохраняется автоматически</span>
                 </div>
 
                 <div className={styles.previewFrame}>
@@ -276,64 +292,50 @@ export default async function ManagePage({ params, searchParams }: Props) {
                       } as CSSProperties
                     }
                   >
-                    <section className={styles.previewMockHero}>
-                      <div className={styles.previewFloralGlow} />
-                      <div className={styles.previewMockTop}>
-                        <span className={styles.previewMockEyebrow}>Открытка для тебя</span>
-                        <h3 className={styles.previewMockTitle}>{previewRecipient}</h3>
-                        <p className={styles.previewMockSubtitle}>{previewDescription}</p>
+                    <section className={styles.previewHeroCard}>
+                      <div className={styles.previewHeroFloral} />
+                      <div className={styles.previewHeroText}>
+                        <h3 className={styles.previewHeroTitle}>{recipientName},</h3>
+                        <p className={styles.previewHeroSubtitle}>эта открытка для тебя!</p>
                       </div>
-
-                      <div className={styles.previewMockOccasion}>
-                        <strong>{previewOccasion}</strong>
+                      <div className={styles.previewHeroOccasion}>
+                        <strong>{occasionText}</strong>
                         <span>
-                          от {previewFromLabel}
+                          от {card.fromLabel.trim() || "Евсея и всей группы"}
                           {formattedEventDate ? ` • ${formattedEventDate}` : ""}
                         </span>
                       </div>
                     </section>
 
-                    {previewBlocks.slice(0, 2).map((block) => (
-                      <section key={block.id} className={styles.previewMiniSection}>
-                        <span className={styles.previewMiniLabel}>
-                          {blockPreviewLabels[block.id] ?? "Дополнительный блок"}
-                        </span>
-                        <p className={styles.previewMiniText}>
-                          {block.id === "summary"
-                            ? previewDescription
-                            : block.id === "qualities"
-                              ? model.qualities.slice(0, 3).join(" • ") || "Тепло • внимание • поддержка"
-                              : block.id === "quotes"
-                                ? model.quotes[0] || "Здесь появится одна из самых тёплых фраз."
-                                : model.aiSummaryText}
-                        </p>
-                      </section>
-                    ))}
-
-                    <section className={styles.previewMessagesSection}>
-                      <div className={styles.previewMessagesHeader}>
-                        <span>Поздравления</span>
-                        <span>{visibleContributions.length}</span>
-                      </div>
-
-                      <div className={styles.previewMessagesList}>
-                        {(previewMessages.length > 0 ? previewMessages : [null, null]).map((item, index) => (
-                          <article key={item?.id ?? `empty-${index}`} className={styles.previewMessageCard}>
-                            <div className={styles.previewAvatar} />
-                            <div className={styles.previewMessageBody}>
-                              <strong>{item?.authorName ?? "Участник"}</strong>
-                              <p>
-                                {item?.message.slice(0, 92) ??
-                                  "Первое поздравление появится здесь, когда участники начнут добавлять свои слова."}
-                              </p>
-                            </div>
-                          </article>
-                        ))}
+                    <section className={styles.previewQuoteCard}>
+                      <span className={styles.previewQuoteMark}>“</span>
+                      <p>{quotePreview}</p>
+                      <div className={styles.previewDots}>
+                        <span />
+                        <span />
+                        <span />
+                        <span />
+                        <span />
                       </div>
                     </section>
 
-                    <section className={styles.previewClosing}>
-                      <span>Спасибо, что вы вместе</span>
+                    <section className={styles.previewMessageSection}>
+                      <span className={styles.previewMessageLabel}>{blockPreviewLabels.messages}</span>
+                      <article className={styles.previewSingleMessage}>
+                        <div className={styles.previewSingleAvatar} />
+                        <div className={styles.previewSingleBody}>
+                          <strong>{previewMessage?.authorName || "Аня"}</strong>
+                          <p>
+                            {previewMessage?.message.slice(0, 118) ||
+                              "Крис, ты невероятная! Пусть новый этап жизни принесёт много счастья и возможностей!"}
+                          </p>
+                        </div>
+                      </article>
+                    </section>
+
+                    <section className={styles.previewFinalCard}>
+                      <span>Спасибо, что ты с нами!</span>
+                      <p>Вперёд — к мечтам!</p>
                     </section>
                   </article>
                 </div>
@@ -341,26 +343,6 @@ export default async function ManagePage({ params, searchParams }: Props) {
                 <Link href={`/gift/${card.finalSlug}`} target="_blank" className={styles.previewLinkButton}>
                   Открыть полный просмотр
                 </Link>
-              </section>
-
-              <section className={styles.actionsCard}>
-                <h2 className={styles.sectionTitle}>Быстрый срез</h2>
-                <div className={styles.summaryList}>
-                  <p className={styles.previewText}>
-                    Шаблон: <strong>{selectedTemplate.name}</strong>
-                  </p>
-                  <p className={styles.previewText}>
-                    Видимых блоков: <strong>{visibleBlockCount}</strong>
-                  </p>
-                  <p className={styles.previewText}>
-                    Лимит карточки в текущей сетке: <strong>{layoutProfile.maxChars}</strong> символов
-                  </p>
-                  <p className={styles.previewText}>
-                    {showAllLink
-                      ? "Если поздравлений станет много, откроется отдельный экран со всеми сообщениями."
-                      : "Все поздравления пока помещаются в основную открытку без отдельного экрана."}
-                  </p>
-                </div>
               </section>
             </aside>
           </div>
@@ -408,9 +390,7 @@ export default async function ManagePage({ params, searchParams }: Props) {
 
                         <div className={styles.contributionSummary}>
                           <span className={isTooLong ? styles.limitWarning : styles.limitOk}>
-                            {isTooLong
-                              ? `Нужно сократить на ${overflow} символов`
-                              : "Карточка укладывается в текущий формат"}
+                            {isTooLong ? `Нужно сократить на ${overflow} символов` : "Карточка укладывается в текущий формат"}
                           </span>
                         </div>
 
