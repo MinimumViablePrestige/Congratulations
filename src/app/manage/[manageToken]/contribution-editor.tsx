@@ -19,40 +19,37 @@ const initialState = {
 export const ContributionEditor = ({ contributionId, manageToken, initialMessage, messageLimit }: Props) => {
   const [state, formAction, isPending] = useActionState(updateContributionMessageAction, initialState);
   const [message, setMessage] = useState(initialMessage);
+  const remaining = messageLimit - message.length;
 
   return (
-    <form action={formAction} className={styles.editorForm}>
+    <form action={formAction} className={styles.contentEditorForm}>
       <input type="hidden" name="manageToken" value={manageToken} />
       <input type="hidden" name="contributionId" value={contributionId} />
 
-      <div className={styles.editorHeader}>
-        <label className={styles.editorLabel} htmlFor={`message-${contributionId}`}>
+      <div className={styles.contentEditorHeader}>
+        <label className={styles.contentEditorLabel} htmlFor={`message-${contributionId}`}>
           Текст поздравления
         </label>
-        <span className={styles.editorCounter}>
+        <span className={`${styles.contentEditorCounter} ${remaining < 0 ? styles.contentEditorCounterWarning : ""}`}>
           {message.length} / {messageLimit}
         </span>
       </div>
-
-      <p className={styles.editorHint}>
-        Для текущего формата лучше держать текст в пределах {messageLimit} символов.
-      </p>
 
       <textarea
         id={`message-${contributionId}`}
         name="message"
         value={message}
         onChange={(event) => setMessage(event.target.value)}
-        className={styles.editorTextarea}
+        className={styles.contentEditorTextarea}
         maxLength={1500}
       />
 
-      <div className={styles.editorFooter}>
-        <button type="submit" className={styles.button} disabled={isPending}>
-          {isPending ? "Сохраняем..." : "Сохранить текст"}
+      <div className={styles.contentEditorFooter}>
+        <button type="submit" className={styles.contentSaveButton} disabled={isPending}>
+          {isPending ? "Сохраняем..." : "Сохранить"}
         </button>
         {state.message ? (
-          <span className={state.ok ? styles.editorSuccess : styles.editorError}>{state.message}</span>
+          <span className={state.ok ? styles.contentEditorSuccess : styles.contentEditorError}>{state.message}</span>
         ) : null}
       </div>
     </form>

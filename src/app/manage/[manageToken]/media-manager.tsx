@@ -17,164 +17,128 @@ const initialState = {
   message: ""
 };
 
-const slotMeta: Array<{
-  slot: CardMediaSlot;
-  title: string;
-  hint: string;
-  activeIn: FinalCardMessageMediaLayout[];
-}> = [
-  {
-    slot: "portrait",
-    title: "Вертикальное фото",
-    hint: "Используется в режиме с одним большим фото справа.",
-    activeIn: ["portrait"]
-  },
-  {
-    slot: "landscape-a",
-    title: "Горизонтальное фото A",
-    hint: "Первое фото для режима с двумя горизонтальными кадрами.",
-    activeIn: ["landscape-pair"]
-  },
-  {
-    slot: "landscape-b",
-    title: "Горизонтальное фото B",
-    hint: "Второе фото для режима с двумя горизонтальными кадрами.",
-    activeIn: ["landscape-pair"]
-  }
-];
+const slotMap: Record<FinalCardMessageMediaLayout, CardMediaSlot> = {
+  portrait: "portrait",
+  "landscape-pair": "landscape-a"
+};
 
-const MediaSlotCard = ({
-  asset,
+const MediaManagerCard = ({
   manageToken,
+  asset,
   slot,
-  title,
-  hint,
-  isActive
+  mediaLayout
 }: {
-  asset: CardMediaAsset | undefined;
   manageToken: string;
+  asset?: CardMediaAsset;
   slot: CardMediaSlot;
-  title: string;
-  hint: string;
-  isActive: boolean;
+  mediaLayout: FinalCardMessageMediaLayout;
 }) => {
   const [saveState, saveAction, savePending] = useActionState(saveCardMediaAction, initialState);
   const [deleteState, deleteAction, deletePending] = useActionState(deleteCardMediaAction, initialState);
+  const isPortrait = mediaLayout === "portrait";
 
   return (
-    <article className={`${styles.mediaManagerCard} ${isActive ? styles.mediaManagerCardActive : ""}`}>
-      <div className={styles.mediaManagerHeader}>
-        <div>
-          <h3 className={styles.mediaManagerTitle}>{title}</h3>
-          <p className={styles.controlHint}>{hint}</p>
-        </div>
-        <span className={styles.infoBadge}>{isActive ? "сейчас на экране" : "запасной слот"}</span>
+    <section className={styles.contentPhotoCard}>
+      <div className={styles.contentPhotoHeader}>
+        <h2 className={styles.contentRailTitle}>Фото для открытки</h2>
+        <p className={styles.contentPhotoHint}>Используются в выбранной раскладке «Колонка + фото».</p>
       </div>
 
-      <div className={styles.mediaPreview}>
-        {asset ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={asset.publicUrl}
-            alt={asset.captionTitle || asset.captionSubtitle || title}
-            className={styles.mediaPreviewImage}
-          />
-        ) : (
-          <div className={styles.mediaPreviewEmpty}>Фото пока не загружено</div>
-        )}
+      <div className={styles.contentPhotoModeRow}>
+        <span className={`${styles.contentPhotoModePill} ${isPortrait ? styles.contentPhotoModePillActive : ""}`}>
+          1 вертикальное фото
+        </span>
+        <span className={`${styles.contentPhotoModePill} ${!isPortrait ? styles.contentPhotoModePillActive : ""}`}>
+          2 горизонтальных
+        </span>
       </div>
 
-      <form action={saveAction} className={styles.mediaForm}>
-        <input type="hidden" name="manageToken" value={manageToken} />
-        <input type="hidden" name="slot" value={slot} />
-        <input type="hidden" name="assetId" value={asset?.id ?? ""} />
+      <div className={styles.contentPhotoGrid}>
+        <div className={styles.contentPhotoPreview}>
+          {asset ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={asset.publicUrl}
+              alt={asset.captionTitle || asset.captionSubtitle || "Фото для открытки"}
+              className={styles.contentPhotoPreviewImage}
+            />
+          ) : (
+            <div className={styles.contentPhotoPlaceholder}>Фото еще не добавлено</div>
+          )}
+        </div>
 
-        <label className={styles.editorLabel} htmlFor={`caption-title-${slot}`}>
-          Подпись, строка 1
-        </label>
-        <input
-          id={`caption-title-${slot}`}
-          name="captionTitle"
-          defaultValue={asset?.captionTitle ?? ""}
-          className={styles.mediaInput}
-          placeholder="Например: Наш выпускной"
-          maxLength={60}
-        />
+        <div className={styles.contentPhotoFormStack}>
+          <form action={saveAction} className={styles.contentPhotoForm}>
+            <input type="hidden" name="manageToken" value={manageToken} />
+            <input type="hidden" name="slot" value={slot} />
+            <input type="hidden" name="assetId" value={asset?.id ?? ""} />
 
-        <label className={styles.editorLabel} htmlFor={`caption-subtitle-${slot}`}>
-          Подпись, строка 2
-        </label>
-        <textarea
-          id={`caption-subtitle-${slot}`}
-          name="captionSubtitle"
-          defaultValue={asset?.captionSubtitle ?? ""}
-          className={styles.mediaTextarea}
-          placeholder="Короткое пояснение или теплый контекст"
-          rows={2}
-          maxLength={120}
-        />
+            <label className={styles.contentPhotoLabel} htmlFor={`caption-title-${slot}`}>
+              Подпись, строка 1
+            </label>
+            <input
+              id={`caption-title-${slot}`}
+              name="captionTitle"
+              defaultValue={asset?.captionTitle ?? ""}
+              className={styles.contentPhotoInput}
+              placeholder="Наш выпускной"
+              maxLength={60}
+            />
 
-        <label className={styles.editorLabel} htmlFor={`file-${slot}`}>
-          Файл
-        </label>
-        <input
-          id={`file-${slot}`}
-          name="file"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className={styles.mediaFileInput}
-        />
+            <label className={styles.contentPhotoLabel} htmlFor={`caption-subtitle-${slot}`}>
+              Подпись, строка 2
+            </label>
+            <input
+              id={`caption-subtitle-${slot}`}
+              name="captionSubtitle"
+              defaultValue={asset?.captionSubtitle ?? ""}
+              className={styles.contentPhotoInput}
+              placeholder="13 июня 2026"
+              maxLength={120}
+            />
 
-        <div className={styles.editorFooter}>
-          <button type="submit" className={styles.button} disabled={savePending}>
-            {savePending ? "Сохраняем..." : asset ? "Обновить слот" : "Загрузить фото"}
-          </button>
-          {saveState.message ? (
-            <span className={saveState.ok ? styles.editorSuccess : styles.editorError}>{saveState.message}</span>
+            <input
+              id={`file-${slot}`}
+              name="file"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className={styles.contentPhotoFileInput}
+            />
+
+            <div className={styles.contentPhotoActions}>
+              <button type="submit" className={styles.contentOutlineButton} disabled={savePending}>
+                {savePending ? "Сохраняем..." : asset ? "Заменить" : "Загрузить"}
+              </button>
+            </div>
+
+            {saveState.message ? (
+              <span className={saveState.ok ? styles.contentEditorSuccess : styles.contentEditorError}>{saveState.message}</span>
+            ) : null}
+          </form>
+
+          {asset ? (
+            <form action={deleteAction} className={styles.contentPhotoDeleteForm}>
+              <input type="hidden" name="manageToken" value={manageToken} />
+              <input type="hidden" name="assetId" value={asset.id} />
+              <button type="submit" className={styles.contentDeleteSecondaryButton} disabled={deletePending}>
+                {deletePending ? "Удаляем..." : "Удалить"}
+              </button>
+              {deleteState.message ? (
+                <span className={deleteState.ok ? styles.contentEditorSuccess : styles.contentEditorError}>
+                  {deleteState.message}
+                </span>
+              ) : null}
+            </form>
           ) : null}
         </div>
-      </form>
-
-      {asset ? (
-        <form action={deleteAction} className={styles.mediaDeleteForm}>
-          <input type="hidden" name="manageToken" value={manageToken} />
-          <input type="hidden" name="assetId" value={asset.id} />
-          <button type="submit" className={styles.dangerButton} disabled={deletePending}>
-            {deletePending ? "Удаляем..." : "Удалить фото"}
-          </button>
-          {deleteState.message ? (
-            <span className={deleteState.ok ? styles.editorSuccess : styles.editorError}>{deleteState.message}</span>
-          ) : null}
-        </form>
-      ) : null}
-    </article>
+      </div>
+    </section>
   );
 };
 
-export const MediaManager = ({ manageToken, mediaAssets, mediaLayout }: Props) => (
-  <section className={styles.actionsCard}>
-    <div className={styles.panelHeader}>
-      <div>
-        <h2 className={styles.sectionTitle}>Фото для открытки</h2>
-        <p className={styles.hint}>
-          Загружаем реальные фото, задаем подпись в две строки и сразу используем это в финальной композиции.
-        </p>
-      </div>
-      <span className={styles.infoBadge}>{mediaAssets.length} файлов</span>
-    </div>
+export const MediaManager = ({ manageToken, mediaAssets, mediaLayout }: Props) => {
+  const activeSlot = slotMap[mediaLayout];
+  const asset = mediaAssets.find((item) => item.slot === activeSlot);
 
-    <div className={styles.mediaManagerGrid}>
-      {slotMeta.map((item) => (
-        <MediaSlotCard
-          key={item.slot}
-          manageToken={manageToken}
-          slot={item.slot}
-          title={item.title}
-          hint={item.hint}
-          asset={mediaAssets.find((asset) => asset.slot === item.slot)}
-          isActive={item.activeIn.includes(mediaLayout)}
-        />
-      ))}
-    </div>
-  </section>
-);
+  return <MediaManagerCard manageToken={manageToken} asset={asset} slot={activeSlot} mediaLayout={mediaLayout} />;
+};

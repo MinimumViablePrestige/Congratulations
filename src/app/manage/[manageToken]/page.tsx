@@ -12,7 +12,6 @@ import { finalCardLayouts } from "@/lib/final-card/layouts";
 import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type { FinalCardBlockId, FinalCardOptionalBlockId } from "@/lib/final-card/types";
 import { buildFinalCardViewModel } from "@/lib/final-card/view-model";
-import { buildReminderText } from "@/lib/manage/reminder";
 import { BasicsSettingsForm } from "./basics-settings-form";
 import { BlockSettingsForm } from "./block-settings-form";
 import { ContributionEditor } from "./contribution-editor";
@@ -94,7 +93,6 @@ export default async function ManagePage({ params, searchParams }: Props) {
   const allContributions = await listAllContributionsByCardId(card.id);
   const visibleContributions = await listContributionsByCardId(card.id);
   const mediaAssets = await listCardMediaAssetsByCardId(card.id);
-  const reminderText = buildReminderText(card, visibleContributions.length);
   const model = buildFinalCardViewModel(card, visibleContributions, mediaAssets);
   const availableModel = buildFinalCardViewModel({ ...card, finalBlockSettings: null }, visibleContributions, mediaAssets);
   const style = cardTemplates.find((template) => template.id === card.templateId)?.id ?? "warm-classic";
@@ -102,7 +100,6 @@ export default async function ManagePage({ params, searchParams }: Props) {
   const layoutMode = card.finalMessageSettings?.layoutMode ?? "grid-2";
   const mediaLayout = card.finalMessageSettings?.mediaLayout ?? "portrait";
   const layoutProfile = getFinalCardMessageLayoutProfile(layoutMode);
-  const showAllLink = visibleContributions.length > layoutProfile.cardsPerPage;
   const optionalLayoutBlocks = finalCardLayouts[style].blocks.filter((block) => !block.required);
 
   const blockMeta: Record<FinalCardOptionalBlockId, { label: string; description: string }> = {
@@ -144,12 +141,14 @@ export default async function ManagePage({ params, searchParams }: Props) {
 
   const recipientName = card.recipientName.trim() || "Кристина";
   const occasionText = card.occasionText.trim() || "За выпускной";
-  const previewDescription =
-    card.description?.trim() || `Собираем красивую открытку для ${recipientName}, где каждое поздравление складывается в один тёплый подарок.`;
   const previewMessages = visibleContributions.slice(0, 1);
   const quotePreview = model.quotes[0] || "Спасибо тебе за твою доброту, поддержку и за то, что ты такая, какая есть.";
   const previewMessage = previewMessages[0];
   const formattedEventDate = formatEventDate(card.eventDate ?? null);
+  const tooLongCount = allContributions.filter((contribution) => contribution.message.length > layoutProfile.maxChars).length;
+  const withinLimitCount = allContributions.length - tooLongCount;
+  const hiddenCount = allContributions.filter((contribution) => contribution.status === "hidden").length;
+  const noRoleCount = allContributions.filter((contribution) => !contribution.authorRole?.trim()).length;
 
   return (
     <main className={styles.page}>
@@ -347,133 +346,240 @@ export default async function ManagePage({ params, searchParams }: Props) {
             </aside>
           </div>
         ) : (
-          <div className={styles.layout}>
-            <section className={styles.panel}>
-              <div className={styles.panelHeader}>
-                <div>
-                  <h2 className={styles.sectionTitle}>Поздравления</h2>
-                  <p className={styles.hint}>
-                    Здесь редактируем тексты, меняем порядок и сразу видим, насколько каждое поздравление укладывается
-                    в текущую сетку.
-                  </p>
-                </div>
-                <span className={styles.infoBadge}>{allContributions.length} записей</span>
+          <div className={styles.contentStudio}>
+            <section className={styles.contentStatusBar}>
+              <div className={styles.contentStatusItem}>
+                <span className={`${styles.contentStatusDot} ${styles.contentStatusDotWarm}`} />
+                <span>{allContributions.length} поздравлений собрано</span>
               </div>
-
-              {allContributions.length === 0 ? (
-                <p className={styles.empty}>Пока поздравлений нет. Сначала участники должны добавить свои сообщения.</p>
-              ) : (
-                <div className={styles.contributionList}>
-                  {allContributions.map((contribution) => {
-                    const overflow = contribution.message.length - layoutProfile.maxChars;
-                    const isTooLong = overflow > 0;
-
-                    return (
-                      <article
-                        key={contribution.id}
-                        className={`${styles.contributionCard} ${isTooLong ? styles.contributionCardWarn : ""}`}
-                      >
-                        <div className={styles.contributionHeader}>
-                          <div className={styles.contributionIdentity}>
-                            <span className={styles.author}>{contribution.authorName}</span>
-                            {contribution.authorRole ? <span className={styles.meta}>· {contribution.authorRole}</span> : null}
-                          </div>
-
-                          <div className={styles.badgeRow}>
-                            <span className={styles.sortBadge}>#{contribution.sortOrder + 1}</span>
-                            <span className={styles.sortBadge} title="Символы / лимит">
-                              {contribution.message.length} / {layoutProfile.maxChars}
-                            </span>
-                            <span className={styles.statusBadge}>{contribution.status}</span>
-                          </div>
-                        </div>
-
-                        <div className={styles.contributionSummary}>
-                          <span className={isTooLong ? styles.limitWarning : styles.limitOk}>
-                            {isTooLong ? `Нужно сократить на ${overflow} символов` : "Карточка укладывается в текущий формат"}
-                          </span>
-                        </div>
-
-                        <ContributionEditor
-                          contributionId={contribution.id}
-                          manageToken={manageToken}
-                          initialMessage={contribution.message}
-                          messageLimit={layoutProfile.maxChars}
-                        />
-
-                        <div className={styles.controls}>
-                          <form action={moveContributionAction}>
-                            <input type="hidden" name="manageToken" value={manageToken} />
-                            <input type="hidden" name="contributionId" value={contribution.id} />
-                            <input type="hidden" name="direction" value="up" />
-                            <button type="submit" className={styles.secondaryButton}>
-                              Выше
-                            </button>
-                          </form>
-                          <form action={moveContributionAction}>
-                            <input type="hidden" name="manageToken" value={manageToken} />
-                            <input type="hidden" name="contributionId" value={contribution.id} />
-                            <input type="hidden" name="direction" value="down" />
-                            <button type="submit" className={styles.secondaryButton}>
-                              Ниже
-                            </button>
-                          </form>
-                          <form action={setContributionStatusAction}>
-                            <input type="hidden" name="manageToken" value={manageToken} />
-                            <input type="hidden" name="contributionId" value={contribution.id} />
-                            <input type="hidden" name="status" value="visible" />
-                            <button type="submit" className={styles.button}>
-                              Показать
-                            </button>
-                          </form>
-                          <form action={setContributionStatusAction}>
-                            <input type="hidden" name="manageToken" value={manageToken} />
-                            <input type="hidden" name="contributionId" value={contribution.id} />
-                            <input type="hidden" name="status" value="hidden" />
-                            <button type="submit" className={styles.secondaryButton}>
-                              Скрыть
-                            </button>
-                          </form>
-                          <form action={setContributionStatusAction}>
-                            <input type="hidden" name="manageToken" value={manageToken} />
-                            <input type="hidden" name="contributionId" value={contribution.id} />
-                            <input type="hidden" name="status" value="deleted" />
-                            <button type="submit" className={styles.dangerButton}>
-                              Удалить
-                            </button>
-                          </form>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              )}
+              <div className={styles.contentStatusItem}>
+                <span className={`${styles.contentStatusDot} ${styles.contentStatusDotOk}`} />
+                <span>{withinLimitCount} подходят по длине</span>
+              </div>
+              <div className={styles.contentStatusItem}>
+                <span className={`${styles.contentStatusDot} ${styles.contentStatusDotAlert}`} />
+                <span>{tooLongCount} нужно сократить</span>
+              </div>
+              <div className={styles.contentStatusItem}>
+                <span className={`${styles.contentStatusDot} ${styles.contentStatusDotWarm}`} />
+                <span>{mediaAssets.length} фото добавлено</span>
+              </div>
             </section>
 
-            <div className={styles.layoutRight}>
-              <MediaManager manageToken={manageToken} mediaAssets={mediaAssets} mediaLayout={mediaLayout} />
+            <div className={styles.contentLayout}>
+              <section className={styles.contentPanel}>
+                <div className={styles.contentPanelHeader}>
+                  <div>
+                    <h2 className={styles.contentPanelTitle}>Поздравления</h2>
+                    <p className={styles.contentPanelText}>Проверьте тексты, порядок и видимость поздравлений.</p>
+                    <p className={styles.contentPanelText}>
+                      Тексты длиннее {layoutProfile.maxChars} символов лучше сократить для выбранного макета.
+                    </p>
+                  </div>
 
-              <section className={styles.actionsCard}>
-                <h2 className={styles.sectionTitle}>Быстрые ссылки</h2>
-                <div className={styles.linksList}>
-                  <p className={styles.line}>
-                    Участники: <code>/card/{card.publicSlug}</code>
-                  </p>
-                  <p className={styles.line}>
-                    Финальная открытка: <code>/gift/{card.finalSlug}</code>
-                  </p>
-                  <p className={styles.line}>
-                    Все поздравления: <code>/gift/{card.finalSlug}/messages</code>
-                  </p>
+                  <div className={styles.contentToolbar}>
+                    <button type="button" className={styles.contentGhostButton}>
+                      <span>+</span>
+                      <span>Добавить вручную</span>
+                    </button>
+                    <button type="button" className={styles.contentGhostButton}>
+                      <span>AI</span>
+                      <span>Сгенерировать общее поздравление</span>
+                    </button>
+                    <button type="button" className={styles.contentIconButton} aria-label="Дополнительные действия">
+                      …
+                    </button>
+                  </div>
                 </div>
+
+                <div className={styles.contentFilterRow}>
+                  <span className={`${styles.contentFilterPill} ${styles.contentFilterPillActive}`}>Все {allContributions.length}</span>
+                  <span className={styles.contentFilterPill}>Видимые {visibleContributions.length}</span>
+                  <span className={styles.contentFilterPill}>Слишком длинные {tooLongCount}</span>
+                  <span className={styles.contentFilterPill}>Скрытые {hiddenCount}</span>
+                  <span className={styles.contentFilterPill}>Без роли {noRoleCount}</span>
+                </div>
+
+                {allContributions.length === 0 ? (
+                  <p className={styles.empty}>Пока поздравлений нет. Сначала участники должны добавить свои сообщения.</p>
+                ) : (
+                  <div className={styles.contentCards}>
+                    {allContributions.map((contribution, index) => {
+                      const overflow = contribution.message.length - layoutProfile.maxChars;
+                      const isTooLong = overflow > 0;
+                      const isHidden = contribution.status === "hidden";
+                      const detailId = `content-card-${contribution.id}`;
+
+                      return (
+                        <details
+                          key={contribution.id}
+                          className={`${styles.contentContributionCard} ${isTooLong ? styles.contentContributionCardWarn : ""}`}
+                          open={index === 0}
+                        >
+                          <summary className={styles.contentContributionSummary} aria-controls={detailId}>
+                            <div className={styles.contentContributionLead}>
+                              <span className={styles.contentGrip} aria-hidden="true">
+                                ⋮⋮
+                              </span>
+                              <span className={styles.contentOrder}>#{contribution.sortOrder + 1}</span>
+                              <div className={styles.contentAvatar}>
+                                {contribution.authorName.trim().slice(0, 1).toUpperCase() || "?"}
+                              </div>
+                              <div className={styles.contentIdentity}>
+                                <strong>{contribution.authorName}</strong>
+                                <span>{contribution.authorRole?.trim() || "без роли"}</span>
+                              </div>
+                            </div>
+
+                            <div className={styles.contentContributionMeta}>
+                              <span className={isTooLong ? styles.limitWarning : styles.limitOk}>
+                                {isTooLong ? `Нужно сократить на ${overflow} символов` : "Длина текста оптимальна"}
+                              </span>
+                              <span className={`${styles.contentToggleView} ${!isHidden ? styles.contentToggleViewActive : ""}`}>
+                                <span className={styles.contentToggleKnob} />
+                              </span>
+                              <span className={styles.contentChevron} aria-hidden="true">
+                                ⌄
+                              </span>
+                            </div>
+                          </summary>
+
+                          <div className={styles.contentContributionBody} id={detailId}>
+                            <div className={styles.contentContributionStatusRow}>
+                              <span className={styles.contentBodyLabel}>Показывать в открытке</span>
+                              <form action={setContributionStatusAction}>
+                                <input type="hidden" name="manageToken" value={manageToken} />
+                                <input type="hidden" name="contributionId" value={contribution.id} />
+                                <input type="hidden" name="status" value={isHidden ? "visible" : "hidden"} />
+                                <button
+                                  type="submit"
+                                  className={`${styles.contentToggleView} ${!isHidden ? styles.contentToggleViewActive : ""}`}
+                                  aria-label={isHidden ? "Показать поздравление" : "Скрыть поздравление"}
+                                >
+                                  <span className={styles.contentToggleKnob} />
+                                </button>
+                              </form>
+                            </div>
+
+                            <ContributionEditor
+                              contributionId={contribution.id}
+                              manageToken={manageToken}
+                              initialMessage={contribution.message}
+                              messageLimit={layoutProfile.maxChars}
+                            />
+
+                            <div className={styles.contentCardFooter}>
+                              <div className={styles.contentActionFormsInline}>
+                                <button type="button" className={styles.contentSoftButton}>
+                                  ✨ Сократить текст
+                                </button>
+                                <form action={moveContributionAction}>
+                                  <input type="hidden" name="manageToken" value={manageToken} />
+                                  <input type="hidden" name="contributionId" value={contribution.id} />
+                                  <input type="hidden" name="direction" value="up" />
+                                  <button type="submit" className={styles.contentSoftButton}>
+                                    Выше
+                                  </button>
+                                </form>
+                                <form action={moveContributionAction}>
+                                  <input type="hidden" name="manageToken" value={manageToken} />
+                                  <input type="hidden" name="contributionId" value={contribution.id} />
+                                  <input type="hidden" name="direction" value="down" />
+                                  <button type="submit" className={styles.contentSoftButton}>
+                                    Ниже
+                                  </button>
+                                </form>
+                              </div>
+
+                              <form action={setContributionStatusAction}>
+                                <input type="hidden" name="manageToken" value={manageToken} />
+                                <input type="hidden" name="contributionId" value={contribution.id} />
+                                <input type="hidden" name="status" value="deleted" />
+                                <button type="submit" className={styles.contentDeleteButton}>
+                                  Удалить
+                                </button>
+                              </form>
+                            </div>
+                          </div>
+                        </details>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <section className={styles.contentAssistantCard}>
+                  <div>
+                    <h3 className={styles.contentAssistantTitle}>AI-помощник</h3>
+                    <p className={styles.contentAssistantText}>
+                      Может сократить, улучшить стиль, сделать текст теплее или убрать лишнее.
+                    </p>
+                  </div>
+                  <button type="button" className={styles.contentOutlineButton}>
+                    Открыть помощника
+                  </button>
+                </section>
               </section>
 
-              <section className={styles.actionsCard}>
-                <h2 className={styles.sectionTitle}>Подсказка для чата</h2>
-                <p className={styles.previewText}>
-                  Напоминание для участников: <code>{reminderText}</code>
-                </p>
-              </section>
+              <aside className={styles.contentRail}>
+                <section className={styles.contentPreviewCard}>
+                  <div className={styles.contentPreviewHeader}>
+                    <h2 className={styles.contentRailTitle}>Предпросмотр поздравлений</h2>
+                    <p className={styles.previewStatusLine}>
+                      <span className={styles.previewStatusDot} />
+                      <span>Обновляется автоматически</span>
+                    </p>
+                  </div>
+
+                  <article className={styles.contentPreviewMessageCard}>
+                    <div className={styles.contentPreviewAvatar} />
+                    <div className={styles.contentPreviewMessageBody}>
+                      <div className={styles.contentPreviewMessageMeta}>
+                        <strong>{previewMessage?.authorName || "Дима"}</strong>
+                        <span>{previewMessage?.authorRole || "ученик"}</span>
+                      </div>
+                      <p>
+                        {previewMessage?.message.slice(0, 140) ||
+                          "Очень хочется сказать вам теплые слова и поблагодарить за добро, которое вы даете людям..."}
+                      </p>
+                    </div>
+                  </article>
+
+                  <div className={styles.contentPreviewPager}>
+                    <button type="button" className={styles.contentPagerButton} aria-label="Предыдущее поздравление">
+                      ‹
+                    </button>
+                    <div className={styles.contentPagerDots} aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                    <button type="button" className={styles.contentPagerButton} aria-label="Следующее поздравление">
+                      ›
+                    </button>
+                  </div>
+                </section>
+
+                <MediaManager manageToken={manageToken} mediaAssets={mediaAssets} mediaLayout={mediaLayout} />
+
+                <section className={styles.contentTipsCard}>
+                  <h2 className={styles.contentRailTitle}>Подсказки</h2>
+                  <ul className={styles.contentTipsList}>
+                    <li>Тексты до {layoutProfile.maxChars} символов читаются лучше и выглядят аккуратнее.</li>
+                    <li>Перетаскивание поздравлений станет следующим шагом, пока порядок можно менять кнопками.</li>
+                    <li>Не забудьте добавить фото — они делают открытку живой и теплой.</li>
+                  </ul>
+                </section>
+              </aside>
+            </div>
+
+            <div className={styles.contentFooterBar}>
+              <Link href={`/manage/${manageToken}?tab=design`} className={styles.contentBackButton}>
+                ← Вернуться к оформлению
+              </Link>
+              <span className={styles.contentAutosave}>Черновик сохраняется автоматически</span>
+              <button type="button" className={styles.contentPrimaryButton}>
+                Сохранить изменения
+              </button>
             </div>
           </div>
         )}

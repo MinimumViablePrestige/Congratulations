@@ -1039,6 +1039,576 @@
   top: -7px;
 }
 
+.contentStudio {
+  display: grid;
+  gap: 18px;
+}
+
+.contentStatusBar,
+.contentPanel,
+.contentPreviewCard,
+.contentPhotoCard,
+.contentTipsCard,
+.contentAssistantCard {
+  border: 1px solid rgba(98, 72, 58, 0.12);
+  border-radius: 28px;
+  background: rgba(255, 250, 245, 0.94);
+  box-shadow: 0 18px 44px rgba(89, 61, 44, 0.08);
+}
+
+.contentStatusBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 26px;
+  align-items: center;
+  padding: 18px 26px;
+}
+
+.contentStatusItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #6f584b;
+  font-size: 0.98rem;
+}
+
+.contentStatusDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.contentStatusDotWarm {
+  background: #dc9b65;
+}
+
+.contentStatusDotOk {
+  background: #91b36a;
+}
+
+.contentStatusDotAlert {
+  background: #eb9b5d;
+}
+
+.contentLayout {
+  display: grid;
+  gap: 22px;
+}
+
+.contentPanel,
+.contentPreviewCard,
+.contentPhotoCard,
+.contentTipsCard,
+.contentAssistantCard {
+  padding: 28px;
+}
+
+.contentPanel {
+  display: grid;
+  gap: 22px;
+}
+
+.contentRail {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.contentPanelHeader,
+.contentPreviewHeader,
+.contentPhotoHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.contentPanelTitle,
+.contentRailTitle,
+.contentAssistantTitle {
+  margin: 0;
+  color: #34231d;
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.04;
+}
+
+.contentPanelTitle {
+  font-size: 3rem;
+}
+
+.contentRailTitle {
+  font-size: 1.75rem;
+}
+
+.contentAssistantTitle {
+  font-size: 1.3rem;
+}
+
+.contentPanelText,
+.contentAssistantText,
+.contentPhotoHint,
+.contentPreviewMessageBody p,
+.contentTipsList li {
+  margin: 0;
+  color: #705c50;
+  line-height: 1.6;
+}
+
+.contentToolbar,
+.contentFilterRow,
+.contentActionFormsInline,
+.contentFooterBar,
+.contentPhotoModeRow,
+.contentPreviewPager,
+.contentPhotoActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.contentToolbar {
+  justify-content: flex-end;
+}
+
+.contentGhostButton,
+.contentIconButton,
+.contentOutlineButton,
+.contentSoftButton,
+.contentBackButton,
+.contentPrimaryButton,
+.contentDeleteSecondaryButton,
+.contentDeleteButton,
+.contentSaveButton,
+.contentPagerButton {
+  border: 1px solid rgba(162, 120, 92, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.84);
+  color: #7f543a;
+  font: inherit;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.contentGhostButton:hover,
+.contentIconButton:hover,
+.contentOutlineButton:hover,
+.contentSoftButton:hover,
+.contentBackButton:hover,
+.contentPrimaryButton:hover,
+.contentDeleteSecondaryButton:hover,
+.contentDeleteButton:hover,
+.contentSaveButton:hover,
+.contentPagerButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(184, 111, 74, 0.3);
+  box-shadow: 0 10px 22px rgba(121, 72, 48, 0.08);
+}
+
+.contentGhostButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px;
+  font-weight: 700;
+}
+
+.contentIconButton,
+.contentPagerButton {
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+
+.contentFilterPill,
+.contentPhotoModePill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid rgba(162, 120, 92, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #7a6253;
+}
+
+.contentFilterPillActive,
+.contentPhotoModePillActive {
+  border-color: rgba(184, 111, 74, 0.3);
+  background: rgba(255, 246, 238, 0.92);
+  color: #a25a34;
+}
+
+.contentCards {
+  display: grid;
+  gap: 14px;
+}
+
+.contentContributionCard {
+  border: 1px solid rgba(98, 72, 58, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.78);
+  overflow: hidden;
+}
+
+.contentContributionCardWarn {
+  border-color: rgba(233, 155, 93, 0.28);
+}
+
+.contentContributionSummary {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 18px 16px;
+  cursor: pointer;
+}
+
+.contentContributionSummary::-webkit-details-marker {
+  display: none;
+}
+
+.contentContributionLead,
+.contentContributionMeta,
+.contentContributionStatusRow,
+.contentPreviewMessageMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contentContributionLead {
+  flex-wrap: wrap;
+}
+
+.contentGrip {
+  color: #c09d86;
+  font-size: 1.1rem;
+  letter-spacing: -0.16em;
+}
+
+.contentOrder {
+  color: #8c6f5e;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.contentAvatar,
+.contentPreviewAvatar {
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.85), transparent 32%),
+    linear-gradient(180deg, #d5a684, #efd5c0);
+}
+
+.contentAvatar {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  color: #fff9f5;
+  font-weight: 800;
+}
+
+.contentPreviewAvatar {
+  width: 96px;
+  height: 96px;
+}
+
+.contentIdentity {
+  display: grid;
+  gap: 4px;
+}
+
+.contentIdentity strong,
+.contentPreviewMessageMeta strong {
+  color: #34231d;
+}
+
+.contentIdentity span,
+.contentPreviewMessageMeta span,
+.contentAutosave {
+  color: #8a6b5a;
+}
+
+.contentContributionMeta {
+  margin-left: auto;
+}
+
+.contentToggleView {
+  position: relative;
+  width: 50px;
+  height: 30px;
+  border: 1px solid rgba(182, 136, 104, 0.2);
+  border-radius: 999px;
+  background: rgba(232, 220, 210, 0.9);
+  transition: background 180ms ease;
+}
+
+.contentToggleViewActive {
+  background: rgba(184, 111, 74, 0.92);
+}
+
+.contentToggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(92, 62, 46, 0.18);
+  transition: transform 180ms ease;
+}
+
+.contentToggleViewActive .contentToggleKnob {
+  transform: translateX(20px);
+}
+
+.contentChevron {
+  color: #a67d66;
+  font-size: 1.25rem;
+  transition: transform 180ms ease;
+}
+
+.contentContributionCard[open] .contentChevron {
+  transform: rotate(180deg);
+}
+
+.contentContributionBody {
+  display: grid;
+  gap: 16px;
+  padding: 0 18px 18px;
+}
+
+.contentContributionStatusRow,
+.contentCardFooter {
+  justify-content: space-between;
+}
+
+.contentBodyLabel,
+.contentPhotoLabel,
+.contentEditorLabel {
+  color: #4e382d;
+  font-weight: 700;
+}
+
+.contentEditorForm,
+.contentPhotoForm,
+.contentPhotoDeleteForm,
+.contentPhotoFormStack {
+  display: grid;
+  gap: 12px;
+}
+
+.contentEditorHeader,
+.contentEditorFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contentEditorCounter {
+  color: #927562;
+  font-size: 0.92rem;
+}
+
+.contentEditorCounterWarning {
+  color: #d07043;
+}
+
+.contentEditorTextarea,
+.contentPhotoInput {
+  width: 100%;
+  border: 1px solid rgba(162, 120, 92, 0.16);
+  border-radius: 16px;
+  background: #fff;
+  color: #34231d;
+  font: inherit;
+}
+
+.contentEditorTextarea {
+  min-height: 116px;
+  padding: 16px;
+  resize: vertical;
+}
+
+.contentPhotoInput {
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.contentSaveButton,
+.contentPrimaryButton {
+  min-height: 48px;
+  padding: 0 20px;
+  background: #c67546;
+  color: #fff8f3;
+  font-weight: 700;
+}
+
+.contentSoftButton,
+.contentOutlineButton,
+.contentDeleteSecondaryButton,
+.contentBackButton {
+  min-height: 46px;
+  padding: 0 18px;
+  font-weight: 700;
+}
+
+.contentDeleteButton {
+  min-height: 44px;
+  padding: 0 16px;
+  color: #a25542;
+}
+
+.contentEditorSuccess {
+  color: #639261;
+}
+
+.contentEditorError {
+  color: #ca6e43;
+}
+
+.contentAssistantCard,
+.contentTipsCard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contentPreviewCard,
+.contentPhotoCard,
+.contentTipsCard {
+  display: grid;
+  gap: 18px;
+}
+
+.contentPreviewMessageCard {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid rgba(98, 72, 58, 0.08);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.contentPreviewMessageBody {
+  display: grid;
+  gap: 10px;
+}
+
+.contentPagerDots {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.contentPagerDots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(193, 157, 134, 0.66);
+}
+
+.contentPagerDots span:nth-child(2) {
+  background: #c67546;
+}
+
+.contentPhotoGrid {
+  display: grid;
+  gap: 18px;
+}
+
+.contentPhotoPreview {
+  min-height: 240px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(98, 72, 58, 0.08);
+}
+
+.contentPhotoPreviewImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contentPhotoPlaceholder {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  padding: 18px;
+  color: #8b705e;
+}
+
+.contentPhotoFileInput {
+  color: #705c50;
+}
+
+.contentTipsList {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.contentFooterBar {
+  justify-content: space-between;
+}
+
+.contentBackButton {
+  text-decoration: none;
+}
+
+@media (min-width: 980px) {
+  .contentLayout {
+    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.72fr);
+  }
+
+  .contentRail {
+    position: sticky;
+    top: 18px;
+  }
+
+  .contentPhotoGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+@media (max-width: 979px) {
+  .contentPanelTitle {
+    font-size: 2.25rem;
+  }
+
+  .contentPreviewMessageCard {
+    grid-template-columns: 1fr;
+  }
+
+  .contentFooterBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 .compositionCardDropAfter::before {
   bottom: -7px;
 }

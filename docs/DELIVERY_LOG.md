@@ -116,3 +116,7 @@
 8. The `Оформление открытки` tab was rebuilt into a two-column studio with a richer hero, current-template card, and sticky preview rail.
 9. The design tab was pushed closer to the target reference: template selection moved to the top card and composition blocks now use toggles plus expandable details.
 10. The manage design screen was reworked again against the exact reference: compact stepper, cleaner template card, richer composition rows, and a more editorial sticky preview.
+11. The `Поздравления и фото` tab was rebuilt toward the target layout:
+    - a compact status strip now summarizes message and photo readiness;
+    - congratulations are shown as cleaner accordion cards with visibility toggles and inline editing;
+    - the right rail now uses a lighter preview card, a focused photo card, and product tips instead of technical utility panels.
