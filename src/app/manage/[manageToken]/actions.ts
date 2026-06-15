@@ -37,11 +37,11 @@ import type {
 } from "@/lib/final-card/types";
 import { logger } from "@/lib/logger";
 
-const optionalBlockIds: FinalCardOptionalBlockId[] = ["summary", "qualities", "quotes", "ai-summary"];
-const managedBlockIds: FinalCardBlockId[] = ["hero", "summary", "qualities", "messages", "quotes", "ai-summary", "closing"];
+const optionalBlockIds: FinalCardOptionalBlockId[] = ["summary", "qualities", "memories", "quotes", "ai-summary"];
+const managedBlockIds: FinalCardBlockId[] = ["hero", "summary", "qualities", "messages", "memories", "quotes", "ai-summary", "closing"];
 const messageLayoutModes: FinalCardMessageLayoutMode[] = ["grid-2", "carousel-1", "carousel-2", "column-media"];
-const mediaLayouts: FinalCardMessageMediaLayout[] = ["portrait", "landscape-pair"];
-const mediaSlots: CardMediaSlot[] = ["portrait", "landscape-a", "landscape-b"];
+const mediaLayouts: FinalCardMessageMediaLayout[] = ["portrait", "landscape-pair", "landscape-trio"];
+const mediaSlots: CardMediaSlot[] = ["portrait", "landscape-a", "landscape-b", "landscape-c", "memory-a", "memory-b", "memory-c"];
 
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const validateLength = (value: string, min: number, max: number) => value.length >= min && value.length <= max;

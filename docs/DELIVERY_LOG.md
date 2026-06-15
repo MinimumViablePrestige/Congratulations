@@ -182,3 +182,12 @@
    - warnings for long messages, missing media in media layout, and hidden contributions;
    - links to the public final version and back to editing.
 4. Side previews remain as quick orientation helpers, while the `Предпросмотр` tab is the main final review surface.
+
+## Update 2026-06-15 Media And Memories Flow
+
+1. Moved final preview readiness/check sections above the embedded public card so the card has full width for review.
+2. Stopped using uploaded media in the public card cover to avoid duplicated photos.
+3. Restored `memories` as an optional organizer-controlled block in every final-card template.
+4. Split uploaded media intent into message media slots and `Наши воспоминания` slots.
+5. The content tab now prioritizes photo upload/management in the right rail instead of the narrow congratulations preview.
+6. Memory photo captions are constrained to one line to keep the public section compact.

@@ -103,7 +103,7 @@ export const buildFinalCardViewModel = (
   const availability: FinalCardContentAvailability = {
     hasSummary: true,
     hasQualities: qualities.length > 0,
-    hasMemories: memories.length > 0 || mediaAssets.length > 0,
+    hasMemories: true,
     hasQuotes: quotes.length > 0,
     hasAiSummary: true
   };

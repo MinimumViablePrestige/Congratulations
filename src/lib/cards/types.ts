@@ -49,7 +49,14 @@ export type CreateCardResult = {
 
 export type ContributionStatus = "visible" | "hidden" | "deleted";
 export type ContributionSource = "manual";
-export type CardMediaSlot = "portrait" | "landscape-a" | "landscape-b";
+export type CardMediaSlot =
+  | "portrait"
+  | "landscape-a"
+  | "landscape-b"
+  | "landscape-c"
+  | "memory-a"
+  | "memory-b"
+  | "memory-c";
 
 export type Contribution = {
   id: string;

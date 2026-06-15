@@ -48,7 +48,7 @@ const stepItems = [
   }
 ] as const;
 
-const managedBlockIds: FinalCardBlockId[] = ["hero", "summary", "qualities", "messages", "quotes", "ai-summary", "closing"];
+const managedBlockIds: FinalCardBlockId[] = ["hero", "summary", "qualities", "messages", "memories", "quotes", "ai-summary", "closing"];
 
 const layoutModeLabels: Record<string, string> = {
   "grid-2": "grid-2",
@@ -113,8 +113,8 @@ export default async function ManagePage({ params, searchParams }: Props) {
       description: "Подсвечивает, за что именно любят и ценят человека."
     },
     memories: {
-      label: "Моменты и фото",
-      description: "Даёт место под фотографии, подписи и тёплые визуальные детали."
+      label: "Наши воспоминания",
+      description: "Добавляет до трех фото с короткими подписями в отдельный теплый блок."
     },
     quotes: {
       label: "Лучшие фразы",
@@ -149,7 +149,8 @@ export default async function ManagePage({ params, searchParams }: Props) {
   const hiddenContributions = allContributions.filter((contribution) => contribution.status === "hidden");
   const tooLongContributions = visibleContributions.filter((contribution) => contribution.message.length > layoutProfile.maxChars);
   const needsMedia = layoutMode === "column-media";
-  const missingMedia = needsMedia && mediaAssets.length === 0;
+  const messageMediaAssets = mediaAssets.filter((asset) => ["portrait", "landscape-a", "landscape-b", "landscape-c"].includes(asset.slot));
+  const missingMedia = needsMedia && messageMediaAssets.length === 0;
   const previewWarnings = [
     tooLongContributions.length > 0
       ? `${tooLongContributions.length} поздравлений длиннее ${layoutProfile.maxChars} символов.`

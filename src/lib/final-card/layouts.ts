@@ -11,6 +11,7 @@ export const finalCardLayouts: Record<FinalCardStyleId, FinalCardLayout> = {
       optional("summary"),
       optional("qualities"),
       required("messages"),
+      optional("memories"),
       optional("quotes"),
       optional("ai-summary"),
       required("closing")
@@ -23,6 +24,7 @@ export const finalCardLayouts: Record<FinalCardStyleId, FinalCardLayout> = {
       optional("summary"),
       optional("qualities"),
       required("messages"),
+      optional("memories"),
       optional("quotes"),
       optional("ai-summary"),
       required("closing")
@@ -30,7 +32,15 @@ export const finalCardLayouts: Record<FinalCardStyleId, FinalCardLayout> = {
   },
   "bright-celebration": {
     style: "bright-celebration",
-    blocks: [required("hero"), optional("summary"), required("messages"), optional("ai-summary"), optional("quotes"), required("closing")]
+    blocks: [
+      required("hero"),
+      optional("summary"),
+      required("messages"),
+      optional("memories"),
+      optional("ai-summary"),
+      optional("quotes"),
+      required("closing")
+    ]
   },
   "gentle-personal": {
     style: "gentle-personal",
@@ -38,6 +48,7 @@ export const finalCardLayouts: Record<FinalCardStyleId, FinalCardLayout> = {
       required("hero"),
       optional("summary"),
       required("messages"),
+      optional("memories"),
       optional("quotes"),
       optional("ai-summary"),
       required("closing")

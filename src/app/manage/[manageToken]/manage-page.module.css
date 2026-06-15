@@ -1763,6 +1763,10 @@ button.contentFilterPill {
   --preview-accent: #c27854;
 }
 
+.contentRail > .contentPreviewCard {
+  display: none;
+}
+
 .contentPreviewStory {
   display: grid;
   gap: 14px;
@@ -2457,6 +2461,20 @@ button.contentFilterPill {
 .mediaManagerGrid {
   display: grid;
   gap: 14px;
+}
+
+.mediaManagerStack {
+  display: grid;
+  gap: 14px;
+}
+
+.mediaManagerSectionHeader {
+  display: grid;
+  gap: 4px;
+  padding: 18px 20px;
+  border: 1px solid rgba(110, 84, 66, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 250, 245, 0.9);
 }
 
 .templateForm {
@@ -3315,6 +3333,7 @@ button.contentFilterPill {
   display: grid;
   gap: 16px;
   align-content: start;
+  order: -1;
   padding: 0;
   border: 0;
   background: transparent;
@@ -3376,8 +3395,16 @@ button.contentFilterPill {
 
 @media (min-width: 900px) {
   .fullPreviewLayout {
-    grid-template-columns: minmax(0, 1fr) 340px;
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
+  }
+
+  .fullPreviewChecklist {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .embeddedPreviewFrame {
+    min-height: 920px;
   }
 }
 

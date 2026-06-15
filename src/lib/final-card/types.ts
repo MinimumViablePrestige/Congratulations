@@ -39,7 +39,7 @@ export type FinalCardBlockOrder = FinalCardBlockId[];
 
 export type FinalCardMessageLayoutMode = "grid-2" | "carousel-1" | "carousel-2" | "column-media";
 
-export type FinalCardMessageMediaLayout = "portrait" | "landscape-pair";
+export type FinalCardMessageMediaLayout = "portrait" | "landscape-pair" | "landscape-trio";
 
 export type FinalCardMessageSettings = {
   layoutMode: FinalCardMessageLayoutMode;

@@ -84,7 +84,7 @@ describe("buildFinalCardViewModel", () => {
       contributions
     );
 
-    expect(viewModel.blocks.map((block) => block.id)).toEqual(["hero", "qualities", "messages", "closing"]);
+    expect(viewModel.blocks.map((block) => block.id)).toEqual(["hero", "qualities", "messages", "memories", "closing"]);
   });
 
   it("passes message presentation settings to the final screen", () => {
@@ -131,7 +131,7 @@ describe("buildFinalCardViewModel", () => {
     const viewModel = buildFinalCardViewModel(
       {
         ...card,
-        finalBlockOrder: ["hero", "messages", "summary", "qualities", "quotes", "ai-summary", "closing"]
+        finalBlockOrder: ["hero", "messages", "summary", "qualities", "quotes", "ai-summary", "closing", "memories"]
       },
       contributions
     );
@@ -143,7 +143,8 @@ describe("buildFinalCardViewModel", () => {
       "qualities",
       "quotes",
       "ai-summary",
-      "closing"
+      "closing",
+      "memories"
     ]);
   });
 });

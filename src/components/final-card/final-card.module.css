@@ -688,6 +688,9 @@
   margin: 0;
   color: var(--fc-muted);
   line-height: 1.7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .memoryPhotoCaptionWrap {
@@ -699,6 +702,9 @@
 .memoryPhotoCaptionTitle {
   color: var(--fc-text);
   font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .memoryCardTiltAlt {

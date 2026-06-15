@@ -21,16 +21,14 @@ const trimMessage = (message: string, maxChars: number) =>
 const getMediaAssetBySlot = (mediaAssets: CardMediaAsset[], slot: CardMediaAsset["slot"]) =>
   mediaAssets.find((item) => item.slot === slot);
 
-const resolveHeroMedia = (mediaAssets: CardMediaAsset[]) => {
-  const portrait = getMediaAssetBySlot(mediaAssets, "portrait");
-  const landscapeA = getMediaAssetBySlot(mediaAssets, "landscape-a");
-  const landscapeB = getMediaAssetBySlot(mediaAssets, "landscape-b");
+const messageMediaSlots: CardMediaAsset["slot"][] = ["portrait", "landscape-a", "landscape-b", "landscape-c"];
+const memoryMediaSlots: CardMediaAsset["slot"][] = ["memory-a", "memory-b", "memory-c"];
 
-  return {
-    primary: portrait ?? landscapeA ?? mediaAssets[0],
-    secondary: landscapeB ?? (portrait ? landscapeA : mediaAssets[1])
-  };
-};
+const getMessageMediaAssets = (mediaAssets: CardMediaAsset[]) =>
+  mediaAssets.filter((asset) => messageMediaSlots.includes(asset.slot));
+
+const getMemoryMediaAssets = (mediaAssets: CardMediaAsset[]) =>
+  mediaAssets.filter((asset) => memoryMediaSlots.includes(asset.slot));
 
 const renderMessageCard = (item: Contribution, index: number, maxChars: number) => (
   <article
@@ -46,8 +44,9 @@ const renderMessageCard = (item: Contribution, index: number, maxChars: number) 
 );
 
 const renderHeroAside = (model: FinalCardViewModel) => {
-  const allowHeroPhotos = model.style === "bright-celebration" || model.style === "gentle-personal";
-  const { primary, secondary } = resolveHeroMedia(model.mediaAssets);
+  const allowHeroPhotos: boolean = false;
+  const primary = null as CardMediaAsset | null;
+  const secondary = null as CardMediaAsset | null;
 
   if (allowHeroPhotos && primary) {
     return (
@@ -149,23 +148,34 @@ const renderMediaFigure = (
 };
 
 const renderMediaRail = (model: FinalCardViewModel) => {
-  if (model.messageMediaLayout === "landscape-pair") {
+  const messageMediaAssets = getMessageMediaAssets(model.mediaAssets);
+
+  if (model.messageMediaLayout === "landscape-pair" || model.messageMediaLayout === "landscape-trio") {
     return (
       <div className={styles.mediaRail}>
         {renderMediaFigure(
-          getMediaAssetBySlot(model.mediaAssets, "landscape-a"),
+          getMediaAssetBySlot(messageMediaAssets, "landscape-a"),
           "landscape-a",
           "Горизонтальное фото A",
           "Здесь может появиться первое горизонтальное фото.",
           styles.mediaCardLandscape
         )}
         {renderMediaFigure(
-          getMediaAssetBySlot(model.mediaAssets, "landscape-b"),
+          getMediaAssetBySlot(messageMediaAssets, "landscape-b"),
           "landscape-b",
           "Горизонтальное фото B",
           "Здесь может появиться второе горизонтальное фото.",
           styles.mediaCardLandscape
         )}
+        {model.messageMediaLayout === "landscape-trio"
+          ? renderMediaFigure(
+              getMediaAssetBySlot(messageMediaAssets, "landscape-c"),
+              "landscape-c",
+              "Горизонтальное фото C",
+              "Здесь может появиться третье горизонтальное фото.",
+              styles.mediaCardLandscape
+            )
+          : null}
       </div>
     );
   }
@@ -173,7 +183,7 @@ const renderMediaRail = (model: FinalCardViewModel) => {
   return (
     <div className={styles.mediaRail}>
       {renderMediaFigure(
-        getMediaAssetBySlot(model.mediaAssets, "portrait"),
+        getMediaAssetBySlot(messageMediaAssets, "portrait"),
         "portrait",
         "Вертикальное фото",
         "Здесь предусмотрено место под одно заметное вертикальное фото.",
@@ -289,12 +299,14 @@ export const FinalCard = ({ model }: Props) => {
             }
 
             if (block.id === "memories") {
+              const memoryAssets = getMemoryMediaAssets(model.mediaAssets);
+
               return (
                 <section key={block.id} className={`${styles.memories} ${styles.section}`}>
                   <h2 className={styles.sectionTitle}>Наши воспоминания</h2>
                   <div className={`${styles.grid} ${styles.memoriesGrid}`}>
-                    {model.mediaAssets.length > 0
-                      ? model.mediaAssets.map((asset, index) => (
+                    {memoryAssets.length > 0
+                      ? memoryAssets.map((asset, index) => (
                           <article
                             key={asset.id}
                             className={`${styles.memoryPhotoCard} ${

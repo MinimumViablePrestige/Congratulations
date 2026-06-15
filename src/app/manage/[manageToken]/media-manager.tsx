@@ -17,9 +17,22 @@ const initialState = {
   message: ""
 };
 
-const slotMap: Record<FinalCardMessageMediaLayout, CardMediaSlot> = {
-  portrait: "portrait",
-  "landscape-pair": "landscape-a"
+const messageSlotMap: Record<FinalCardMessageMediaLayout, CardMediaSlot[]> = {
+  portrait: ["portrait"],
+  "landscape-pair": ["landscape-a", "landscape-b"],
+  "landscape-trio": ["landscape-a", "landscape-b", "landscape-c"]
+};
+
+const memorySlots: CardMediaSlot[] = ["memory-a", "memory-b", "memory-c"];
+
+const slotLabels: Record<CardMediaSlot, string> = {
+  portrait: "1 вертикальное фото",
+  "landscape-a": "Горизонтальное фото 1",
+  "landscape-b": "Горизонтальное фото 2",
+  "landscape-c": "Горизонтальное фото 3",
+  "memory-a": "Воспоминание 1",
+  "memory-b": "Воспоминание 2",
+  "memory-c": "Воспоминание 3"
 };
 
 const MediaManagerCard = ({
@@ -40,7 +53,7 @@ const MediaManagerCard = ({
   return (
     <section className={styles.contentPhotoCard}>
       <div className={styles.contentPhotoHeader}>
-        <h2 className={styles.contentRailTitle}>Фото для открытки</h2>
+        <h2 className={styles.contentRailTitle}>{slotLabels[slot]}</h2>
         <p className={styles.contentPhotoHint}>Используются в выбранной раскладке «Колонка + фото».</p>
       </div>
 
@@ -137,8 +150,37 @@ const MediaManagerCard = ({
 };
 
 export const MediaManager = ({ manageToken, mediaAssets, mediaLayout }: Props) => {
-  const activeSlot = slotMap[mediaLayout];
-  const asset = mediaAssets.find((item) => item.slot === activeSlot);
+  const messageSlots = messageSlotMap[mediaLayout];
 
-  return <MediaManagerCard manageToken={manageToken} asset={asset} slot={activeSlot} mediaLayout={mediaLayout} />;
+  return (
+    <section className={styles.mediaManagerStack}>
+      <div className={styles.mediaManagerSectionHeader}>
+        <h2 className={styles.contentRailTitle}>Фото для поздравлений</h2>
+        <p className={styles.contentPhotoHint}>Используются только в раскладке «Колонка + фото».</p>
+      </div>
+      {messageSlots.map((slot) => (
+        <MediaManagerCard
+          key={slot}
+          manageToken={manageToken}
+          asset={mediaAssets.find((item) => item.slot === slot)}
+          slot={slot}
+          mediaLayout={mediaLayout}
+        />
+      ))}
+
+      <div className={styles.mediaManagerSectionHeader}>
+        <h2 className={styles.contentRailTitle}>Наши воспоминания</h2>
+        <p className={styles.contentPhotoHint}>До трех фото с короткими подписями для отдельного блока открытки.</p>
+      </div>
+      {memorySlots.map((slot) => (
+        <MediaManagerCard
+          key={slot}
+          manageToken={manageToken}
+          asset={mediaAssets.find((item) => item.slot === slot)}
+          slot={slot}
+          mediaLayout={mediaLayout}
+        />
+      ))}
+    </section>
+  );
 };

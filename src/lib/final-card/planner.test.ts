@@ -22,7 +22,7 @@ describe("buildFinalCardLayout", () => {
       hasAiSummary: false
     });
 
-    expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "summary", "messages", "quotes", "closing"]);
+    expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "summary", "messages", "memories", "quotes", "closing"]);
   });
 
   it("respects organizer block settings for optional sections", () => {
