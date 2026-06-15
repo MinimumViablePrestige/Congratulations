@@ -86,3 +86,19 @@
    - вместо кнопок `выше / ниже` используется drag-and-drop;
    - карточка следует за курсором через drag-state;
    - место вставки показывается заранее отдельной теплой линией.
+ 
+## Update 2026-06-15: manage editor polish
+
+1. `Оформление открытки` and `Поздравления и фото` are now treated as two parts of one organizer editor:
+   - design/composition lives in the first tab;
+   - moderation/content/media lives in the second tab.
+2. Composition drag-and-drop was refined:
+   - fixed anchor blocks stay locked;
+   - movable blocks are dragged from the handle;
+   - the drag preview no longer feels attached to the center of the row.
+3. Contribution moderation now has explicit visibility grouping:
+   - active contributions are the main working group;
+   - hidden contributions are retained but pushed below active cards;
+   - returning a hidden contribution to active places it at the end of the active group.
+4. Status changes collapse the contribution card before movement, so moderation does not move a large expanded editor around the page.
+5. The next visual target is to make the right-side previews more faithful to the real final card and less like admin helper cards.

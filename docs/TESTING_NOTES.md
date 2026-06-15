@@ -73,3 +73,34 @@ Check the new manage flow:
 6. The `Поздравления` card changes the grid and updates the preview scheme.
 7. Template selection happens after structure, not before it.
 8. Participant AI still uses `occasionText` rather than a visible legacy category.
+ 
+## Update 2026-06-15
+
+Manual checks for the current manage editor:
+
+1. Open the organizer manage page and switch between `Оформление открытки` and `Поздравления и фото`.
+2. In `Оформление открытки`, drag a non-fixed composition block by its handle:
+   - the block should feel attached to the handle;
+   - `Обложка` and `Финал` should not be draggable;
+   - the insertion line should show where the block will land.
+3. In `Поздравления и фото`, expand a contribution and toggle it from active to hidden:
+   - the card should collapse;
+   - the card should move to the end of the list;
+   - the badge should become red `Скрыто`;
+   - after refresh, the card should still be hidden and stay in the hidden group.
+4. Toggle a hidden contribution back to active:
+   - the card should collapse if it was open;
+   - it should move to the end of the active group, before hidden cards;
+   - the badge should become green `Активно`;
+   - after refresh, the order should remain the same.
+5. Use the category filters:
+   - `Все` shows all cards;
+   - `Активные` shows active cards only;
+   - `Скрытые` shows hidden cards only;
+   - `Слишком длинные` shows cards above the current character limit;
+   - `Без роли` shows cards without participant role.
+6. Drag a contribution by its handle:
+   - the card should feel attached to the handle, not to the center;
+   - the insertion point should be visible before drop;
+   - saving the order should keep it after refresh.
+7. Confirm that hidden contributions do not appear on participant/public visible surfaces.

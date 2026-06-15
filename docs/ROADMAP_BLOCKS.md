@@ -222,3 +222,30 @@ MVP готов к первому аккуратному запуску и про
 
 1. Improve the self-explanatory hints inside each block card for blank and semi-empty drafts.
 2. Remove the remaining legacy `occasion` dependency from draft creation and storage over time.
+ 
+## Current Focus After 2026-06-15 Editor Pass
+
+The organizer editor is now usable enough to continue with product polish instead of restructuring.
+
+Recommended next work:
+
+1. Improve the right-side previews in both manage tabs:
+   - show closer-to-final visual cards;
+   - reduce admin-like helper copy;
+   - make empty states feel guided and premium.
+2. Implement `AI-общее поздравление`:
+   - generate one common team greeting from visible contributions;
+   - explain that it appears only when the corresponding block is enabled in `Оформление открытки`;
+   - keep it editable by the organizer.
+3. Strengthen empty states:
+   - no contributions yet;
+   - no photos yet;
+   - selected layout needs photo but photo is missing.
+4. Only after that return to publish/payment flow.
+
+Lower priority for now:
+
+1. Reactions to contributions.
+2. Per-contribution photos.
+3. PDF/export.
+4. Complex analytics or external database migration.

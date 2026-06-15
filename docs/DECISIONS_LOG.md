@@ -257,3 +257,42 @@ Accepted:
 1. `Обложка` is always the first block of the final card.
 2. `Финал` is always the closing block of the final card.
 3. Reordering is available only for the middle sequence, with visible drop guidance during drag and drop.
+ 
+## 2026-06-15
+
+### Decision: hidden and active contributions are separate working groups
+
+Accepted:
+
+1. The organizer should always see whether a contribution is active or hidden directly on the card.
+2. Hidden contributions should not stay mixed into the active working list.
+3. When a contribution becomes hidden, it moves to the end of the list.
+4. When a hidden contribution becomes active again, it moves to the end of the active group, before hidden contributions.
+5. The movement is intentional product behavior, not just a visual sort: the saved order must match the visible grouping after refresh.
+
+Why:
+
+The organizer is moderating a final card, not just toggling database flags. Active messages are the working set; hidden messages are retained but visually de-prioritized.
+
+### Decision: drag-and-drop must feel handle-based
+
+Accepted:
+
+1. Dragging contributions and composition blocks should feel attached to the drag handle, not to the center of the card.
+2. Fixed blocks in card composition remain non-draggable.
+3. Drag feedback should communicate the future insertion point before drop.
+
+Why:
+
+The editor should feel like a premium card constructor. If the dragged item jumps to the center, the interaction feels technical and imprecise.
+
+### Decision: status changes collapse the edited contribution card
+
+Accepted:
+
+1. A contribution card collapses before it moves because of a visibility-status change.
+2. This avoids moving a large expanded editor through the list.
+
+Why:
+
+The status action is moderation, not text editing. Once the organizer changes visibility, the card should return to compact list mode and move cleanly to its new group.

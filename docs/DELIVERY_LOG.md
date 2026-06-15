@@ -124,3 +124,29 @@
     - cards move by dragging the left handle instead of `up/down` buttons;
     - the dragged card gets a softer floating state;
     - the insertion point is highlighted so the new position is readable before drop.
+ 
+## Update 2026-06-15
+
+1. The organizer manage page is now treated as the main editor, split into two primary tabs:
+   - `Оформление открытки` for basis, template, composition, message layout, and preview;
+   - `Поздравления и фото` for message moderation, text editing, visibility, ordering, and media.
+2. The old separate creation-step mental model is no longer the target flow: creation starts from the showcase landing page, then continues in the manage editor.
+3. Contribution visibility now has explicit categories:
+   - `Активные`;
+   - `Скрытые`;
+   - visual green/red badges inside each contribution card.
+4. Changing a contribution status also changes its position:
+   - active -> hidden moves the card to the end of the list;
+   - hidden -> active moves the card to the end of the active group, before hidden cards.
+5. Contribution cards collapse before status-based movement, so the list does not jump with a large expanded editor.
+6. Drag-and-drop was refined in both tabs:
+   - contribution cards are grabbed from the handle instead of feeling attached to the card center;
+   - composition blocks in `Оформление открытки` use the same handle-based drag feel.
+7. Current known local-only data caveat: `data/media-assets.json` may remain dirty during visual/media experiments and should not be included in unrelated commits.
+
+## Next Product Candidates
+
+1. Polish the right-side previews so both tabs feel like real card previews rather than admin summaries.
+2. Implement the AI-generated common greeting from the team, tied to the optional `Общее поздравление` block.
+3. Add stronger empty states for a brand-new draft with no contributions and no uploaded photos.
+4. Add manual visual QA scenarios for status changes, drag ordering, and preview updates before moving to payment/publish flow.
