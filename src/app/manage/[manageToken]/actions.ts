@@ -24,6 +24,8 @@ import type { CardDraft, CardMediaAsset, CardMediaSlot } from "@/lib/cards/types
 import { validateContributionMessage } from "@/lib/contributions/validation";
 import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type {
+  FinalCardBlockId,
+  FinalCardBlockOrder,
   FinalCardBlockSettings,
   FinalCardMessageLayoutMode,
   FinalCardMessageMediaLayout,
@@ -32,7 +34,8 @@ import type {
 } from "@/lib/final-card/types";
 import { logger } from "@/lib/logger";
 
-const optionalBlockIds: FinalCardOptionalBlockId[] = ["summary", "qualities", "memories", "quotes", "ai-summary"];
+const optionalBlockIds: FinalCardOptionalBlockId[] = ["summary", "qualities", "quotes", "ai-summary"];
+const managedBlockIds: FinalCardBlockId[] = ["hero", "summary", "qualities", "messages", "quotes", "ai-summary", "closing"];
 const messageLayoutModes: FinalCardMessageLayoutMode[] = ["grid-2", "carousel-1", "carousel-2", "column-media"];
 const mediaLayouts: FinalCardMessageMediaLayout[] = ["portrait", "landscape-pair"];
 const mediaSlots: CardMediaSlot[] = ["portrait", "landscape-a", "landscape-b"];
@@ -249,6 +252,10 @@ export async function updateFinalPresentationSettingsAction(
   const templateId = isTemplateId(rawTemplateId) ? rawTemplateId : card.templateId;
   const visibleContributions = await listContributionsByCardId(card.id);
   const layoutProfile = getFinalCardMessageLayoutProfile(layoutMode);
+  const finalBlockOrder = formData
+    .getAll("blockOrder")
+    .map((value) => String(value))
+    .filter((value): value is FinalCardBlockId => managedBlockIds.includes(value as FinalCardBlockId));
 
   const finalBlockSettings = optionalBlockIds.reduce<FinalCardBlockSettings>((acc, blockId) => {
     acc[blockId] = formData.get(blockId) === "on";
@@ -261,7 +268,13 @@ export async function updateFinalPresentationSettingsAction(
     showAllLink: visibleContributions.length > layoutProfile.cardsPerPage
   };
 
-  const updated = await updateCardFinalPresentationSettings(card.id, templateId, finalBlockSettings, finalMessageSettings);
+  const updated = await updateCardFinalPresentationSettings(
+    card.id,
+    templateId,
+    finalBlockSettings,
+    finalBlockOrder.length > 0 ? (finalBlockOrder as FinalCardBlockOrder) : card.finalBlockOrder,
+    finalMessageSettings
+  );
   if (!updated) {
     return { ok: false, message: "Не удалось сохранить состав финального экрана." };
   }

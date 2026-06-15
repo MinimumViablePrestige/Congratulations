@@ -37,7 +37,6 @@ export const finalCardLayouts: Record<FinalCardStyleId, FinalCardLayout> = {
     blocks: [
       required("hero"),
       optional("summary"),
-      optional("memories"),
       required("messages"),
       optional("quotes"),
       optional("ai-summary"),

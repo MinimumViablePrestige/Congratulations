@@ -9,7 +9,7 @@ import {
 import { cardTemplates } from "@/lib/cards/templates";
 import { finalCardLayouts } from "@/lib/final-card/layouts";
 import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
-import type { FinalCardOptionalBlockId } from "@/lib/final-card/types";
+import type { FinalCardBlockId, FinalCardOptionalBlockId } from "@/lib/final-card/types";
 import { buildFinalCardViewModel } from "@/lib/final-card/view-model";
 import { buildReminderText } from "@/lib/manage/reminder";
 import { BasicsSettingsForm } from "./basics-settings-form";
@@ -39,6 +39,7 @@ const starterSteps = [
   "Коротко опишите повод, чтобы у открытки появился живой контекст.",
   "Потом выберите структуру, шаблон и позовите участников."
 ];
+const managedBlockIds: FinalCardBlockId[] = ["hero", "summary", "qualities", "messages", "quotes", "ai-summary", "closing"];
 
 export default async function ManagePage({ params, searchParams }: Props) {
   const { manageToken } = await params;
@@ -98,6 +99,8 @@ export default async function ManagePage({ params, searchParams }: Props) {
   const blockState = Object.fromEntries(
     blockOptions.map((option) => [option.id, card.finalBlockSettings?.[option.id] ?? true])
   ) as Record<FinalCardOptionalBlockId, boolean>;
+  const savedBlockOrder = card.finalBlockOrder?.filter((blockId) => managedBlockIds.includes(blockId)) ?? [];
+  const initialBlockOrder = [...savedBlockOrder, ...managedBlockIds.filter((blockId) => !savedBlockOrder.includes(blockId))];
 
   const isBlankBasics =
     !card.recipientName.trim() &&
@@ -208,6 +211,7 @@ export default async function ManagePage({ params, searchParams }: Props) {
                 options={blockOptions}
                 initialLayoutMode={layoutMode}
                 initialMediaLayout={mediaLayout}
+                initialBlockOrder={initialBlockOrder}
               />
             </section>
 
@@ -229,6 +233,7 @@ export default async function ManagePage({ params, searchParams }: Props) {
                 initialTemplateId={selectedTemplate.id}
                 initialLayoutMode={layoutMode}
                 initialMediaLayout={mediaLayout}
+                initialBlockOrder={initialBlockOrder}
                 blockState={blockState}
               />
             </section>

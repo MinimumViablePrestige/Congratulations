@@ -35,6 +35,7 @@ export type FinalCardContentAvailability = {
 };
 
 export type FinalCardBlockSettings = Partial<Record<FinalCardOptionalBlockId, boolean>>;
+export type FinalCardBlockOrder = FinalCardBlockId[];
 
 export type FinalCardMessageLayoutMode = "grid-2" | "carousel-1" | "carousel-2" | "column-media";
 

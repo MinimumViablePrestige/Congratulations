@@ -22,7 +22,7 @@ describe("buildFinalCardLayout", () => {
       hasAiSummary: false
     });
 
-    expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "summary", "memories", "messages", "quotes", "closing"]);
+    expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "summary", "messages", "quotes", "closing"]);
   });
 
   it("respects organizer block settings for optional sections", () => {
@@ -43,5 +43,35 @@ describe("buildFinalCardLayout", () => {
     );
 
     expect(layout.blocks.map((block) => block.id)).toEqual(["hero", "qualities", "messages", "ai-summary", "closing"]);
+  });
+
+  it("respects custom block order from organizer", () => {
+    const layout = buildFinalCardLayout(
+      "team-modern",
+      {
+        hasSummary: true,
+        hasQualities: true,
+        hasMemories: false,
+        hasQuotes: true,
+        hasAiSummary: true
+      },
+      {
+        summary: true,
+        qualities: true,
+        quotes: true,
+        "ai-summary": true
+      },
+      ["hero", "messages", "summary", "qualities", "quotes", "ai-summary", "closing"]
+    );
+
+    expect(layout.blocks.map((block) => block.id)).toEqual([
+      "hero",
+      "messages",
+      "summary",
+      "qualities",
+      "quotes",
+      "ai-summary",
+      "closing"
+    ]);
   });
 });

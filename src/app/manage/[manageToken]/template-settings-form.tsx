@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import type { CardTemplate } from "@/lib/cards/templates";
 import type {
+  FinalCardBlockId,
   FinalCardMessageLayoutMode,
   FinalCardMessageMediaLayout,
   FinalCardOptionalBlockId
@@ -16,6 +17,7 @@ type Props = {
   initialTemplateId: CardTemplate["id"];
   initialLayoutMode: FinalCardMessageLayoutMode;
   initialMediaLayout: FinalCardMessageMediaLayout;
+  initialBlockOrder: FinalCardBlockId[];
   blockState: Record<FinalCardOptionalBlockId, boolean>;
 };
 
@@ -30,6 +32,7 @@ export const TemplateSettingsForm = ({
   initialTemplateId,
   initialLayoutMode,
   initialMediaLayout,
+  initialBlockOrder,
   blockState
 }: Props) => {
   const [state, formAction, isPending] = useActionState(updateFinalPresentationSettingsAction, initialState);
@@ -40,6 +43,9 @@ export const TemplateSettingsForm = ({
       <input type="hidden" name="manageToken" value={manageToken} />
       <input type="hidden" name="layoutMode" value={initialLayoutMode} />
       <input type="hidden" name="mediaLayout" value={initialMediaLayout} />
+      {initialBlockOrder.map((blockId) => (
+        <input key={blockId} type="hidden" name="blockOrder" value={blockId} />
+      ))}
 
       {Object.entries(blockState).map(([blockId, enabled]) => (
         <input key={blockId} type="hidden" name={blockId} value={enabled ? "on" : ""} />

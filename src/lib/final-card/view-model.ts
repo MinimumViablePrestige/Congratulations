@@ -127,6 +127,6 @@ export const buildFinalCardViewModel = (
     messageLayoutMode,
     messageMediaLayout: card.finalMessageSettings?.mediaLayout ?? "portrait",
     showAllMessagesLink: contributions.length > layoutProfile.cardsPerPage,
-    blocks: buildFinalCardLayout(style, availability, card.finalBlockSettings).blocks
+    blocks: buildFinalCardLayout(style, availability, card.finalBlockSettings, card.finalBlockOrder).blocks
   };
 };

@@ -220,6 +220,25 @@
   font-weight: 700;
 }
 
+.canvasBlockHeading {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.canvasDragHandle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 999px;
+  border: 1px dashed rgba(98, 72, 58, 0.2);
+  color: #8a6b5a;
+  cursor: grab;
+  user-select: none;
+}
+
 .canvasBlockDescription {
   margin: 0;
   color: #705c50;

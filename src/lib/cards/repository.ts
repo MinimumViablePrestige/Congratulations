@@ -2,7 +2,7 @@ import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { CardDraft, CardMediaAsset, Contribution } from "@/lib/cards/types";
 import type { CardTemplateId } from "@/lib/cards/templates";
-import type { FinalCardBlockSettings, FinalCardMessageSettings } from "@/lib/final-card/types";
+import type { FinalCardBlockOrder, FinalCardBlockSettings, FinalCardMessageSettings } from "@/lib/final-card/types";
 
 const cardsFilePath = join(process.cwd(), "data", "cards.json");
 const contributionsFilePath = join(process.cwd(), "data", "contributions.json");
@@ -18,6 +18,7 @@ const normalizeCard = (card: CardDraft): CardDraft => ({
   ...card,
   occasionText: card.occasionText ?? card.description ?? card.occasion,
   finalBlockSettings: card.finalBlockSettings ?? null,
+  finalBlockOrder: card.finalBlockOrder ?? null,
   finalMessageSettings: card.finalMessageSettings
     ? {
         ...defaultFinalMessageSettings,
@@ -137,7 +138,8 @@ export const getCardDraftById = async (cardId: string) => {
 
 export const updateCardFinalBlockSettings = async (
   cardId: string,
-  finalBlockSettings: FinalCardBlockSettings
+  finalBlockSettings: FinalCardBlockSettings,
+  finalBlockOrder: FinalCardBlockOrder | null
 ) => {
   const cards = await readCards();
   const index = cards.findIndex((card) => card.id === cardId);
@@ -149,6 +151,7 @@ export const updateCardFinalBlockSettings = async (
   const updated = {
     ...cards[index],
     finalBlockSettings,
+    finalBlockOrder,
     updatedAt: new Date().toISOString()
   };
 
@@ -161,6 +164,7 @@ export const updateCardFinalPresentationSettings = async (
   cardId: string,
   templateId: CardTemplateId,
   finalBlockSettings: FinalCardBlockSettings,
+  finalBlockOrder: FinalCardBlockOrder | null,
   finalMessageSettings: FinalCardMessageSettings
 ) => {
   const cards = await readCards();
@@ -174,6 +178,7 @@ export const updateCardFinalPresentationSettings = async (
     ...cards[index],
     templateId,
     finalBlockSettings,
+    finalBlockOrder,
     finalMessageSettings,
     updatedAt: new Date().toISOString()
   };

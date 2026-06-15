@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type {
+  FinalCardBlockId,
   FinalCardMessageLayoutMode,
   FinalCardMessageMediaLayout,
   FinalCardOptionalBlockId
@@ -23,14 +24,14 @@ type Props = {
   options: BlockOption[];
   initialLayoutMode: FinalCardMessageLayoutMode;
   initialMediaLayout: FinalCardMessageMediaLayout;
+  initialBlockOrder: FinalCardBlockId[];
 };
 
 type RenderedBlock = {
-  id: string;
+  id: FinalCardBlockId;
   label: string;
   description: string;
   removable: boolean;
-  disabled?: boolean;
 };
 
 const initialState = {
@@ -74,19 +75,17 @@ const mediaLayoutOptions: Array<{
 ];
 
 const canvasBlockMeta: Record<
-  string,
+  FinalCardBlockId,
   {
     label: string;
     size: "hero" | "medium" | "small" | "messages" | "closing";
     description: string;
-    required?: boolean;
   }
 > = {
   hero: {
     label: "Обложка",
     size: "hero",
-    description: "Первый экран с именем получателя, поводом и общим настроением открытки. Является обязательным.",
-    required: true
+    description: "Первый экран с именем получателя, поводом и общим настроением открытки. Является обязательным."
   },
   summary: {
     label: "Вводный блок",
@@ -101,13 +100,12 @@ const canvasBlockMeta: Record<
   messages: {
     label: "Поздравления",
     size: "messages",
-    description: "Главный блок с карточками участников. Является обязательным.",
-    required: true
+    description: "Главный блок с карточками участников. Является обязательным."
   },
   memories: {
     label: "Моменты / фото",
     size: "medium",
-    description: "Дает место под фотографии, подписи и теплые визуальные детали. Сейчас блок включен в открытку."
+    description: "Блок временно скрыт из конструктора."
   },
   quotes: {
     label: "Лучшие фразы",
@@ -122,10 +120,11 @@ const canvasBlockMeta: Record<
   closing: {
     label: "Финал",
     size: "closing",
-    description: "Завершает открытку и собирает общее ощущение подарка. Является обязательным.",
-    required: true
+    description: "Завершает открытку и собирает общее ощущение подарка. Является обязательным."
   }
 };
+
+const requiredBlockIds: FinalCardBlockId[] = ["hero", "messages", "closing"];
 
 const buildCanvasBlocks = (options: BlockOption[], blockState: Record<string, boolean>): RenderedBlock[] => [
   {
@@ -137,11 +136,10 @@ const buildCanvasBlocks = (options: BlockOption[], blockState: Record<string, bo
   ...options
     .filter((option) => !option.disabled && blockState[option.id])
     .map((option) => ({
-      id: option.id,
+      id: option.id as FinalCardBlockId,
       label: option.label,
       description: canvasBlockMeta[option.id].description,
-      removable: true,
-      disabled: option.disabled
+      removable: true
     })),
   {
     id: "messages",
@@ -157,23 +155,68 @@ const buildCanvasBlocks = (options: BlockOption[], blockState: Record<string, bo
   }
 ];
 
-export const BlockSettingsForm = ({ manageToken, options, initialLayoutMode, initialMediaLayout }: Props) => {
+export const BlockSettingsForm = ({
+  manageToken,
+  options,
+  initialLayoutMode,
+  initialMediaLayout,
+  initialBlockOrder
+}: Props) => {
   const [state, formAction, isPending] = useActionState(updateFinalPresentationSettingsAction, initialState);
   const [layoutMode, setLayoutMode] = useState<FinalCardMessageLayoutMode>(initialLayoutMode);
   const [mediaLayout, setMediaLayout] = useState<FinalCardMessageMediaLayout>(initialMediaLayout);
   const [blockState, setBlockState] = useState<Record<string, boolean>>(
     Object.fromEntries(options.map((option) => [option.id, option.checked]))
   );
+  const [blockOrder, setBlockOrder] = useState<FinalCardBlockId[]>(initialBlockOrder);
+  const [draggedBlockId, setDraggedBlockId] = useState<FinalCardBlockId | null>(null);
 
-  const canvasBlocks = useMemo(() => buildCanvasBlocks(options, blockState), [blockState, options]);
+  const activeBlocks = useMemo(() => buildCanvasBlocks(options, blockState), [blockState, options]);
+
+  const canvasBlocks = useMemo(() => {
+    const activeMap = new Map(activeBlocks.map((block) => [block.id, block]));
+    return blockOrder
+      .map((blockId) => activeMap.get(blockId))
+      .filter((block): block is RenderedBlock => Boolean(block));
+  }, [activeBlocks, blockOrder]);
+
   const currentLayoutLabel = layoutOptions.find((option) => option.id === layoutMode)?.label ?? 'Сетка "2 на 2"';
-  const removedOptionalBlocks = options.filter((option) => !blockState[option.id]);
+
+  const removedOptionalBlocks = blockOrder
+    .filter((blockId) => !requiredBlockIds.includes(blockId) && !blockState[blockId])
+    .map((blockId) => options.find((option) => option.id === blockId))
+    .filter((option): option is BlockOption => Boolean(option));
+
+  const moveBlock = (targetBlockId: FinalCardBlockId) => {
+    if (!draggedBlockId || draggedBlockId === targetBlockId) {
+      return;
+    }
+
+    setBlockOrder((current) => {
+      const withoutDragged = current.filter((blockId) => blockId !== draggedBlockId);
+      const targetIndex = withoutDragged.indexOf(targetBlockId);
+
+      if (targetIndex === -1) {
+        return current;
+      }
+
+      const next = [...withoutDragged];
+      next.splice(targetIndex, 0, draggedBlockId);
+      return next;
+    });
+
+    setDraggedBlockId(null);
+  };
 
   return (
     <form action={formAction} className={styles.studioForm}>
       <input type="hidden" name="manageToken" value={manageToken} />
       <input type="hidden" name="layoutMode" value={layoutMode} />
       <input type="hidden" name="mediaLayout" value={mediaLayout} />
+
+      {blockOrder.map((blockId) => (
+        <input key={blockId} type="hidden" name="blockOrder" value={blockId} />
+      ))}
 
       {options.map((option) => (
         <input key={option.id} type="hidden" name={option.id} value={blockState[option.id] ? "on" : ""} />
@@ -195,9 +238,23 @@ export const BlockSettingsForm = ({ manageToken, options, initialLayoutMode, ini
             <article
               key={block.id}
               className={`${styles.canvasBlock} ${styles[`canvasBlock${canvasBlockMeta[block.id].size}`]}`}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={() => moveBlock(block.id)}
             >
               <div className={styles.canvasBlockHeader}>
-                <span>{block.label}</span>
+                <div className={styles.canvasBlockHeading}>
+                  <span>{block.label}</span>
+                  <span
+                    className={styles.canvasDragHandle}
+                    draggable
+                    onDragStart={() => setDraggedBlockId(block.id)}
+                    onDragEnd={() => setDraggedBlockId(null)}
+                    title="Перетащите, чтобы изменить порядок"
+                    aria-label={`Перетащите блок ${block.label}, чтобы изменить порядок`}
+                  >
+                    ⋮⋮
+                  </span>
+                </div>
                 {block.removable ? (
                   <button
                     type="button"

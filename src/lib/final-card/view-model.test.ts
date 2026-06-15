@@ -16,6 +16,7 @@ const card: CardDraft = {
   description: "Спасибо за поддержку, энергию и человеческое тепло.",
   templateId: "team-modern",
   finalBlockSettings: null,
+  finalBlockOrder: null,
   finalMessageSettings: null,
   status: "draft",
   paymentStatus: "unpaid",
@@ -124,5 +125,25 @@ describe("buildFinalCardViewModel", () => {
     expect(viewModel.mediaAssets[0]?.slot).toBe("portrait");
     expect(viewModel.mediaAssets[0]?.captionTitle).toBe("Командное фото");
     expect(viewModel.mediaAssets[0]?.captionSubtitle).toContain("помнить");
+  });
+
+  it("uses saved block order in the final model", () => {
+    const viewModel = buildFinalCardViewModel(
+      {
+        ...card,
+        finalBlockOrder: ["hero", "messages", "summary", "qualities", "quotes", "ai-summary", "closing"]
+      },
+      contributions
+    );
+
+    expect(viewModel.blocks.map((block) => block.id)).toEqual([
+      "hero",
+      "messages",
+      "summary",
+      "qualities",
+      "quotes",
+      "ai-summary",
+      "closing"
+    ]);
   });
 });
