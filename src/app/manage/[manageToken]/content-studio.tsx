@@ -132,25 +132,12 @@ export const ContentStudio = ({
     moveContribution(contributionId, dropTarget.position);
   };
 
-  const toggleContribution = (contributionId: string, trigger: HTMLElement) => {
-    const before = trigger.getBoundingClientRect();
-
+  const toggleContribution = (contributionId: string) => {
     setExpandedContributionIds((current) =>
       current.includes(contributionId)
         ? current.filter((id) => id !== contributionId)
         : [...current, contributionId]
     );
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const after = trigger.getBoundingClientRect();
-        const deltaY = after.top - before.top;
-
-        if (Math.abs(deltaY) > 0.5) {
-          window.scrollBy({ top: deltaY, left: 0, behavior: "auto" });
-        }
-      });
-    });
   };
 
   return (
@@ -294,7 +281,7 @@ export const ContentStudio = ({
                             type="button"
                             className={styles.contentChevronButton}
                             onMouseDown={(event) => event.preventDefault()}
-                            onClick={(event) => toggleContribution(contribution.id, event.currentTarget)}
+                            onClick={() => toggleContribution(contribution.id)}
                             aria-expanded={isExpanded}
                             aria-label={isExpanded ? "Свернуть поздравление" : "Развернуть поздравление"}
                           >

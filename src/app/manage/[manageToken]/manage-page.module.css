@@ -1107,6 +1107,7 @@
 .contentPanel {
   display: grid;
   gap: 22px;
+  align-content: start;
 }
 
 .contentRail {
