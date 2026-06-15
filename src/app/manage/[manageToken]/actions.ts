@@ -11,6 +11,7 @@ import {
   listContributionsByCardId,
   listCardMediaAssetsByCardId,
   moveContribution,
+  reorderContributions,
   updateCardDraftBasics,
   updateCardFinalPresentationSettings,
   updateCardMediaAssetCaption,
@@ -222,6 +223,40 @@ export async function moveContributionAction(formData: FormData) {
   });
 
   revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
+}
+
+export async function reorderContributionsAction(
+  _prevState: { ok: boolean; message: string },
+  formData: FormData
+) {
+  const manageToken = String(formData.get("manageToken") ?? "");
+  const orderedContributionIds = formData
+    .getAll("orderedContributionIds")
+    .map((value) => String(value))
+    .filter(Boolean);
+
+  if (!manageToken || orderedContributionIds.length === 0) {
+    return { ok: false, message: "Не удалось сохранить новый порядок поздравлений." };
+  }
+
+  const card = await getCardDraftByManageToken(manageToken);
+  if (!card) {
+    return { ok: false, message: "Секретная ссылка управления больше не актуальна." };
+  }
+
+  const updated = await reorderContributions(card.id, orderedContributionIds);
+
+  logger.info("manage.contributions_reordered", "Contribution list reordered by organizer", {
+    cardId: card.id,
+    orderedContributionIds
+  });
+
+  revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
+
+  return {
+    ok: true,
+    message: updated.length > 0 ? "Новый порядок поздравлений сохранён." : "Порядок поздравлений обновлён."
+  };
 }
 
 export async function updateFinalPresentationSettingsAction(

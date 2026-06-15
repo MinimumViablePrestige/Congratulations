@@ -386,6 +386,47 @@ export const moveContribution = async (contributionId: string, direction: "up" |
   return nextContributions.find((item) => item.id === contributionId) ?? null;
 };
 
+export const reorderContributions = async (cardId: string, orderedContributionIds: string[]) => {
+  const contributions = await readContributions();
+  const siblings = contributions.filter((item) => item.cardId === cardId).sort(compareContributions);
+
+  if (siblings.length === 0) {
+    return [];
+  }
+
+  const siblingIds = new Set(siblings.map((item) => item.id));
+  const normalizedOrder = orderedContributionIds.filter((id) => siblingIds.has(id));
+
+  if (normalizedOrder.length !== siblings.length) {
+    for (const item of siblings) {
+      if (!normalizedOrder.includes(item.id)) {
+        normalizedOrder.push(item.id);
+      }
+    }
+  }
+
+  const orderMap = new Map(normalizedOrder.map((id, index) => [id, index]));
+  const nextContributions = contributions.map((item) => {
+    if (item.cardId !== cardId) {
+      return item;
+    }
+
+    const nextOrder = orderMap.get(item.id);
+    if (typeof nextOrder !== "number") {
+      return item;
+    }
+
+    return {
+      ...item,
+      sortOrder: nextOrder,
+      updatedAt: new Date().toISOString()
+    };
+  });
+
+  await writeFile(contributionsFilePath, JSON.stringify(nextContributions, null, 2), "utf8");
+  return nextContributions.filter((item) => item.cardId === cardId).sort(compareContributions);
+};
+
 export const updateContributionMessage = async (
   contributionId: string,
   message: Contribution["message"]

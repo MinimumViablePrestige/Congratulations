@@ -120,3 +120,7 @@
     - a compact status strip now summarizes message and photo readiness;
     - congratulations are shown as cleaner accordion cards with visibility toggles and inline editing;
     - the right rail now uses a lighter preview card, a focused photo card, and product tips instead of technical utility panels.
+12. Contribution ordering inside `Поздравления и фото` now uses drag-and-drop:
+    - cards move by dragging the left handle instead of `up/down` buttons;
+    - the dragged card gets a softer floating state;
+    - the insertion point is highlighted so the new position is readable before drop.
