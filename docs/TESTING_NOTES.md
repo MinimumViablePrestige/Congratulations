@@ -104,3 +104,5 @@ Manual checks for the current manage editor:
    - the insertion point should be visible before drop;
    - saving the order should keep it after refresh.
 7. Confirm that hidden contributions do not appear on participant/public visible surfaces.
+8. Click `Добавить вручную`, add a valid author and message, and confirm the new contribution appears in the moderation list after submit.
+9. Open the overflow menu next to `Добавить вручную` and confirm participant link and invitation text can be copied.

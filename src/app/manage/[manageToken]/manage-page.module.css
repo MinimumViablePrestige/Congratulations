@@ -1171,6 +1171,45 @@
   justify-content: flex-end;
 }
 
+.contentMenuWrap {
+  position: relative;
+}
+
+.contentMenu {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 8px);
+  right: 0;
+  display: grid;
+  min-width: 260px;
+  padding: 8px;
+  border: 1px solid rgba(162, 120, 92, 0.16);
+  border-radius: 18px;
+  background: rgba(255, 251, 247, 0.98);
+  box-shadow: 0 18px 38px rgba(89, 61, 44, 0.14);
+}
+
+.contentMenu button {
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #6d4d3b;
+  cursor: pointer;
+  font: inherit;
+  padding: 11px 12px;
+  text-align: left;
+}
+
+.contentMenu button:hover {
+  background: rgba(194, 120, 84, 0.1);
+}
+
+.contentInlineNotice {
+  margin: 0;
+  color: #4d7f5c;
+  font-size: 0.92rem;
+}
+
 .contentPanelTopRow {
   display: flex;
   flex-wrap: wrap;
@@ -1257,6 +1296,68 @@ button.contentFilterPill {
   border-color: rgba(184, 111, 74, 0.3);
   background: rgba(255, 246, 238, 0.92);
   color: #a25a34;
+}
+
+.manualContributionForm {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px dashed rgba(194, 120, 84, 0.28);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.72), transparent 26%),
+    rgba(255, 248, 242, 0.82);
+}
+
+.manualContributionHeader,
+.manualContributionFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.manualContributionHeader h3 {
+  margin: 0;
+  color: #3f2b23;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+}
+
+.manualContributionHeader p {
+  margin: 4px 0 0;
+  color: #7d6657;
+}
+
+.manualContributionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.manualContributionGrid label,
+.manualContributionMessage {
+  display: grid;
+  gap: 8px;
+  color: #4e382d;
+  font-weight: 700;
+}
+
+.manualContributionGrid input,
+.manualContributionMessage textarea {
+  width: 100%;
+  border: 1px solid rgba(98, 72, 58, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #2f211b;
+  font: inherit;
+  padding: 13px 14px;
+}
+
+.manualContributionMessage textarea {
+  resize: vertical;
+  line-height: 1.55;
 }
 
 .contentCards {
@@ -1874,6 +1975,16 @@ button.contentFilterPill {
 
   .contentPreviewMessageCard {
     grid-template-columns: 1fr;
+  }
+
+  .manualContributionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .contentMenu {
+    left: auto;
+    right: 0;
+    min-width: min(280px, calc(100vw - 48px));
   }
 
   .contentFooterBar {

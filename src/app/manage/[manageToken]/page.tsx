@@ -349,6 +349,7 @@ export default async function ManagePage({ params, searchParams }: Props) {
             recipientName={recipientName}
             occasionText={occasionText}
             fromLabel={card.fromLabel}
+            publicSlug={card.publicSlug}
             finalSlug={card.finalSlug}
             templateAccent={selectedTemplate.accent}
             previewMessage={previewMessage}

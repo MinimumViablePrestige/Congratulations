@@ -21,9 +21,10 @@ import {
   upsertCardMediaAsset
 } from "@/lib/cards/repository";
 import { buildCardMediaFileName, validateCardMediaFile } from "@/lib/cards/media";
+import { createContribution } from "@/lib/cards/service";
 import { isTemplateId } from "@/lib/cards/templates";
 import type { CardDraft, CardMediaAsset, CardMediaSlot } from "@/lib/cards/types";
-import { validateContributionMessage } from "@/lib/contributions/validation";
+import { validateContributionFormData, validateContributionMessage } from "@/lib/contributions/validation";
 import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type {
   FinalCardBlockId,
@@ -108,6 +109,50 @@ export async function setContributionStatusAction(formData: FormData) {
   } else {
     revalidatePath(`/manage/${manageToken}`);
   }
+}
+
+export async function addManualContributionAction(
+  _prevState: { ok: boolean; message: string },
+  formData: FormData
+) {
+  const manageToken = String(formData.get("manageToken") ?? "");
+
+  if (!manageToken) {
+    return { ok: false, message: "Не удалось определить страницу управления." };
+  }
+
+  const card = await getCardDraftByManageToken(manageToken);
+  if (!card) {
+    return { ok: false, message: "Секретная ссылка управления больше не актуальна." };
+  }
+
+  const contributionFormData = new FormData();
+  contributionFormData.set("cardId", card.id);
+  contributionFormData.set("authorName", String(formData.get("authorName") ?? ""));
+  contributionFormData.set("authorRole", String(formData.get("authorRole") ?? ""));
+  contributionFormData.set("message", String(formData.get("message") ?? ""));
+
+  const validation = validateContributionFormData(contributionFormData, {
+    layoutMode: card.finalMessageSettings?.layoutMode ?? "grid-2"
+  });
+
+  if (!validation.success) {
+    return {
+      ok: false,
+      message: validation.issues.map((issue) => issue.message).join(" ")
+    };
+  }
+
+  const contribution = await createContribution(validation.data);
+
+  logger.info("manage.manual_contribution_created", "Manual contribution created by organizer", {
+    cardId: card.id,
+    contributionId: contribution.id
+  });
+
+  revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
+
+  return { ok: true, message: "Поздравление добавлено вручную." };
 }
 
 export async function deleteContributionAction(formData: FormData) {

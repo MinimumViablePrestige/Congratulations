@@ -160,3 +160,12 @@
    - full preview link.
 2. The `Оформление открытки` preview received a softer paper-like card treatment so both tabs feel closer to the final gift.
 3. Remaining visual QA item: check the preview in the browser at real viewport sizes and tune spacing if needed.
+
+## Update 2026-06-15 Manual Contribution Entry
+
+1. The `Добавить вручную` button in `Поздравления и фото` now opens an organizer form for adding a message on behalf of someone who cannot use the participant page.
+2. Manual entries use the same contribution validation rules as participant-submitted messages.
+3. The overflow menu next to the button now has two practical organizer actions:
+   - copy participant link;
+   - copy invitation text.
+4. Future menu candidates remain export, bulk actions, and filter reset, but they are intentionally not added until there is a clear need.

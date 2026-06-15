@@ -6,7 +6,7 @@ import type { CardMediaAsset, Contribution } from "@/lib/cards/types";
 import type { FinalCardMessageMediaLayout } from "@/lib/final-card/types";
 import { ContributionEditor } from "./contribution-editor";
 import { MediaManager } from "./media-manager";
-import { reorderContributionsAction, setContributionStatusAction } from "./actions";
+import { addManualContributionAction, reorderContributionsAction, setContributionStatusAction } from "./actions";
 import styles from "./manage-page.module.css";
 
 type Props = {
@@ -18,6 +18,7 @@ type Props = {
   recipientName: string;
   occasionText: string;
   fromLabel: string;
+  publicSlug: string;
   finalSlug: string;
   templateAccent: string;
   previewMessage?: Contribution;
@@ -44,22 +45,29 @@ export const ContentStudio = ({
   recipientName,
   occasionText,
   fromLabel,
+  publicSlug,
   finalSlug,
   templateAccent,
   previewMessage
 }: Props) => {
   const [state, formAction, isPending] = useActionState(reorderContributionsAction, initialState);
+  const [manualState, manualFormAction, isManualPending] = useActionState(addManualContributionAction, initialState);
   const [contributionOrder, setContributionOrder] = useState(allContributions.map((item) => item.id));
   const [draggedContributionId, setDraggedContributionId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
   const [expandedContributionIds, setExpandedContributionIds] = useState<string[]>([]);
   const [activeFilter, setActiveFilter] = useState<ContributionFilter>("all");
+  const [isManualFormOpen, setIsManualFormOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [copyMessage, setCopyMessage] = useState("");
 
   const tooLongCount = allContributions.filter((contribution) => contribution.message.length > messageLimit).length;
   const withinLimitCount = allContributions.length - tooLongCount;
   const hiddenCount = allContributions.filter((contribution) => contribution.status === "hidden").length;
   const activeCount = allContributions.filter((contribution) => contribution.status === "visible").length;
   const noRoleCount = allContributions.filter((contribution) => !contribution.authorRole?.trim()).length;
+  const participantUrl = `/card/${publicSlug}`;
+  const inviteText = `Собираем открытку для ${recipientName}. Добавьте пару теплых слов по ссылке: ${participantUrl}`;
 
   const orderedContributions = useMemo(() => {
     const map = new Map(allContributions.map((contribution) => [contribution.id, contribution]));
@@ -209,6 +217,19 @@ export const ContentStudio = ({
     );
   };
 
+  const copyToClipboard = async (value: string, successMessage: string) => {
+    const origin = typeof window === "undefined" ? "" : window.location.origin;
+    const normalizedValue = value.startsWith("/") ? `${origin}${value}` : value.replace(participantUrl, `${origin}${participantUrl}`);
+
+    try {
+      await navigator.clipboard.writeText(normalizedValue);
+      setCopyMessage(successMessage);
+      setIsMenuOpen(false);
+    } catch {
+      setCopyMessage("Не удалось скопировать автоматически.");
+    }
+  };
+
   return (
     <div className={styles.contentStudio}>
       <section className={styles.contentStatusBar}>
@@ -236,13 +257,31 @@ export const ContentStudio = ({
             <div className={styles.contentPanelTopRow}>
               <h2 className={styles.contentPanelTitle}>Поздравления</h2>
               <div className={styles.contentToolbar}>
-                <button type="button" className={styles.contentGhostButton}>
+                <button type="button" className={styles.contentGhostButton} onClick={() => setIsManualFormOpen((current) => !current)}>
                   <span>+</span>
                   <span>Добавить вручную</span>
                 </button>
-                <button type="button" className={styles.contentIconButton} aria-label="Дополнительные действия">
-                  …
-                </button>
+                <div className={styles.contentMenuWrap}>
+                  <button
+                    type="button"
+                    className={styles.contentIconButton}
+                    onClick={() => setIsMenuOpen((current) => !current)}
+                    aria-expanded={isMenuOpen}
+                    aria-label="Дополнительные действия"
+                  >
+                    …
+                  </button>
+                  {isMenuOpen ? (
+                    <div className={styles.contentMenu}>
+                      <button type="button" onClick={() => copyToClipboard(participantUrl, "Ссылка для участников скопирована.")}>
+                        Скопировать ссылку для участников
+                      </button>
+                      <button type="button" onClick={() => copyToClipboard(inviteText, "Текст приглашения скопирован.")}>
+                        Скопировать текст приглашения
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </div>
 
@@ -252,7 +291,53 @@ export const ContentStudio = ({
                 Тексты длиннее {messageLimit} символов лучше сократить для выбранного макета.
               </p>
             </div>
+            {copyMessage ? <p className={styles.contentInlineNotice}>{copyMessage}</p> : null}
           </div>
+
+          {isManualFormOpen ? (
+            <form action={manualFormAction} className={styles.manualContributionForm}>
+              <input type="hidden" name="manageToken" value={manageToken} />
+              <div className={styles.manualContributionHeader}>
+                <div>
+                  <h3>Добавить поздравление вручную</h3>
+                  <p>Для сообщений из чата, звонка или от человека, который не может открыть форму сайта.</p>
+                </div>
+                <button type="button" className={styles.contentSoftButton} onClick={() => setIsManualFormOpen(false)}>
+                  Свернуть
+                </button>
+              </div>
+
+              <div className={styles.manualContributionGrid}>
+                <label>
+                  <span>Имя автора</span>
+                  <input name="authorName" placeholder="Например, Мария" required minLength={2} maxLength={80} />
+                </label>
+                <label>
+                  <span>Роль или подпись</span>
+                  <input name="authorRole" placeholder="Например, коллега" maxLength={80} />
+                </label>
+              </div>
+
+              <label className={styles.manualContributionMessage}>
+                <span>Текст поздравления</span>
+                <textarea
+                  name="message"
+                  placeholder="Вставьте или напишите поздравление от участника..."
+                  required
+                  minLength={20}
+                  maxLength={1500}
+                  rows={5}
+                />
+              </label>
+
+              <div className={styles.manualContributionFooter}>
+                <button type="submit" className={styles.contentPrimaryButton} disabled={isManualPending}>
+                  {isManualPending ? "Добавляем..." : "Добавить поздравление"}
+                </button>
+                <span className={manualState.ok ? styles.limitOk : styles.limitWarning}>{manualState.message || `Лучше уложиться до ${messageLimit} символов для текущей сетки.`}</span>
+              </div>
+            </form>
+          ) : null}
 
           <div className={styles.contentFilterRow}>
             <button
