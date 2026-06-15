@@ -150,3 +150,13 @@
 2. Implement the AI-generated common greeting from the team, tied to the optional `Общее поздравление` block.
 3. Add stronger empty states for a brand-new draft with no contributions and no uploaded photos.
 4. Add manual visual QA scenarios for status changes, drag ordering, and preview updates before moving to payment/publish flow.
+
+## Update 2026-06-15 Preview Pass
+
+1. The `Поздравления и фото` right rail preview now shows a mini card sequence instead of a single technical message card:
+   - cover;
+   - selected contribution;
+   - closing block;
+   - full preview link.
+2. The `Оформление открытки` preview received a softer paper-like card treatment so both tabs feel closer to the final gift.
+3. Remaining visual QA item: check the preview in the browser at real viewport sizes and tune spacing if needed.

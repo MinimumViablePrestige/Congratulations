@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useMemo, useState, type DragEvent as ReactDragEvent } from "react";
+import { useActionState, useMemo, useState, type CSSProperties, type DragEvent as ReactDragEvent } from "react";
 import type { CardMediaAsset, Contribution } from "@/lib/cards/types";
 import type { FinalCardMessageMediaLayout } from "@/lib/final-card/types";
 import { ContributionEditor } from "./contribution-editor";
@@ -15,6 +15,11 @@ type Props = {
   mediaAssets: CardMediaAsset[];
   mediaLayout: FinalCardMessageMediaLayout;
   messageLimit: number;
+  recipientName: string;
+  occasionText: string;
+  fromLabel: string;
+  finalSlug: string;
+  templateAccent: string;
   previewMessage?: Contribution;
 };
 
@@ -36,6 +41,11 @@ export const ContentStudio = ({
   mediaAssets,
   mediaLayout,
   messageLimit,
+  recipientName,
+  occasionText,
+  fromLabel,
+  finalSlug,
+  templateAccent,
   previewMessage
 }: Props) => {
   const [state, formAction, isPending] = useActionState(reorderContributionsAction, initialState);
@@ -426,7 +436,14 @@ export const ContentStudio = ({
         </section>
 
         <aside className={styles.contentRail}>
-          <section className={styles.contentPreviewCard}>
+          <section
+            className={styles.contentPreviewCard}
+            style={
+              {
+                "--preview-accent": templateAccent
+              } as CSSProperties
+            }
+          >
             <div className={styles.contentPreviewHeader}>
               <h2 className={styles.contentRailTitle}>Предпросмотр поздравлений</h2>
               <p className={styles.previewStatusLine}>
@@ -435,18 +452,32 @@ export const ContentStudio = ({
               </p>
             </div>
 
-            <article className={styles.contentPreviewMessageCard}>
-              <div className={styles.contentPreviewAvatar} />
-              <div className={styles.contentPreviewMessageBody}>
-                <div className={styles.contentPreviewMessageMeta}>
-                  <strong>{previewMessage?.authorName || "Дима"}</strong>
-                  <span>{previewMessage?.authorRole || "ученик"}</span>
+            <article className={styles.contentPreviewStory}>
+              <section className={styles.contentPreviewCover}>
+                <span className={styles.contentPreviewKicker}>Открытка для тебя</span>
+                <strong>{recipientName}</strong>
+                <p>{occasionText}</p>
+                <small>{fromLabel}</small>
+              </section>
+
+              <section className={styles.contentPreviewMessageCard}>
+                <div className={styles.contentPreviewAvatar} />
+                <div className={styles.contentPreviewMessageBody}>
+                  <div className={styles.contentPreviewMessageMeta}>
+                    <strong>{previewMessage?.authorName || "Дима"}</strong>
+                    <span>{previewMessage?.authorRole || "ученик"}</span>
+                  </div>
+                  <p>
+                    {previewMessage?.message.slice(0, 140) ||
+                      "Очень хочется сказать вам теплые слова и поблагодарить за добро, которое вы даете людям..."}
+                  </p>
                 </div>
-                <p>
-                  {previewMessage?.message.slice(0, 140) ||
-                    "Очень хочется сказать вам теплые слова и поблагодарить за добро, которое вы даете людям..."}
-                </p>
-              </div>
+              </section>
+
+              <section className={styles.contentPreviewFinal}>
+                <span>Спасибо, что ты с нами!</span>
+                <p>Вперед - к мечтам.</p>
+              </section>
             </article>
 
             <div className={styles.contentPreviewPager}>
@@ -462,6 +493,10 @@ export const ContentStudio = ({
                 ›
               </button>
             </div>
+
+            <Link href={`/gift/${finalSlug}`} target="_blank" className={styles.previewLinkButton}>
+              Открыть полный просмотр
+            </Link>
           </section>
 
           <MediaManager manageToken={manageToken} mediaAssets={mediaAssets} mediaLayout={mediaLayout} />

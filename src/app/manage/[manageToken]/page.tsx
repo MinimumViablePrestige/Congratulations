@@ -346,6 +346,11 @@ export default async function ManagePage({ params, searchParams }: Props) {
             mediaAssets={mediaAssets}
             mediaLayout={mediaLayout}
             messageLimit={layoutProfile.maxChars}
+            recipientName={recipientName}
+            occasionText={occasionText}
+            fromLabel={card.fromLabel}
+            finalSlug={card.finalSlug}
+            templateAccent={selectedTemplate.accent}
             previewMessage={previewMessage}
           />
         )}

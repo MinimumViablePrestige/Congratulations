@@ -1396,8 +1396,8 @@ button.contentFilterPill {
 }
 
 .contentPreviewAvatar {
-  width: 96px;
-  height: 96px;
+  width: 86px;
+  height: 86px;
 }
 
 .contentIdentity {
@@ -1658,15 +1658,125 @@ button.contentFilterPill {
   gap: 18px;
 }
 
+.contentPreviewCard {
+  --preview-accent: #c27854;
+}
+
+.contentPreviewStory {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid rgba(98, 72, 58, 0.08);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 82% 6%, color-mix(in srgb, var(--preview-accent) 18%, white), transparent 28%),
+    linear-gradient(180deg, #fffaf4 0%, #f7eee5 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+
+.contentPreviewCover,
+.contentPreviewFinal {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(98, 72, 58, 0.08);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.contentPreviewCover {
+  display: grid;
+  gap: 8px;
+  min-height: 230px;
+  padding: 26px 20px;
+  place-items: center;
+  text-align: center;
+}
+
+.contentPreviewCover::before,
+.contentPreviewFinal::before {
+  content: "";
+  position: absolute;
+  right: -32px;
+  top: -34px;
+  width: 138px;
+  height: 138px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 42% 40%, rgba(255, 255, 255, 0.84), transparent 22%),
+    radial-gradient(circle, color-mix(in srgb, var(--preview-accent) 28%, white), transparent 68%);
+  opacity: 0.86;
+}
+
+.contentPreviewKicker {
+  position: relative;
+  z-index: 1;
+  color: #9a7a65;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.contentPreviewCover strong {
+  position: relative;
+  z-index: 1;
+  color: #55382d;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.15rem;
+  line-height: 1;
+}
+
+.contentPreviewCover p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid rgba(194, 120, 84, 0.16);
+  border-radius: 18px;
+  background: rgba(255, 248, 242, 0.9);
+  color: #6f5546;
+  font-weight: 700;
+}
+
+.contentPreviewCover small {
+  position: relative;
+  z-index: 1;
+  color: #947765;
+}
+
 .contentPreviewMessageCard {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 16px;
   align-items: center;
   padding: 18px;
   border: 1px solid rgba(98, 72, 58, 0.08);
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.82);
+}
+
+.contentPreviewFinal {
+  display: grid;
+  gap: 6px;
+  min-height: 112px;
+  padding: 20px 18px;
+  place-items: center;
+  text-align: center;
+}
+
+.contentPreviewFinal span,
+.contentPreviewFinal p {
+  position: relative;
+  z-index: 1;
+}
+
+.contentPreviewFinal span {
+  color: #5a4033;
+  font-weight: 800;
+}
+
+.contentPreviewFinal p {
+  margin: 0;
+  color: #8a7060;
 }
 
 .contentPreviewMessageBody {
@@ -2793,9 +2903,14 @@ button.contentFilterPill {
   gap: 14px;
   padding: 16px;
   border-radius: 24px;
+  border: 1px solid rgba(110, 84, 66, 0.08);
   background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.7), transparent 24%),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--preview-accent) 18%, white), transparent 24%),
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.84), transparent 18%),
     linear-gradient(180deg, #fffaf4 0%, #f7ede3 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.56),
+    0 18px 34px rgba(89, 61, 44, 0.08);
 }
 
 .previewHeroCard,
@@ -2969,6 +3084,7 @@ button.contentFilterPill {
 .previewLinkButton {
   min-height: 44px;
   border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
 }
 
 .studioCanvasCard {
