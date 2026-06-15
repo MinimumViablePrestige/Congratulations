@@ -191,3 +191,10 @@
 4. Split uploaded media intent into message media slots and `Наши воспоминания` slots.
 5. The content tab now prioritizes photo upload/management in the right rail instead of the narrow congratulations preview.
 6. Memory photo captions are constrained to one line to keep the public section compact.
+
+## Update 2026-06-15 Compact Photo Library
+
+1. Replaced per-slot photo cards with two compact library groups: horizontal photos and vertical photos.
+2. Added need/added counters to each photo group so the organizer sees how many images are still missing.
+3. Kept existing slot storage underneath, but made the UI behave like a shared photo library for future block-level selection.
+4. Tightened right-rail form styles so inputs and file controls stay inside the page bounds.
