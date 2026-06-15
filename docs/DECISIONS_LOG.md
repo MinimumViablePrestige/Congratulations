@@ -250,3 +250,10 @@ Accepted:
 2. Optional blocks can be removed directly from the card.
 3. Removed blocks are restored from a dedicated recovery area.
 4. Message grid settings live inside the `Поздравления` card.
+### Update: cover and final are fixed anchors of the composition
+
+Accepted:
+
+1. `Обложка` is always the first block of the final card.
+2. `Финал` is always the closing block of the final card.
+3. Reordering is available only for the middle sequence, with visible drop guidance during drag and drop.

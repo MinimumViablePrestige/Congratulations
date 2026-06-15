@@ -111,3 +111,5 @@
 3. Blank manage drafts now include softer guided empty states.
 4. AI generation now relies on `occasionText` plus template choice instead of an active `occasion` branch.
 5. `Состав открытки` was rebuilt into a card-based block constructor with remove/restore behavior and inline message-layout controls.
+6. `Состав открытки` was cleaned up into a single composition list with fixed `Обложка` and `Финал`.
+7. Block reordering now uses clearer drag feedback with visible drop targets instead of a bare browser drag.

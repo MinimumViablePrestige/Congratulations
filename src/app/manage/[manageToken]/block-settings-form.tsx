@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useMemo, useState, type DragEvent as ReactDragEvent } from "react";
 import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type {
   FinalCardBlockId,
@@ -32,6 +32,11 @@ type RenderedBlock = {
   label: string;
   description: string;
   removable: boolean;
+};
+
+type DropTarget = {
+  blockId: FinalCardBlockId;
+  position: "before" | "after";
 };
 
 const initialState = {
@@ -85,7 +90,8 @@ const canvasBlockMeta: Record<
   hero: {
     label: "Обложка",
     size: "hero",
-    description: "Первый экран с именем получателя, поводом и общим настроением открытки. Является обязательным."
+    description:
+      "Первый экран с именем получателя, поводом и общим настроением открытки. Является обязательным."
   },
   summary: {
     label: "Вводный блок",
@@ -125,6 +131,7 @@ const canvasBlockMeta: Record<
 };
 
 const requiredBlockIds: FinalCardBlockId[] = ["hero", "messages", "closing"];
+const fixedBlockIds: FinalCardBlockId[] = ["hero", "closing"];
 
 const buildCanvasBlocks = (options: BlockOption[], blockState: Record<string, boolean>): RenderedBlock[] => [
   {
@@ -170,6 +177,7 @@ export const BlockSettingsForm = ({
   );
   const [blockOrder, setBlockOrder] = useState<FinalCardBlockId[]>(initialBlockOrder);
   const [draggedBlockId, setDraggedBlockId] = useState<FinalCardBlockId | null>(null);
+  const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
 
   const activeBlocks = useMemo(() => buildCanvasBlocks(options, blockState), [blockState, options]);
 
@@ -187,10 +195,27 @@ export const BlockSettingsForm = ({
     .map((blockId) => options.find((option) => option.id === blockId))
     .filter((option): option is BlockOption => Boolean(option));
 
-  const moveBlock = (targetBlockId: FinalCardBlockId) => {
+  const resolveDropPosition = (
+    targetBlockId: FinalCardBlockId,
+    pointerPosition: "before" | "after"
+  ): "before" | "after" => {
+    if (targetBlockId === "hero") {
+      return "after";
+    }
+
+    if (targetBlockId === "closing") {
+      return "before";
+    }
+
+    return pointerPosition;
+  };
+
+  const moveBlock = (targetBlockId: FinalCardBlockId, pointerPosition: "before" | "after") => {
     if (!draggedBlockId || draggedBlockId === targetBlockId) {
       return;
     }
+
+    const targetPosition = resolveDropPosition(targetBlockId, pointerPosition);
 
     setBlockOrder((current) => {
       const withoutDragged = current.filter((blockId) => blockId !== draggedBlockId);
@@ -201,11 +226,67 @@ export const BlockSettingsForm = ({
       }
 
       const next = [...withoutDragged];
-      next.splice(targetIndex, 0, draggedBlockId);
+      const insertIndex = targetPosition === "after" ? targetIndex + 1 : targetIndex;
+      next.splice(insertIndex, 0, draggedBlockId);
       return next;
     });
 
     setDraggedBlockId(null);
+    setDropTarget(null);
+  };
+
+  const handleDragStart = (event: ReactDragEvent<HTMLSpanElement>, blockId: FinalCardBlockId) => {
+    setDraggedBlockId(blockId);
+    setDropTarget(null);
+    event.dataTransfer.effectAllowed = "move";
+
+    const blockCard = event.currentTarget.closest("article");
+
+    if (blockCard instanceof HTMLElement) {
+      const rect = blockCard.getBoundingClientRect();
+      event.dataTransfer.setDragImage(blockCard, rect.width / 2, 32);
+    }
+  };
+
+  const handleDragOver = (event: ReactDragEvent<HTMLElement>, blockId: FinalCardBlockId) => {
+    if (!draggedBlockId || draggedBlockId === blockId) {
+      return;
+    }
+
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const midpoint = rect.top + rect.height / 2;
+    const pointerPosition = event.clientY < midpoint ? "before" : "after";
+    const targetPosition = resolveDropPosition(blockId, pointerPosition);
+
+    setDropTarget((current) => {
+      if (current?.blockId === blockId && current.position === targetPosition) {
+        return current;
+      }
+
+      return { blockId, position: targetPosition };
+    });
+  };
+
+  const handleDragLeave = (event: ReactDragEvent<HTMLElement>, blockId: FinalCardBlockId) => {
+    if (event.currentTarget.contains(event.relatedTarget as Node | null)) {
+      return;
+    }
+
+    setDropTarget((current) => (current?.blockId === blockId ? null : current));
+  };
+
+  const handleDrop = (event: ReactDragEvent<HTMLElement>, blockId: FinalCardBlockId) => {
+    event.preventDefault();
+
+    if (!draggedBlockId || draggedBlockId === blockId || !dropTarget || dropTarget.blockId !== blockId) {
+      setDropTarget(null);
+      return;
+    }
+
+    moveBlock(blockId, dropTarget.position);
   };
 
   return (
@@ -237,23 +318,41 @@ export const BlockSettingsForm = ({
           {canvasBlocks.map((block) => (
             <article
               key={block.id}
-              className={`${styles.canvasBlock} ${styles[`canvasBlock${canvasBlockMeta[block.id].size}`]}`}
-              onDragOver={(event) => event.preventDefault()}
-              onDrop={() => moveBlock(block.id)}
+              className={[
+                styles.canvasBlock,
+                styles[`canvasBlock${canvasBlockMeta[block.id].size}`],
+                draggedBlockId === block.id ? styles.canvasBlockDragging : "",
+                dropTarget?.blockId === block.id ? styles.canvasBlockDropTarget : "",
+                dropTarget?.blockId === block.id && dropTarget.position === "before" ? styles.canvasBlockDropBefore : "",
+                dropTarget?.blockId === block.id && dropTarget.position === "after" ? styles.canvasBlockDropAfter : "",
+                fixedBlockIds.includes(block.id) ? styles.canvasBlockFixed : ""
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              onDragOver={(event) => handleDragOver(event, block.id)}
+              onDragLeave={(event) => handleDragLeave(event, block.id)}
+              onDrop={(event) => handleDrop(event, block.id)}
             >
               <div className={styles.canvasBlockHeader}>
                 <div className={styles.canvasBlockHeading}>
                   <span>{block.label}</span>
-                  <span
-                    className={styles.canvasDragHandle}
-                    draggable
-                    onDragStart={() => setDraggedBlockId(block.id)}
-                    onDragEnd={() => setDraggedBlockId(null)}
-                    title="Перетащите, чтобы изменить порядок"
-                    aria-label={`Перетащите блок ${block.label}, чтобы изменить порядок`}
-                  >
-                    ⋮⋮
-                  </span>
+                  {fixedBlockIds.includes(block.id) ? (
+                    <span className={styles.canvasFixedBadge}>Фиксирован</span>
+                  ) : (
+                    <span
+                      className={styles.canvasDragHandle}
+                      draggable
+                      onDragStart={(event) => handleDragStart(event, block.id)}
+                      onDragEnd={() => {
+                        setDraggedBlockId(null);
+                        setDropTarget(null);
+                      }}
+                      title="Перетащите, чтобы изменить порядок"
+                      aria-label={`Перетащите блок ${block.label}, чтобы изменить порядок`}
+                    >
+                      ⋮⋮
+                    </span>
+                  )}
                 </div>
                 {block.removable ? (
                   <button
@@ -384,7 +483,9 @@ export const BlockSettingsForm = ({
           </div>
 
           {removedOptionalBlocks.length === 0 ? (
-            <p className={styles.empty}>Сейчас ничего не убрано. Все доступные дополнительные блоки уже в составе открытки.</p>
+            <p className={styles.empty}>
+              Сейчас ничего не убрано. Все доступные дополнительные блоки уже в составе открытки.
+            </p>
           ) : (
             <div className={styles.restoreChipList}>
               {removedOptionalBlocks.map((option) => (
