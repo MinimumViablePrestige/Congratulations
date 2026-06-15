@@ -93,7 +93,20 @@ const resolveStyle = (templateId: CardDraft["templateId"]): FinalCardStyleId => 
   return matched?.id ?? "warm-classic";
 };
 
-const resolveOrderedMediaAssets = (mediaAssets: CardMediaAsset[], slots: string[], fallbackSlots: string[]) => {
+const resolveOrderedMediaAssets = (
+  mediaAssets: CardMediaAsset[],
+  assetIds: string[],
+  slots: string[],
+  fallbackSlots: string[]
+) => {
+  const selectedById = assetIds
+    .map((id) => mediaAssets.find((asset) => asset.id === id))
+    .filter((asset): asset is CardMediaAsset => Boolean(asset));
+
+  if (selectedById.length > 0) {
+    return selectedById;
+  }
+
   const selectedSlots = slots.length > 0 ? slots : fallbackSlots;
   return selectedSlots
     .map((slot) => mediaAssets.find((asset) => asset.slot === slot))
@@ -138,6 +151,7 @@ export const buildFinalCardViewModel = (
     mediaAssets,
     messageMediaAssets: resolveOrderedMediaAssets(
       mediaAssets,
+      card.finalMessageSettings?.mediaAssetIds ?? [],
       card.finalMessageSettings?.mediaSlots ?? [],
       messageMediaLayout === "portrait"
         ? ["portrait"]
@@ -145,11 +159,12 @@ export const buildFinalCardViewModel = (
           ? ["landscape-a", "landscape-b"]
           : ["landscape-a", "landscape-b", "landscape-c"]
     ),
-    memoryMediaAssets: resolveOrderedMediaAssets(mediaAssets, card.finalMemorySettings?.mediaSlots ?? [], [
-      "memory-a",
-      "memory-b",
-      "memory-c"
-    ]),
+    memoryMediaAssets: resolveOrderedMediaAssets(
+      mediaAssets,
+      card.finalMemorySettings?.mediaAssetIds ?? [],
+      card.finalMemorySettings?.mediaSlots ?? [],
+      ["memory-a", "memory-b", "memory-c"]
+    ),
     memoryTitle: card.finalMemorySettings?.title ?? "Наши воспоминания",
     memoryDescription: card.finalMemorySettings?.description ?? "Столько ярких моментов, с которыми мы идём рядом с тобой.",
     messageLayoutMode,

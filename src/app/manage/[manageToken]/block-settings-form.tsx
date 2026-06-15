@@ -30,6 +30,8 @@ type Props = {
   mediaAssets: CardMediaAsset[];
   initialMessageMediaSlots: FinalCardMediaSlot[];
   initialMemoryMediaSlots: FinalCardMediaSlot[];
+  initialMessageMediaAssetIds: string[];
+  initialMemoryMediaAssetIds: string[];
   initialMemoryTitle: string;
   initialMemoryDescription: string;
 };
@@ -78,6 +80,15 @@ const mediaSlotsByLayout: Record<FinalCardMessageMediaLayout, CardMediaSlot[]> =
   "landscape-pair": ["landscape-a", "landscape-b"],
   "landscape-trio": ["landscape-a", "landscape-b", "landscape-c"]
 };
+
+const horizontalMediaSlots: CardMediaSlot[] = [
+  "landscape-a",
+  "landscape-b",
+  "landscape-c",
+  "memory-a",
+  "memory-b",
+  "memory-c"
+];
 
 const memorySlotCount = 3;
 
@@ -331,29 +342,59 @@ const normalizeSelectedSlots = (
   return [...filtered, ...fallback.filter((slot) => !filtered.includes(slot))].slice(0, fallbackCount);
 };
 
+const normalizeSelectedAssetIds = (
+  assets: CardMediaAsset[],
+  selectedAssetIds: string[],
+  legacySelectedSlots: FinalCardMediaSlot[],
+  allowedSlots: CardMediaSlot[],
+  fallbackCount: number
+) => {
+  const allowed = new Set(allowedSlots);
+  const allowedAssets = assets.filter((asset) => allowed.has(asset.slot));
+  const selected = selectedAssetIds.filter((id) => allowedAssets.some((asset) => asset.id === id));
+  const legacySlots = normalizeSelectedSlots(legacySelectedSlots, allowedSlots, fallbackCount);
+  const legacyIds = legacySlots
+    .map((slot) => allowedAssets.find((asset) => asset.slot === slot)?.id)
+    .filter((id): id is string => Boolean(id));
+  const fallbackIds = allowedAssets.map((asset) => asset.id);
+
+  return [...selected, ...legacyIds, ...fallbackIds]
+    .filter((id, index, list) => list.indexOf(id) === index)
+    .slice(0, fallbackCount);
+};
+
 const PhotoSequencePicker = ({
   title,
   description,
   assets,
   allowedSlots,
-  selectedSlots,
+  slotCount,
+  selectedAssetIds,
+  legacySelectedSlots,
   onChange
 }: {
   title: string;
   description: string;
   assets: CardMediaAsset[];
   allowedSlots: CardMediaSlot[];
-  selectedSlots: FinalCardMediaSlot[];
-  onChange: (slots: FinalCardMediaSlot[]) => void;
+  slotCount: number;
+  selectedAssetIds: string[];
+  legacySelectedSlots: FinalCardMediaSlot[];
+  onChange: (assetIds: string[]) => void;
 }) => {
-  const availableAssets = allowedSlots
-    .map((slot) => assets.find((asset) => asset.slot === slot))
-    .filter((asset): asset is CardMediaAsset => Boolean(asset));
-  const normalizedSlots = normalizeSelectedSlots(selectedSlots, allowedSlots, allowedSlots.length);
+  const allowed = new Set(allowedSlots);
+  const availableAssets = assets.filter((asset) => allowed.has(asset.slot));
+  const normalizedAssetIds = normalizeSelectedAssetIds(
+    assets,
+    selectedAssetIds,
+    legacySelectedSlots,
+    allowedSlots,
+    slotCount
+  );
 
-  const updateSlot = (index: number, nextSlot: FinalCardMediaSlot) => {
-    const next = [...normalizedSlots];
-    next[index] = nextSlot;
+  const updateAsset = (index: number, nextAssetId: string) => {
+    const next = [...normalizedAssetIds];
+    next[index] = nextAssetId;
     onChange(next);
   };
 
@@ -371,15 +412,15 @@ const PhotoSequencePicker = ({
         <p className={styles.photoSequenceEmpty}>Сначала загрузите фото во вкладке «Поздравления и фото».</p>
       ) : (
         <div className={styles.photoSequenceList}>
-          {normalizedSlots.map((slot, index) => {
-            const selectedAsset = assets.find((asset) => asset.slot === slot);
+          {normalizedAssetIds.map((assetId, index) => {
+            const selectedAsset = assets.find((asset) => asset.id === assetId);
 
             return (
-              <label key={`${slot}-${index}`} className={styles.photoSequenceRow}>
+              <label key={`${assetId}-${index}`} className={styles.photoSequenceRow}>
                 <span>Позиция {index + 1}</span>
-                <select value={slot} onChange={(event) => updateSlot(index, event.target.value as FinalCardMediaSlot)}>
+                <select value={assetId} onChange={(event) => updateAsset(index, event.target.value)}>
                   {availableAssets.map((asset) => (
-                    <option key={asset.slot} value={asset.slot}>
+                    <option key={asset.id} value={asset.id}>
                       {getAssetLabel(asset)}
                     </option>
                   ))}
@@ -408,6 +449,8 @@ export const BlockSettingsForm = ({
   mediaAssets,
   initialMessageMediaSlots,
   initialMemoryMediaSlots,
+  initialMessageMediaAssetIds,
+  initialMemoryMediaAssetIds,
   initialMemoryTitle,
   initialMemoryDescription
 }: Props) => {
@@ -418,8 +461,10 @@ export const BlockSettingsForm = ({
     Object.fromEntries(options.map((option) => [option.id, option.checked]))
   );
   const [blockOrder, setBlockOrder] = useState<FinalCardBlockId[]>(initialBlockOrder);
-  const [messageMediaSlots, setMessageMediaSlots] = useState<FinalCardMediaSlot[]>(initialMessageMediaSlots);
-  const [memoryMediaSlots, setMemoryMediaSlots] = useState<FinalCardMediaSlot[]>(initialMemoryMediaSlots);
+  const [messageMediaSlots] = useState<FinalCardMediaSlot[]>(initialMessageMediaSlots);
+  const [memoryMediaSlots] = useState<FinalCardMediaSlot[]>(initialMemoryMediaSlots);
+  const [messageMediaAssetIds, setMessageMediaAssetIds] = useState<string[]>(initialMessageMediaAssetIds);
+  const [memoryMediaAssetIds, setMemoryMediaAssetIds] = useState<string[]>(initialMemoryMediaAssetIds);
   const [memoryTitle, setMemoryTitle] = useState(initialMemoryTitle);
   const [memoryDescription, setMemoryDescription] = useState(initialMemoryDescription);
   const [draggedBlockId, setDraggedBlockId] = useState<FinalCardBlockId | null>(null);
@@ -440,6 +485,7 @@ export const BlockSettingsForm = ({
     .map((blockId) => options.find((option) => option.id === blockId))
     .filter((option): option is BlockOption => Boolean(option));
   const activeMessageMediaSlots = mediaSlotsByLayout[mediaLayout];
+  const activeMessagePickerSlots = mediaLayout === "portrait" ? activeMessageMediaSlots : horizontalMediaSlots;
 
   const resolveDropPosition = (
     targetBlockId: FinalCardBlockId,
@@ -561,8 +607,28 @@ export const BlockSettingsForm = ({
         <input key={`message-media-${slot}-${index}`} type="hidden" name="messageMediaSlots" value={slot} />
       ))}
 
+      {normalizeSelectedAssetIds(
+        mediaAssets,
+        messageMediaAssetIds,
+        messageMediaSlots,
+        activeMessagePickerSlots,
+        activeMessageMediaSlots.length
+      ).map((assetId, index) => (
+        <input key={`message-media-asset-${assetId}-${index}`} type="hidden" name="messageMediaAssetIds" value={assetId} />
+      ))}
+
       {normalizeSelectedSlots(memoryMediaSlots, ["memory-a", "memory-b", "memory-c"], memorySlotCount).map((slot, index) => (
         <input key={`memory-media-${slot}-${index}`} type="hidden" name="memoryMediaSlots" value={slot} />
+      ))}
+
+      {normalizeSelectedAssetIds(
+        mediaAssets,
+        memoryMediaAssetIds,
+        memoryMediaSlots,
+        horizontalMediaSlots,
+        memorySlotCount
+      ).map((assetId, index) => (
+        <input key={`memory-media-asset-${assetId}-${index}`} type="hidden" name="memoryMediaAssetIds" value={assetId} />
       ))}
 
       {blockOrder.map((blockId) => (
@@ -718,9 +784,11 @@ export const BlockSettingsForm = ({
                               title="Фото и последовательность"
                               description="Выберите, какие фото и в каком порядке попадут рядом с поздравлениями."
                               assets={mediaAssets}
-                              allowedSlots={activeMessageMediaSlots}
-                              selectedSlots={messageMediaSlots}
-                              onChange={setMessageMediaSlots}
+                              allowedSlots={activeMessagePickerSlots}
+                              slotCount={activeMessageMediaSlots.length}
+                              selectedAssetIds={messageMediaAssetIds}
+                              legacySelectedSlots={messageMediaSlots}
+                              onChange={setMessageMediaAssetIds}
                             />
                           </div>
                         ) : null}
@@ -756,9 +824,11 @@ export const BlockSettingsForm = ({
                           title="Фото и последовательность"
                           description="Выберите до трех фото для блока воспоминаний."
                           assets={mediaAssets}
-                          allowedSlots={["memory-a", "memory-b", "memory-c"]}
-                          selectedSlots={memoryMediaSlots}
-                          onChange={setMemoryMediaSlots}
+                          allowedSlots={horizontalMediaSlots}
+                          slotCount={memorySlotCount}
+                          selectedAssetIds={memoryMediaAssetIds}
+                          legacySelectedSlots={memoryMediaSlots}
+                          onChange={setMemoryMediaAssetIds}
                         />
                       </div>
                     ) : null}

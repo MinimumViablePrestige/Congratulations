@@ -102,6 +102,8 @@ export default async function ManagePage({ params, searchParams }: Props) {
   const mediaLayout = card.finalMessageSettings?.mediaLayout ?? "portrait";
   const messageMediaSlots = card.finalMessageSettings?.mediaSlots ?? [];
   const memoryMediaSlots = card.finalMemorySettings?.mediaSlots ?? [];
+  const messageMediaAssetIds = card.finalMessageSettings?.mediaAssetIds ?? [];
+  const memoryMediaAssetIds = card.finalMemorySettings?.mediaAssetIds ?? [];
   const memoryTitle = card.finalMemorySettings?.title ?? "Наши воспоминания";
   const memoryDescription =
     card.finalMemorySettings?.description ?? "Столько ярких моментов, с которыми мы идём рядом с тобой.";
@@ -294,6 +296,8 @@ export default async function ManagePage({ params, searchParams }: Props) {
                   mediaAssets={mediaAssets}
                   initialMessageMediaSlots={messageMediaSlots}
                   initialMemoryMediaSlots={memoryMediaSlots}
+                  initialMessageMediaAssetIds={messageMediaAssetIds}
+                  initialMemoryMediaAssetIds={memoryMediaAssetIds}
                   initialMemoryTitle={memoryTitle}
                   initialMemoryDescription={memoryDescription}
                 />

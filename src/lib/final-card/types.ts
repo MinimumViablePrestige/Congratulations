@@ -54,6 +54,7 @@ export type FinalCardMessageSettings = {
   layoutMode: FinalCardMessageLayoutMode;
   mediaLayout: FinalCardMessageMediaLayout;
   mediaSlots: FinalCardMediaSlot[];
+  mediaAssetIds: string[];
   showAllLink: boolean;
 };
 
@@ -61,4 +62,5 @@ export type FinalCardMemorySettings = {
   title: string;
   description: string;
   mediaSlots: FinalCardMediaSlot[];
+  mediaAssetIds: string[];
 };

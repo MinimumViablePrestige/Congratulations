@@ -205,3 +205,11 @@
 2. The `Поздравления` block now lets the organizer choose which uploaded photos appear in the media layout and in what order.
 3. The `Наши воспоминания` block now has its own shared caption text and ordered photo selection.
 4. Final card rendering now uses the selected photo order instead of fixed slot order.
+
+## Update 2026-06-15 Asset-Based Photo Selection
+
+1. Replaced block photo selection by fixed media slots with selection by concrete uploaded photo IDs.
+2. Kept legacy slot-based settings as a fallback so existing drafts continue to render.
+3. The `Поздравления` media block now selects photos from the matching uploaded library and preserves their order.
+4. The `Наши воспоминания` block now selects up to three horizontal photos from the shared photo library and preserves their order.
+5. Final card rendering now prefers selected asset IDs before falling back to old slot order.

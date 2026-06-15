@@ -17,13 +17,15 @@ const defaultFinalMessageSettings: FinalCardMessageSettings = {
   layoutMode: "grid-2",
   mediaLayout: "portrait",
   mediaSlots: [],
+  mediaAssetIds: [],
   showAllLink: true
 };
 
 const defaultFinalMemorySettings: FinalCardMemorySettings = {
   title: "Наши воспоминания",
   description: "Столько ярких моментов, с которыми мы идём рядом с тобой.",
-  mediaSlots: []
+  mediaSlots: [],
+  mediaAssetIds: []
 };
 
 const normalizeCard = (card: CardDraft): CardDraft => ({

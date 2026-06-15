@@ -415,6 +415,16 @@ export async function updateFinalPresentationSettingsAction(
     .getAll("memoryMediaSlots")
     .map((value) => String(value))
     .filter((value): value is FinalCardMediaSlot => finalMediaSlots.includes(value as FinalCardMediaSlot));
+  const cardMediaAssets = await listCardMediaAssetsByCardId(card.id);
+  const cardMediaAssetIds = new Set(cardMediaAssets.map((asset) => asset.id));
+  const messageMediaAssetIds = formData
+    .getAll("messageMediaAssetIds")
+    .map((value) => String(value))
+    .filter((value) => cardMediaAssetIds.has(value));
+  const memoryMediaAssetIds = formData
+    .getAll("memoryMediaAssetIds")
+    .map((value) => String(value))
+    .filter((value) => cardMediaAssetIds.has(value));
   const memoryTitle = String(formData.get("memoryTitle") ?? "").trim().slice(0, 80) || "Наши воспоминания";
   const memoryDescription =
     String(formData.get("memoryDescription") ?? "").trim().slice(0, 180) ||
@@ -433,12 +443,14 @@ export async function updateFinalPresentationSettingsAction(
     layoutMode,
     mediaLayout,
     mediaSlots: messageMediaSlots,
+    mediaAssetIds: messageMediaAssetIds,
     showAllLink: visibleContributions.length > layoutProfile.cardsPerPage
   };
   const finalMemorySettings: FinalCardMemorySettings = {
     title: memoryTitle,
     description: memoryDescription,
-    mediaSlots: memoryMediaSlots
+    mediaSlots: memoryMediaSlots,
+    mediaAssetIds: memoryMediaAssetIds
   };
 
   const updated = await updateCardFinalPresentationSettings(
