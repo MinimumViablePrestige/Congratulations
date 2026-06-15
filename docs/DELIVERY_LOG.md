@@ -113,3 +113,4 @@
 5. `Состав открытки` was rebuilt into a card-based block constructor with remove/restore behavior and inline message-layout controls.
 6. `Состав открытки` was cleaned up into a single composition list with fixed `Обложка` and `Финал`.
 7. Block reordering now uses clearer drag feedback with visible drop targets instead of a bare browser drag.
+8. The `Оформление открытки` tab was rebuilt into a two-column studio with a richer hero, current-template card, and sticky preview rail.
