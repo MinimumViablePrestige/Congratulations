@@ -39,6 +39,8 @@ type DropTarget = {
   position: "before" | "after";
 };
 
+type ExpandedState = Partial<Record<FinalCardBlockId, boolean>>;
+
 const initialState = {
   ok: false,
   message: ""
@@ -51,23 +53,23 @@ const layoutOptions: Array<{
 }> = [
   {
     id: "grid-2",
-    label: 'Сетка "2 на 2"',
-    description: "На первом экране видно 4 карточки, дальше можно листать."
+    label: "Сетка 2 на 2",
+    description: "Карточки стоят компактной сеткой 2х2."
   },
   {
     id: "carousel-1",
     label: "Один ряд",
-    description: "Карточки идут в одну линию и читаются как лента."
+    description: "Все карточки идут в одну горизонтальную ленту."
   },
   {
     id: "carousel-2",
     label: "Два ряда",
-    description: "Более плотная сетка, когда хочется показать больше поздравлений сразу."
+    description: "Карточки читаются в две полосы, плотнее и короче."
   },
   {
     id: "column-media",
     label: "Колонка + фото",
-    description: "Слева идут поздравления, справа закрепляется отдельный фотоблок."
+    description: "Слева поздравления, справа закреплённый фотоблок."
   }
 ];
 
@@ -75,58 +77,67 @@ const mediaLayoutOptions: Array<{
   id: FinalCardMessageMediaLayout;
   label: string;
 }> = [
-  { id: "portrait", label: "1 вертикальное фото" },
-  { id: "landscape-pair", label: "2 горизонтальных фото" }
+  { id: "portrait", label: "1 Вертикальное фото" },
+  { id: "landscape-pair", label: "2 Горизонтальных фото" }
 ];
 
-const canvasBlockMeta: Record<
+const blockMeta: Record<
   FinalCardBlockId,
   {
     label: string;
-    size: "hero" | "medium" | "small" | "messages" | "closing";
-    description: string;
+    icon: string;
+    summary: string;
+    details: string;
+    fixed?: boolean;
   }
 > = {
   hero: {
     label: "Обложка",
-    size: "hero",
-    description:
-      "Первый экран с именем получателя, поводом и общим настроением открытки. Является обязательным."
+    icon: "О",
+    summary: "Первый экран с именем получателя и настроением открытки.",
+    details: "Обязательный блок. Он открывает открытку и задаёт первое впечатление."
   },
   summary: {
     label: "Вводный блок",
-    size: "medium",
-    description: "Коротко объясняет, по какому поводу собрана открытка. Сейчас блок включен в открытку."
+    icon: "В",
+    summary: "Коротко объясняет, по какому поводу собрана открытка.",
+    details: "Подходит для контекста, пояснения ситуации или короткого вступления от группы."
   },
   qualities: {
     label: "Качества",
-    size: "small",
-    description: "Подсвечивает, за что именно любят и ценят человека. Сейчас блок включен в открытку."
+    icon: "К",
+    summary: "Показывает, за что именно любят и ценят человека.",
+    details: "Собирает повторяющиеся тёплые слова и превращает их в отдельный ритмичный блок."
   },
   messages: {
     label: "Поздравления",
-    size: "messages",
-    description: "Главный блок с карточками участников. Является обязательным."
+    icon: "П",
+    summary: "Главный блок с карточками участников.",
+    details: "Обязательный блок. Здесь настраивается сетка поздравлений и медиаблок рядом с ними."
   },
   memories: {
     label: "Моменты / фото",
-    size: "medium",
-    description: "Блок временно скрыт из конструктора."
+    icon: "Ф",
+    summary: "Блок временно скрыт из конструктора.",
+    details: "Сейчас не используется в этой версии конструктора."
   },
   quotes: {
     label: "Лучшие фразы",
-    size: "small",
-    description: "Выносит самые сильные короткие строки из поздравлений. Сейчас блок включен в открытку."
+    icon: "Ц",
+    summary: "Выносит самые сильные короткие строки из поздравлений.",
+    details: "Работает как эмоциональная пауза между основными частями открытки."
   },
   "ai-summary": {
     label: "Общее поздравление",
-    size: "medium",
-    description: "Собирает общий голос группы в один сводный аккорд. Сейчас блок включен в открытку."
+    icon: "А",
+    summary: "Собирает общий голос группы в один сводный аккорд.",
+    details: "Подходит для общего финального абзаца, когда хочется объединить настроение всех поздравлений."
   },
   closing: {
     label: "Финал",
-    size: "closing",
-    description: "Завершает открытку и собирает общее ощущение подарка. Является обязательным."
+    icon: "Ф",
+    summary: "Завершает открытку и собирает общее ощущение подарка.",
+    details: "Обязательный блок. Он фиксирует тёплое завершение сценария."
   }
 };
 
@@ -136,8 +147,8 @@ const fixedBlockIds: FinalCardBlockId[] = ["hero", "closing"];
 const buildCanvasBlocks = (options: BlockOption[], blockState: Record<string, boolean>): RenderedBlock[] => [
   {
     id: "hero",
-    label: canvasBlockMeta.hero.label,
-    description: canvasBlockMeta.hero.description,
+    label: blockMeta.hero.label,
+    description: blockMeta.hero.summary,
     removable: false
   },
   ...options
@@ -145,22 +156,32 @@ const buildCanvasBlocks = (options: BlockOption[], blockState: Record<string, bo
     .map((option) => ({
       id: option.id as FinalCardBlockId,
       label: option.label,
-      description: canvasBlockMeta[option.id].description,
+      description: blockMeta[option.id].summary,
       removable: true
     })),
   {
     id: "messages",
-    label: canvasBlockMeta.messages.label,
-    description: canvasBlockMeta.messages.description,
+    label: blockMeta.messages.label,
+    description: blockMeta.messages.summary,
     removable: false
   },
   {
     id: "closing",
-    label: canvasBlockMeta.closing.label,
-    description: canvasBlockMeta.closing.description,
+    label: blockMeta.closing.label,
+    description: blockMeta.closing.summary,
     removable: false
   }
 ];
+
+const initialExpandedState: ExpandedState = {
+  hero: false,
+  summary: false,
+  qualities: false,
+  messages: true,
+  quotes: false,
+  "ai-summary": false,
+  closing: false
+};
 
 export const BlockSettingsForm = ({
   manageToken,
@@ -178,6 +199,7 @@ export const BlockSettingsForm = ({
   const [blockOrder, setBlockOrder] = useState<FinalCardBlockId[]>(initialBlockOrder);
   const [draggedBlockId, setDraggedBlockId] = useState<FinalCardBlockId | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
+  const [expandedBlocks, setExpandedBlocks] = useState<ExpandedState>(initialExpandedState);
 
   const activeBlocks = useMemo(() => buildCanvasBlocks(options, blockState), [blockState, options]);
 
@@ -187,8 +209,6 @@ export const BlockSettingsForm = ({
       .map((blockId) => activeMap.get(blockId))
       .filter((block): block is RenderedBlock => Boolean(block));
   }, [activeBlocks, blockOrder]);
-
-  const currentLayoutLabel = layoutOptions.find((option) => option.id === layoutMode)?.label ?? 'Сетка "2 на 2"';
 
   const removedOptionalBlocks = blockOrder
     .filter((blockId) => !requiredBlockIds.includes(blockId) && !blockState[blockId])
@@ -235,7 +255,7 @@ export const BlockSettingsForm = ({
     setDropTarget(null);
   };
 
-  const handleDragStart = (event: ReactDragEvent<HTMLSpanElement>, blockId: FinalCardBlockId) => {
+  const handleDragStart = (event: ReactDragEvent<HTMLButtonElement>, blockId: FinalCardBlockId) => {
     setDraggedBlockId(blockId);
     setDropTarget(null);
     event.dataTransfer.effectAllowed = "move";
@@ -244,7 +264,7 @@ export const BlockSettingsForm = ({
 
     if (blockCard instanceof HTMLElement) {
       const rect = blockCard.getBoundingClientRect();
-      event.dataTransfer.setDragImage(blockCard, rect.width / 2, 32);
+      event.dataTransfer.setDragImage(blockCard, rect.width / 2, 36);
     }
   };
 
@@ -289,6 +309,20 @@ export const BlockSettingsForm = ({
     moveBlock(blockId, dropTarget.position);
   };
 
+  const toggleExpanded = (blockId: FinalCardBlockId) => {
+    setExpandedBlocks((current) => ({
+      ...current,
+      [blockId]: !current[blockId]
+    }));
+  };
+
+  const toggleBlock = (blockId: FinalCardBlockId, checked: boolean) => {
+    setBlockState((current) => ({
+      ...current,
+      [blockId]: checked
+    }));
+  };
+
   return (
     <form action={formAction} className={styles.studioForm}>
       <input type="hidden" name="manageToken" value={manageToken} />
@@ -304,188 +338,157 @@ export const BlockSettingsForm = ({
       ))}
 
       <section className={styles.studioCanvasCard}>
-        <div className={styles.studioCanvasHeader}>
-          <div>
-            <p className={styles.eyebrowLabel}>Шаг 2</p>
-            <h3 className={styles.studioTitle}>Состав открытки</h3>
-          </div>
-          <div className={styles.studioCanvasBadges}>
-            <span className={styles.infoBadge}>{currentLayoutLabel}</span>
-          </div>
+        <div className={styles.studioCanvasIntro}>
+          <p className={styles.studioLead}>
+            Перетаскивайте блоки, чтобы менять их порядок. Обязательные блоки отключить нельзя.
+          </p>
+          <button type="button" className={styles.inlineHelpLink}>
+            Как это работает?
+          </button>
         </div>
 
-        <div className={styles.canvasPhone}>
-          {canvasBlocks.map((block) => (
-            <article
-              key={block.id}
-              className={[
-                styles.canvasBlock,
-                styles[`canvasBlock${canvasBlockMeta[block.id].size}`],
-                draggedBlockId === block.id ? styles.canvasBlockDragging : "",
-                dropTarget?.blockId === block.id ? styles.canvasBlockDropTarget : "",
-                dropTarget?.blockId === block.id && dropTarget.position === "before" ? styles.canvasBlockDropBefore : "",
-                dropTarget?.blockId === block.id && dropTarget.position === "after" ? styles.canvasBlockDropAfter : "",
-                fixedBlockIds.includes(block.id) ? styles.canvasBlockFixed : ""
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              onDragOver={(event) => handleDragOver(event, block.id)}
-              onDragLeave={(event) => handleDragLeave(event, block.id)}
-              onDrop={(event) => handleDrop(event, block.id)}
-            >
-              <div className={styles.canvasBlockHeader}>
-                <div className={styles.canvasBlockHeading}>
-                  <span>{block.label}</span>
-                  {fixedBlockIds.includes(block.id) ? (
-                    <span className={styles.canvasFixedBadge}>Фиксирован</span>
-                  ) : (
-                    <span
-                      className={styles.canvasDragHandle}
-                      draggable
+        <div className={styles.compositionList}>
+          {canvasBlocks.map((block) => {
+            const isExpanded = Boolean(expandedBlocks[block.id]);
+            const isFixed = fixedBlockIds.includes(block.id);
+            const isEnabled = isFixed || blockState[block.id];
+
+            return (
+              <article
+                key={block.id}
+                className={[
+                  styles.compositionCard,
+                  draggedBlockId === block.id ? styles.compositionCardDragging : "",
+                  dropTarget?.blockId === block.id ? styles.compositionCardDropTarget : "",
+                  dropTarget?.blockId === block.id && dropTarget.position === "before" ? styles.compositionCardDropBefore : "",
+                  dropTarget?.blockId === block.id && dropTarget.position === "after" ? styles.compositionCardDropAfter : "",
+                  isExpanded ? styles.compositionCardExpanded : ""
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onDragOver={(event) => handleDragOver(event, block.id)}
+                onDragLeave={(event) => handleDragLeave(event, block.id)}
+                onDrop={(event) => handleDrop(event, block.id)}
+              >
+                <div className={styles.compositionCardTop}>
+                  <div className={styles.compositionCardLead}>
+                    <button
+                      type="button"
+                      className={styles.compositionDragHandle}
+                      draggable={!isFixed}
+                      disabled={isFixed}
                       onDragStart={(event) => handleDragStart(event, block.id)}
                       onDragEnd={() => {
                         setDraggedBlockId(null);
                         setDropTarget(null);
                       }}
-                      title="Перетащите, чтобы изменить порядок"
-                      aria-label={`Перетащите блок ${block.label}, чтобы изменить порядок`}
+                      aria-label={isFixed ? `${block.label} зафиксирован` : `Перетащить блок ${block.label}`}
                     >
                       ⋮⋮
-                    </span>
-                  )}
-                </div>
-                {block.removable ? (
-                  <button
-                    type="button"
-                    className={styles.blockCardRemove}
-                    onClick={() =>
-                      setBlockState((current) => ({
-                        ...current,
-                        [block.id]: false
-                      }))
-                    }
-                    aria-label={`Убрать блок ${block.label}`}
-                  >
-                    ×
-                  </button>
-                ) : null}
-              </div>
+                    </button>
 
-              <p className={styles.canvasBlockDescription}>{block.description}</p>
+                    <span className={styles.compositionBlockIcon}>{blockMeta[block.id].icon}</span>
 
-              {block.id === "messages" ? (
-                <div className={styles.messagesCardControls}>
-                  <div className={styles.layoutChoiceGrid}>
-                    {layoutOptions.map((option) => {
-                      const profile = getFinalCardMessageLayoutProfile(option.id);
-
-                      return (
-                        <button
-                          key={option.id}
-                          type="button"
-                          className={`${styles.layoutChoiceCard} ${layoutMode === option.id ? styles.layoutChoiceCardActive : ""}`}
-                          onClick={() => setLayoutMode(option.id)}
-                        >
-                          <span className={styles.layoutChoiceTitle}>{option.label}</span>
-                          <span className={styles.layoutChoiceDescription}>{option.description}</span>
-                          <span className={styles.compactOptionMeta}>До {profile.maxChars} символов на карточку</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {layoutMode === "column-media" ? (
-                    <div className={styles.inlineSettingsStack}>
-                      <span className={styles.inlineSettingsLabel}>Как выглядит медиаблок рядом:</span>
-                      <div className={styles.inlinePillGroup}>
-                        {mediaLayoutOptions.map((option) => (
-                          <button
-                            key={option.id}
-                            type="button"
-                            className={`${styles.inlinePillOption} ${mediaLayout === option.id ? styles.inlinePillOptionActive : ""}`}
-                            onClick={() => setMediaLayout(option.id)}
-                          >
-                            <span>{option.label}</span>
-                          </button>
-                        ))}
+                    <div className={styles.compositionBlockText}>
+                      <div className={styles.compositionBlockTitleRow}>
+                        <strong>{block.label}</strong>
+                        <span className={styles.compositionBlockStatus}>
+                          {isFixed || block.id === "messages" ? "Обязательный" : "Включён"}
+                        </span>
                       </div>
+                      <p className={styles.compositionBlockSummary}>{block.description}</p>
                     </div>
-                  ) : null}
+                  </div>
 
-                  <div className={styles.messageLayoutPreview} data-layout={layoutMode}>
-                    {layoutMode === "grid-2" ? (
-                      <>
-                        <span className={styles.messageSlot}>1</span>
-                        <span className={styles.messageSlot}>2</span>
-                        <span className={styles.messageSlot}>3</span>
-                        <span className={styles.messageSlot}>4</span>
-                      </>
+                  <div className={styles.compositionCardActions}>
+                    {block.removable ? (
+                      <button
+                        type="button"
+                        className={`${styles.toggleSwitch} ${isEnabled ? styles.toggleSwitchActive : ""}`}
+                        onClick={() => toggleBlock(block.id, !isEnabled)}
+                        aria-pressed={isEnabled}
+                        aria-label={isEnabled ? `Убрать блок ${block.label}` : `Вернуть блок ${block.label}`}
+                      >
+                        <span className={styles.toggleKnob} />
+                      </button>
                     ) : null}
 
-                    {layoutMode === "carousel-1" ? (
-                      <>
-                        <span className={styles.messageSlotWide}>1</span>
-                        <span className={styles.messageSlotWide}>2</span>
-                        <span className={styles.messageSlotWide}>3</span>
-                        <span className={styles.scrollHint}>↔</span>
-                      </>
-                    ) : null}
-
-                    {layoutMode === "carousel-2" ? (
-                      <>
-                        <div className={styles.messageSlotColumn}>
-                          <span className={styles.messageSlot}>1</span>
-                          <span className={styles.messageSlot}>2</span>
-                        </div>
-                        <div className={styles.messageSlotColumn}>
-                          <span className={styles.messageSlot}>3</span>
-                          <span className={styles.messageSlot}>4</span>
-                        </div>
-                        <span className={styles.scrollHint}>↔</span>
-                      </>
-                    ) : null}
-
-                    {layoutMode === "column-media" ? (
-                      <>
-                        <div className={styles.columnMediaMessages}>
-                          <span className={styles.messageSlotTall}>1</span>
-                          <span className={styles.messageSlotTall}>2</span>
-                          <span className={styles.messageSlotTall}>3</span>
-                          <span className={styles.messageSlotTall}>4</span>
-                        </div>
-                        <div className={styles.columnMediaAside}>
-                          {mediaLayout === "portrait" ? (
-                            <span className={styles.mediaSlotPortrait}>Фото</span>
-                          ) : (
-                            <>
-                              <span className={styles.mediaSlotLandscape}>Фото A</span>
-                              <span className={styles.mediaSlotLandscape}>Фото B</span>
-                            </>
-                          )}
-                        </div>
-                      </>
-                    ) : null}
+                    <button
+                      type="button"
+                      className={styles.compositionExpandButton}
+                      onClick={() => toggleExpanded(block.id)}
+                      aria-expanded={isExpanded}
+                      aria-label={isExpanded ? `Свернуть блок ${block.label}` : `Развернуть блок ${block.label}`}
+                    >
+                      {isExpanded ? "⌃" : "⌄"}
+                    </button>
                   </div>
                 </div>
-              ) : (
-                <div className={styles.canvasBlockFill} />
-              )}
-            </article>
-          ))}
+
+                {isExpanded ? (
+                  <div className={styles.compositionCardBody}>
+                    <p className={styles.compositionBlockDetails}>{blockMeta[block.id].details}</p>
+
+                    {block.id === "messages" ? (
+                      <div className={styles.messagesConfigurator}>
+                        <div className={styles.messagesConfiguratorGroup}>
+                          <span className={styles.messagesConfiguratorLabel}>Выберите вид отображения поздравлений</span>
+                          <div className={styles.layoutPresetGrid}>
+                            {layoutOptions.map((option) => {
+                              const profile = getFinalCardMessageLayoutProfile(option.id);
+
+                              return (
+                                <button
+                                  key={option.id}
+                                  type="button"
+                                  className={`${styles.layoutPresetCard} ${layoutMode === option.id ? styles.layoutPresetCardActive : ""}`}
+                                  onClick={() => setLayoutMode(option.id)}
+                                >
+                                  <span className={styles.layoutPresetTitle}>{option.label}</span>
+                                  <span className={styles.layoutPresetHint}>{option.description}</span>
+                                  <span className={styles.layoutPresetMeta}>До {profile.maxChars} символов</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {layoutMode === "column-media" ? (
+                          <div className={styles.messagesConfiguratorGroup}>
+                            <span className={styles.messagesConfiguratorLabel}>
+                              Как выглядит медиаблок рядом с поздравлением
+                            </span>
+                            <div className={styles.mediaLayoutPills}>
+                              {mediaLayoutOptions.map((option) => (
+                                <button
+                                  key={option.id}
+                                  type="button"
+                                  className={`${styles.mediaLayoutPill} ${mediaLayout === option.id ? styles.mediaLayoutPillActive : ""}`}
+                                  onClick={() => setMediaLayout(option.id)}
+                                >
+                                  {option.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
         </div>
 
         <div className={styles.restoreZone}>
           <div className={styles.restoreZoneHeader}>
-            <h4 className={styles.restoreZoneTitle}>Убранные блоки, которые можно восстановить</h4>
-            <p className={styles.controlHint}>
-              Если что-то убрали и передумали, блок возвращается отсюда без переходов назад.
-            </p>
+            <h4 className={styles.restoreZoneTitle}>Добавить необязательный блок</h4>
+            <p className={styles.controlHint}>Удалённые блоки можно вернуть отсюда в любой момент.</p>
           </div>
 
           {removedOptionalBlocks.length === 0 ? (
-            <p className={styles.empty}>
-              Сейчас ничего не убрано. Все доступные дополнительные блоки уже в составе открытки.
-            </p>
+            <p className={styles.empty}>Сейчас все доступные дополнительные блоки уже включены в открытку.</p>
           ) : (
             <div className={styles.restoreChipList}>
               {removedOptionalBlocks.map((option) => (
@@ -493,17 +496,15 @@ export const BlockSettingsForm = ({
                   key={option.id}
                   type="button"
                   className={`${styles.restoreChip} ${option.disabled ? styles.restoreChipDisabled : ""}`}
-                  onClick={() =>
-                    setBlockState((current) => ({
-                      ...current,
-                      [option.id]: true
-                    }))
-                  }
+                  onClick={() => toggleBlock(option.id, true)}
                   disabled={option.disabled}
                 >
-                  <span className={styles.restoreChipLabel}>Вернуть {option.label}</span>
-                  <span className={styles.restoreChipDescription}>
-                    {option.disabled ? "Сначала нужен контент для этого блока." : option.description}
+                  <span className={styles.restoreChipIcon}>{blockMeta[option.id].icon}</span>
+                  <span className={styles.restoreChipText}>
+                    <span className={styles.restoreChipLabel}>{option.label}</span>
+                    <span className={styles.restoreChipDescription}>
+                      {option.disabled ? "Сначала нужен контент для этого блока." : option.description}
+                    </span>
                   </span>
                 </button>
               ))}

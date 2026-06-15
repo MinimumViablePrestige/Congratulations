@@ -36,9 +36,9 @@ const tabItems = [
 ] as const;
 
 const starterSteps = [
-  "Укажите, кому и от кого создаётся открытка, чтобы у неё сразу появился понятный контекст.",
-  "Настройте состав открытки: какие блоки будут видны и в каком порядке они читаются.",
-  "После структуры выберите шаблон и проверьте, как всё выглядит в живом предпросмотре."
+  "Заполните, для кого создаётся открытка, от кого она и по какому поводу собирается.",
+  "Настройте состав открытки: какие блоки будут видны, как они идут и как выглядят поздравления.",
+  "Проверьте справа общий вид открытки и только потом переходите к поздравлениям и фото."
 ];
 
 const managedBlockIds: FinalCardBlockId[] = ["hero", "summary", "qualities", "messages", "quotes", "ai-summary", "closing"];
@@ -136,15 +136,7 @@ export default async function ManagePage({ params, searchParams }: Props) {
   const savedBlockOrder = card.finalBlockOrder?.filter((blockId) => managedBlockIds.includes(blockId)) ?? [];
   const initialBlockOrder = [...savedBlockOrder, ...managedBlockIds.filter((blockId) => !savedBlockOrder.includes(blockId))];
 
-  const isBlankBasics =
-    !card.recipientName.trim() &&
-    !card.fromLabel.trim() &&
-    !card.occasionText.trim() &&
-    !card.organizerName.trim() &&
-    !card.organizerEmail.trim();
-
   const recipientName = card.recipientName.trim() || "нового получателя";
-  const fromLabel = card.fromLabel.trim() || "пока не указано";
   const occasionText = card.occasionText.trim() || "пока не указан";
   const previewRecipient = card.recipientName.trim() || "Кристина";
   const previewFromLabel = card.fromLabel.trim() || "вашей группы";
@@ -166,13 +158,10 @@ export default async function ManagePage({ params, searchParams }: Props) {
                 <span>Организатор: {card.organizerName.trim() || "не указан"}</span>
                 <span>Повод: {occasionText}</span>
               </p>
-              <p className={styles.eyebrow}>Секретная страница организатора</p>
-              <h1 className={styles.title}>
-                {isBlankBasics ? "Новый черновик открытки" : `Открытка для ${recipientName}`}
-              </h1>
+              <h1 className={styles.title}>Открытка для {recipientName}</h1>
               <p className={styles.subtitle}>
-                Здесь собирается вся открытка целиком: сначала основа и структура, затем шаблон, после этого
-                поздравления и фото. Черновик сохраняется в одном понятном месте.
+                Создайте красивую открытку и соберите искренние поздравления от всех участников. Всё сохраняется в
+                одном месте и не теряется между шагами.
               </p>
 
               <div className={styles.stats}>
@@ -198,7 +187,6 @@ export default async function ManagePage({ params, searchParams }: Props) {
             <aside className={styles.heroTemplateCard}>
               <span className={styles.heroTemplateLabel}>Текущий шаблон</span>
               <strong className={styles.heroTemplateName}>{selectedTemplate.name}</strong>
-              <span className={styles.heroTemplateDescription}>{selectedTemplate.description}</span>
               <div
                 className={styles.heroTemplatePreview}
                 style={{ background: selectedTemplate.accent }}
@@ -208,9 +196,17 @@ export default async function ManagePage({ params, searchParams }: Props) {
                   <span>{previewRecipient}</span>
                 </div>
               </div>
-              <a href="#template-section" className={styles.secondaryButton}>
-                Выбрать другой
-              </a>
+
+              <TemplateSettingsForm
+                manageToken={manageToken}
+                templates={cardTemplates}
+                initialTemplateId={selectedTemplate.id}
+                initialLayoutMode={layoutMode}
+                initialMediaLayout={mediaLayout}
+                initialBlockOrder={initialBlockOrder}
+                blockState={blockState}
+                variant="compact"
+              />
             </aside>
           </div>
         </section>
@@ -218,52 +214,37 @@ export default async function ManagePage({ params, searchParams }: Props) {
         {activeTab === "design" ? (
           <div className={styles.designStudio}>
             <div className={styles.designMain}>
-              {isBlankBasics ? (
-                <section className={styles.welcomeCard}>
-                  <div className={styles.welcomeIntro}>
-                    <p className={styles.eyebrow}>С чего начать</p>
-                    <h2 className={styles.sectionTitle}>Сначала заполните основу открытки</h2>
-                    <p className={styles.hint}>
-                      Это новый пустой черновик. Ниже уже подготовлены все шаги: сначала смысл и базовые поля,
-                      затем состав открытки и только после этого выбор визуального шаблона.
-                    </p>
-                  </div>
-                  <div className={styles.welcomeSteps}>
-                    {starterSteps.map((step, index) => (
-                      <article key={step} className={styles.welcomeStep}>
-                        <span className={styles.welcomeStepNumber}>0{index + 1}</span>
-                        <p className={styles.previewText}>{step}</p>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              ) : null}
+              <section className={styles.welcomeCard}>
+                <div className={styles.welcomeSteps}>
+                  {starterSteps.map((step, index) => (
+                    <article key={step} className={styles.welcomeStep}>
+                      <span className={styles.welcomeStepNumber}>{index + 1}</span>
+                      <p className={styles.previewText}>{step}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
 
               <section className={styles.panel} id="basics-section">
-                <div className={styles.panelHeader}>
+                <div className={styles.sectionStepHeader}>
+                  <span className={styles.sectionStepNumber}>1</span>
                   <div>
-                    <p className={styles.eyebrow}>Шаг 1</p>
                     <h2 className={styles.sectionTitle}>Основа открытки</h2>
                   </div>
-                  <p className={styles.hint}>
-                    Заполните имя получателя, повод, организатора и короткое описание. Если ошиблись раньше, всё можно
-                    поправить здесь без возврата на отдельный экран.
-                  </p>
                 </div>
 
                 <BasicsSettingsForm manageToken={manageToken} card={card} />
               </section>
 
               <section className={styles.studioPanel} id="composition-section">
-                <div className={styles.studioPanelHeader}>
+                <div className={styles.sectionStepHeader}>
+                  <span className={styles.sectionStepNumber}>2</span>
                   <div>
-                    <p className={styles.eyebrow}>Шаг 2</p>
                     <h2 className={styles.sectionTitle}>Состав открытки</h2>
+                    <p className={styles.studioLead}>
+                      Настройте структуру и блоки. У обязательных блоков можно посмотреть детали, но отключить их нельзя.
+                    </p>
                   </div>
-                  <p className={styles.studioLead}>
-                    Здесь вы управляете самим сценарием открытки: какие блоки останутся, в каком порядке они идут и
-                    как будут выглядеть поздравления. Обложка и финал всегда закреплены по краям.
-                  </p>
                 </div>
 
                 <BlockSettingsForm
@@ -274,29 +255,6 @@ export default async function ManagePage({ params, searchParams }: Props) {
                   initialBlockOrder={initialBlockOrder}
                 />
               </section>
-
-              <section className={styles.panel} id="template-section">
-                <div className={styles.panelHeader}>
-                  <div>
-                    <p className={styles.eyebrow}>Шаг 3</p>
-                    <h2 className={styles.sectionTitle}>Шаблон и настроение</h2>
-                  </div>
-                  <p className={styles.hint}>
-                    Шаблон выбирается после структуры. Так проще смотреть все варианты и принимать решение уже на
-                    готовом составе открытки, а не вслепую.
-                  </p>
-                </div>
-
-                <TemplateSettingsForm
-                  manageToken={manageToken}
-                  templates={cardTemplates}
-                  initialTemplateId={selectedTemplate.id}
-                  initialLayoutMode={layoutMode}
-                  initialMediaLayout={mediaLayout}
-                  initialBlockOrder={initialBlockOrder}
-                  blockState={blockState}
-                />
-              </section>
             </div>
 
             <aside className={styles.designRail}>
@@ -304,9 +262,9 @@ export default async function ManagePage({ params, searchParams }: Props) {
                 <div className={styles.previewPanelHeader}>
                   <div>
                     <h2 className={styles.sectionTitle}>Предпросмотр</h2>
-                    <p className={styles.hint}>Показывает общий ритм открытки и обновляется после сохранения настроек.</p>
+                    <p className={styles.hint}>Предпросмотр обновляется автоматически</p>
                   </div>
-                  <span className={styles.previewStatus}>● Автосохранение черновика</span>
+                  <span className={styles.previewStatus}>● Черновик сохраняется автоматически</span>
                 </div>
 
                 <div className={styles.previewFrame}>

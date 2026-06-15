@@ -74,6 +74,40 @@
   font-size: 1.45rem;
 }
 
+.templateCompactForm {
+  display: grid;
+  gap: 12px;
+}
+
+.templateCompactPicker {
+  display: grid;
+  gap: 8px;
+}
+
+.templateCompactLabel {
+  color: #8a6b5a;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.templateSelect {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(98, 72, 58, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #33231d;
+  font: inherit;
+}
+
+.templateCompactFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
 .heroTemplateDescription {
   color: #705c50;
   line-height: 1.55;
@@ -234,6 +268,26 @@
 .previewPanelHeader {
   display: grid;
   gap: 10px;
+}
+
+.sectionStepHeader {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.sectionStepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 50%;
+  background: #b86f4a;
+  color: #fff8f3;
+  font-weight: 800;
 }
 
 .previewStatus {
@@ -443,6 +497,23 @@
 .studioCanvasHeader {
   display: grid;
   gap: 12px;
+}
+
+.studioCanvasIntro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inlineHelpLink {
+  border: 0;
+  background: transparent;
+  color: #8a6b5a;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .studioCanvasBadges {
@@ -873,8 +944,9 @@
 }
 
 .restoreChip {
-  display: grid;
-  gap: 6px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
   padding: 14px;
   border: 1px solid rgba(98, 72, 58, 0.12);
   border-radius: 18px;
@@ -897,6 +969,287 @@
   cursor: not-allowed;
 }
 
+.restoreChipIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 12px;
+  background: rgba(184, 111, 74, 0.12);
+  color: #9f6244;
+  font-weight: 800;
+}
+
+.restoreChipText {
+  display: grid;
+  gap: 4px;
+}
+
+.compositionList {
+  display: grid;
+  gap: 12px;
+}
+
+.compositionCard {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid rgba(98, 72, 58, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.84);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.compositionCard::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(184, 111, 74, 0.94);
+  opacity: 0;
+  transform: scaleX(0.25);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    top 160ms ease,
+    bottom 160ms ease;
+}
+
+.compositionCardDropTarget {
+  border-color: rgba(184, 111, 74, 0.28);
+  background: rgba(255, 249, 243, 0.96);
+  box-shadow: 0 16px 32px rgba(121, 72, 48, 0.1);
+}
+
+.compositionCardDropTarget::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.compositionCardDropBefore::before {
+  top: -7px;
+}
+
+.compositionCardDropAfter::before {
+  bottom: -7px;
+}
+
+.compositionCardDragging {
+  opacity: 0.56;
+  transform: scale(0.985);
+}
+
+.compositionCardExpanded {
+  box-shadow: 0 14px 26px rgba(114, 76, 54, 0.08);
+}
+
+.compositionCardTop {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.compositionCardLead {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.compositionDragHandle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 40px;
+  flex: 0 0 28px;
+  border: 0;
+  background: transparent;
+  color: #a08473;
+  cursor: grab;
+  font-size: 1rem;
+}
+
+.compositionDragHandle:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.compositionBlockIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 14px;
+  background: rgba(184, 111, 74, 0.12);
+  color: #9f6244;
+  font-weight: 800;
+}
+
+.compositionBlockText {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.compositionBlockTitleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  align-items: center;
+  color: #33231d;
+}
+
+.compositionBlockStatus {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(184, 111, 74, 0.1);
+  color: #9a6144;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.compositionBlockSummary,
+.compositionBlockDetails,
+.layoutPresetHint,
+.layoutPresetMeta {
+  margin: 0;
+  color: #705c50;
+  line-height: 1.55;
+}
+
+.compositionCardActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.toggleSwitch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(98, 72, 58, 0.18);
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.toggleSwitchActive {
+  background: #b86f4a;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff8f3;
+  box-shadow: 0 2px 10px rgba(71, 45, 32, 0.18);
+  transition: transform 160ms ease;
+}
+
+.toggleSwitchActive .toggleKnob {
+  transform: translateX(22px);
+}
+
+.compositionExpandButton {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(98, 72, 58, 0.12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: #7f5948;
+  cursor: pointer;
+}
+
+.compositionCardBody {
+  display: grid;
+  gap: 16px;
+  padding-top: 2px;
+}
+
+.messagesConfigurator,
+.messagesConfiguratorGroup {
+  display: grid;
+  gap: 12px;
+}
+
+.messagesConfiguratorLabel {
+  color: #4a352d;
+  font-weight: 700;
+}
+
+.layoutPresetGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.layoutPresetCard {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid rgba(98, 72, 58, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  text-align: left;
+  cursor: pointer;
+}
+
+.layoutPresetCardActive {
+  border-color: rgba(184, 111, 74, 0.34);
+  box-shadow: inset 0 0 0 1px rgba(184, 111, 74, 0.16);
+  background: rgba(255, 248, 242, 0.96);
+}
+
+.layoutPresetTitle {
+  color: #33231d;
+  font-weight: 700;
+}
+
+.mediaLayoutPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mediaLayoutPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(98, 72, 58, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  cursor: pointer;
+  color: #4a352d;
+  font-weight: 700;
+}
+
+.mediaLayoutPillActive {
+  border-color: rgba(184, 111, 74, 0.34);
+  background: rgba(255, 248, 242, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(184, 111, 74, 0.14);
+}
+
 .layout {
   display: grid;
   gap: 22px;
@@ -914,7 +1267,7 @@
 
 .welcomeCard {
   gap: 18px;
-  padding: 22px;
+  padding: 18px;
   border: 1px solid rgba(98, 72, 58, 0.14);
   border-radius: 28px;
   background: linear-gradient(180deg, rgba(255, 250, 245, 0.96), rgba(255, 245, 236, 0.92));
@@ -933,7 +1286,7 @@
 
 .welcomeStep {
   gap: 6px;
-  padding: 16px;
+  padding: 14px 16px;
   border: 1px solid rgba(98, 72, 58, 0.12);
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.72);
@@ -946,8 +1299,8 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: rgba(184, 111, 74, 0.12);
-  color: #ad6b4e;
+  background: #b86f4a;
+  color: #fff8f3;
   font-weight: 800;
 }
 
@@ -1300,6 +1653,10 @@
 }
 
 @media (min-width: 900px) {
+  .layoutPresetGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .designStudio {
     grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.7fr);
     align-items: start;
