@@ -372,7 +372,7 @@ export const BlockSettingsForm = ({
 
     if (card instanceof HTMLElement) {
       const rect = card.getBoundingClientRect();
-      event.dataTransfer.setDragImage(card, rect.width / 2, 32);
+      event.dataTransfer.setDragImage(card, event.clientX - rect.left, event.clientY - rect.top);
     }
   };
 

@@ -128,6 +128,8 @@ export const ContentStudio = ({
   };
 
   const handleVisibilityToggle = (contributionId: string, isHidden: boolean) => {
+    setExpandedContributionIds((current) => current.filter((id) => id !== contributionId));
+
     if (isHidden) {
       moveContributionToActiveEnd(contributionId);
       return;
