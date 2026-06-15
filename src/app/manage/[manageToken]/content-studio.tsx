@@ -42,7 +42,7 @@ export const ContentStudio = ({
   const [contributionOrder, setContributionOrder] = useState(allContributions.map((item) => item.id));
   const [draggedContributionId, setDraggedContributionId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
-  const [expandedContributionId, setExpandedContributionId] = useState<string | null>(allContributions[0]?.id ?? null);
+  const [expandedContributionIds, setExpandedContributionIds] = useState<string[]>([]);
 
   const tooLongCount = allContributions.filter((contribution) => contribution.message.length > messageLimit).length;
   const withinLimitCount = allContributions.length - tooLongCount;
@@ -132,6 +132,21 @@ export const ContentStudio = ({
     moveContribution(contributionId, dropTarget.position);
   };
 
+  const toggleContribution = (contributionId: string) => {
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+
+    setExpandedContributionIds((current) =>
+      current.includes(contributionId)
+        ? current.filter((id) => id !== contributionId)
+        : [...current, contributionId]
+    );
+
+    requestAnimationFrame(() => {
+      window.scrollTo({ left: scrollX, top: scrollY, behavior: "auto" });
+    });
+  };
+
   return (
     <div className={styles.contentStudio}>
       <section className={styles.contentStatusBar}>
@@ -193,7 +208,7 @@ export const ContentStudio = ({
                 const overflow = contribution.message.length - messageLimit;
                 const isTooLong = overflow > 0;
                 const isHidden = contribution.status === "hidden";
-                const isExpanded = expandedContributionId === contribution.id;
+                const isExpanded = expandedContributionIds.includes(contribution.id);
 
                 return (
                   <article
@@ -272,9 +287,8 @@ export const ContentStudio = ({
                           <button
                             type="button"
                             className={styles.contentChevronButton}
-                            onClick={() =>
-                              setExpandedContributionId((current) => (current === contribution.id ? null : contribution.id))
-                            }
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => toggleContribution(contribution.id)}
                             aria-expanded={isExpanded}
                             aria-label={isExpanded ? "Свернуть поздравление" : "Развернуть поздравление"}
                           >
