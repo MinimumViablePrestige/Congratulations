@@ -170,3 +170,15 @@
    - copy invitation text.
 4. Future menu candidates remain export, bulk actions, and filter reset, but they are intentionally not added until there is a clear need.
 5. Manual entries now close the form after a successful submit and are placed at the end of the active contribution group, before hidden cards.
+
+## Update 2026-06-15 Full Preview Tab
+
+1. Added a third organizer tab: `Предпросмотр`.
+2. The new tab shows a larger final-card-style preview instead of relying only on the narrow side preview.
+3. The preview tab includes:
+   - a large cover/message/closing card mock;
+   - a readiness summary;
+   - active block list;
+   - warnings for long messages, missing media in media layout, and hidden contributions;
+   - links to the public final version and back to editing.
+4. Side previews remain as quick orientation helpers and are not the main final review surface.

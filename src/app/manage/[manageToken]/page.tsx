@@ -29,8 +29,11 @@ type Props = {
 
 const tabItems = [
   { id: "design", label: "Оформление открытки" },
-  { id: "content", label: "Поздравления и фото" }
+  { id: "content", label: "Поздравления и фото" },
+  { id: "preview", label: "Предпросмотр" }
 ] as const;
+
+type ManageTab = (typeof tabItems)[number]["id"];
 
 const stepItems = [
   {
@@ -81,7 +84,7 @@ const formatEventDate = (value: string | null) => {
 export default async function ManagePage({ params, searchParams }: Props) {
   const { manageToken } = await params;
   const { tab } = await searchParams;
-  const activeTab = tab === "content" ? "content" : "design";
+  const activeTab: ManageTab = tabItems.some((item) => item.id === tab) ? (tab as ManageTab) : "design";
   const card = await getCardDraftByManageToken(manageToken);
 
   if (!card) {
@@ -143,6 +146,28 @@ export default async function ManagePage({ params, searchParams }: Props) {
   const quotePreview = model.quotes[0] || "Спасибо тебе за твою доброту, поддержку и за то, что ты такая, какая есть.";
   const previewMessage = previewMessages[0];
   const formattedEventDate = formatEventDate(card.eventDate ?? null);
+  const hiddenContributions = allContributions.filter((contribution) => contribution.status === "hidden");
+  const tooLongContributions = visibleContributions.filter((contribution) => contribution.message.length > layoutProfile.maxChars);
+  const needsMedia = layoutMode === "column-media";
+  const missingMedia = needsMedia && mediaAssets.length === 0;
+  const previewWarnings = [
+    tooLongContributions.length > 0
+      ? `${tooLongContributions.length} поздравлений длиннее ${layoutProfile.maxChars} символов.`
+      : "",
+    missingMedia ? "Для выбранной раскладки рядом с поздравлениями стоит добавить фото." : "",
+    hiddenContributions.length > 0 ? `${hiddenContributions.length} поздравлений скрыто и не попадет в открытку.` : ""
+  ].filter(Boolean);
+  const activeBlockLabels = model.blocks.map((block) => {
+    if (block.id === "hero") {
+      return "Обложка";
+    }
+
+    if (block.id === "closing") {
+      return "Финал";
+    }
+
+    return blockPreviewLabels[block.id] ?? block.id;
+  });
 
   return (
     <main className={styles.page}>
@@ -339,6 +364,126 @@ export default async function ManagePage({ params, searchParams }: Props) {
               </section>
             </aside>
           </div>
+        ) : activeTab === "preview" ? (
+          <section className={styles.fullPreviewStage}>
+            <div className={styles.fullPreviewHeader}>
+              <div>
+                <span className={styles.previewKicker}>Финальная проверка</span>
+                <h2>Предпросмотр открытки</h2>
+                <p>
+                  Здесь можно спокойно посмотреть, как открытка ощущается целиком, перед тем как отправлять ссылку или переходить к публикации.
+                </p>
+              </div>
+              <div className={styles.fullPreviewActions}>
+                <Link href={`/gift/${card.finalSlug}`} target="_blank" className={styles.previewPrimaryLink}>
+                  Открыть публичную версию
+                </Link>
+                <Link href={`/manage/${manageToken}?tab=design`} className={styles.previewSecondaryLink}>
+                  Вернуться к оформлению
+                </Link>
+              </div>
+            </div>
+
+            <div className={styles.fullPreviewLayout}>
+              <article
+                className={styles.fullPreviewCard}
+                style={
+                  {
+                    "--preview-accent": selectedTemplate.accent
+                  } as CSSProperties
+                }
+              >
+                <section className={styles.fullPreviewHero}>
+                  <div className={styles.fullPreviewGlow} />
+                  <span>Открытка для тебя</span>
+                  <h3>{recipientName}</h3>
+                  <p>{occasionText}</p>
+                  <small>
+                    от {card.fromLabel.trim() || "всей группы"}
+                    {formattedEventDate ? ` • ${formattedEventDate}` : ""}
+                  </small>
+                </section>
+
+                {model.summaryText ? (
+                  <section className={styles.fullPreviewSection}>
+                    <span>Вводный блок</span>
+                    <p>{model.summaryText}</p>
+                  </section>
+                ) : null}
+
+                <section className={styles.fullPreviewSection}>
+                  <span>Лучшие фразы</span>
+                  <blockquote>{quotePreview}</blockquote>
+                </section>
+
+                <section className={styles.fullPreviewMessages}>
+                  <div className={styles.fullPreviewSectionTitle}>
+                    <span>Поздравления</span>
+                    <strong>{visibleContributions.length}</strong>
+                  </div>
+                  {(visibleContributions.length > 0 ? visibleContributions.slice(0, 3) : [previewMessage]).map((contribution, index) => (
+                    <article key={contribution?.id ?? index} className={styles.fullPreviewMessage}>
+                      <div className={styles.fullPreviewAvatar}>
+                        {contribution?.authorName?.trim().slice(0, 1).toUpperCase() || "?"}
+                      </div>
+                      <div>
+                        <strong>{contribution?.authorName || "Пока нет поздравлений"}</strong>
+                        <p>
+                          {contribution?.message.slice(0, 180) ||
+                            "Когда участники добавят первые теплые слова, они появятся здесь в выбранной раскладке."}
+                        </p>
+                      </div>
+                    </article>
+                  ))}
+                </section>
+
+                <section className={styles.fullPreviewClosing}>
+                  <span>Спасибо, что ты с нами!</span>
+                  <p>Вперед - к мечтам.</p>
+                </section>
+              </article>
+
+              <aside className={styles.fullPreviewChecklist}>
+                <section>
+                  <h3>Готовность</h3>
+                  <div className={styles.fullPreviewMetric}>
+                    <span>Активных поздравлений</span>
+                    <strong>{visibleContributions.length}</strong>
+                  </div>
+                  <div className={styles.fullPreviewMetric}>
+                    <span>Фото добавлено</span>
+                    <strong>{mediaAssets.length}</strong>
+                  </div>
+                  <div className={styles.fullPreviewMetric}>
+                    <span>Шаблон</span>
+                    <strong>{selectedTemplate.name}</strong>
+                  </div>
+                </section>
+
+                <section>
+                  <h3>Что входит в открытку</h3>
+                  <div className={styles.fullPreviewBlockList}>
+                    {activeBlockLabels.map((label) => (
+                      <span key={label}>{label}</span>
+                    ))}
+                  </div>
+                </section>
+
+                <section>
+                  <h3>Проверить перед отправкой</h3>
+                  {previewWarnings.length > 0 ? (
+                    <ul className={styles.fullPreviewWarnings}>
+                      {previewWarnings.map((warning) => (
+                        <li key={warning}>{warning}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className={styles.fullPreviewOk}>Критичных предупреждений нет. Можно открыть публичную версию и посмотреть финальный экран.</p>
+                  )}
+                </section>
+              </aside>
+            </div>
+          </section>
         ) : (
           <ContentStudio
             key={allContributions.map((contribution) => contribution.id).join(":")}
