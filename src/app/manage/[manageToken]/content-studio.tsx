@@ -367,7 +367,9 @@ export const ContentStudio = ({
                                 <button
                                   type="submit"
                                   className={`${styles.contentToggleView} ${!isHidden ? styles.contentToggleViewActive : ""}`}
-                                  onClick={() => handleVisibilityToggle(contribution.id, isHidden)}
+                                  onClick={() => {
+                                    window.setTimeout(() => handleVisibilityToggle(contribution.id, isHidden), 0);
+                                  }}
                                   aria-label={isHidden ? "Показать поздравление" : "Скрыть поздравление"}
                                 >
                                   <span className={styles.contentToggleKnob} />
