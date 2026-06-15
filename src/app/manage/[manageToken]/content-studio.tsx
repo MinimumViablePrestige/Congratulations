@@ -161,26 +161,24 @@ export const ContentStudio = ({
       <div className={styles.contentLayout}>
         <section className={styles.contentPanel}>
           <div className={styles.contentPanelHeader}>
-            <div>
+            <div className={styles.contentPanelTopRow}>
               <h2 className={styles.contentPanelTitle}>Поздравления</h2>
+              <div className={styles.contentToolbar}>
+                <button type="button" className={styles.contentGhostButton}>
+                  <span>+</span>
+                  <span>Добавить вручную</span>
+                </button>
+                <button type="button" className={styles.contentIconButton} aria-label="Дополнительные действия">
+                  …
+                </button>
+              </div>
+            </div>
+
+            <div>
               <p className={styles.contentPanelText}>Проверьте тексты, порядок и видимость поздравлений.</p>
               <p className={styles.contentPanelText}>
                 Тексты длиннее {messageLimit} символов лучше сократить для выбранного макета.
               </p>
-            </div>
-
-            <div className={styles.contentToolbar}>
-              <button type="button" className={styles.contentGhostButton}>
-                <span>+</span>
-                <span>Добавить вручную</span>
-              </button>
-              <button type="button" className={styles.contentGhostButton}>
-                <span>AI</span>
-                <span>Сгенерировать общее поздравление</span>
-              </button>
-              <button type="button" className={styles.contentIconButton} aria-label="Дополнительные действия">
-                …
-              </button>
             </div>
           </div>
 
@@ -255,18 +253,15 @@ export const ContentStudio = ({
                         <span className={isTooLong ? styles.limitWarning : styles.limitOk}>
                           {isTooLong ? `Нужно сократить на ${overflow} символов` : "Длина текста оптимальна"}
                         </span>
-                        <span className={`${styles.contentToggleView} ${!isHidden ? styles.contentToggleViewActive : ""}`}>
-                          <span className={styles.contentToggleKnob} />
-                        </span>
                         <span className={styles.contentChevron} aria-hidden="true">
-                          ⌄
+                          ˅
                         </span>
                       </div>
                     </summary>
 
                     <div className={styles.contentContributionBody} id={detailId}>
                       <div className={styles.contentContributionStatusRow}>
-                        <span className={styles.contentBodyLabel}>Показывать в открытке</span>
+                        <span className={styles.contentBodyLabelCompact}>Показывать в открытке</span>
                         <form action={setContributionStatusAction}>
                           <input type="hidden" name="manageToken" value={manageToken} />
                           <input type="hidden" name="contributionId" value={contribution.id} />
@@ -287,23 +282,6 @@ export const ContentStudio = ({
                         initialMessage={contribution.message}
                         messageLimit={messageLimit}
                       />
-
-                      <div className={styles.contentCardFooter}>
-                        <div className={styles.contentActionFormsInline}>
-                          <button type="button" className={styles.contentSoftButton}>
-                            ✨ Сократить текст
-                          </button>
-                        </div>
-
-                        <form action={setContributionStatusAction}>
-                          <input type="hidden" name="manageToken" value={manageToken} />
-                          <input type="hidden" name="contributionId" value={contribution.id} />
-                          <input type="hidden" name="status" value="deleted" />
-                          <button type="submit" className={styles.contentDeleteButton}>
-                            Удалить
-                          </button>
-                        </form>
-                      </div>
                     </div>
                   </details>
                 );
@@ -313,13 +291,14 @@ export const ContentStudio = ({
 
           <section className={styles.contentAssistantCard}>
             <div>
-              <h3 className={styles.contentAssistantTitle}>AI-помощник</h3>
+              <h3 className={styles.contentAssistantTitle}>AI-общее поздравление</h3>
               <p className={styles.contentAssistantText}>
-                Может сократить, улучшить стиль, сделать текст теплее или убрать лишнее.
+                Сгенерировать единое поздравление от команды на основании уже добавленных поздравлений. Этот текст
+                появится в отдельном блоке, который нужно включить во вкладке «Оформление открытки».
               </p>
             </div>
             <button type="button" className={styles.contentOutlineButton}>
-              Открыть помощника
+              AI Сгенерировать общее поздравление
             </button>
           </section>
         </section>
@@ -385,7 +364,6 @@ export const ContentStudio = ({
           {isPending ? "Сохраняем..." : "Сохранить изменения"}
         </button>
       </div>
-
     </form>
   );
 };

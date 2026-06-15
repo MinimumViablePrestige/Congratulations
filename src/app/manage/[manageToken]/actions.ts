@@ -80,6 +80,32 @@ export async function setContributionStatusAction(formData: FormData) {
   }
 }
 
+export async function deleteContributionAction(formData: FormData) {
+  const contributionId = String(formData.get("contributionId") ?? "");
+  const manageToken = String(formData.get("manageToken") ?? "");
+
+  if (!contributionId || !manageToken) {
+    return;
+  }
+
+  const updated = await updateContributionStatus(contributionId, "deleted");
+  if (!updated) {
+    return;
+  }
+
+  const card = await getCardDraftById(updated.cardId);
+
+  logger.info("manage.contribution_deleted", "Contribution deleted by organizer", {
+    contributionId
+  });
+
+  if (card) {
+    revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);
+  } else {
+    revalidatePath(`/manage/${manageToken}`);
+  }
+}
+
 export async function updateCardBasicsAction(
   _prevState: { ok: boolean; message: string },
   formData: FormData
