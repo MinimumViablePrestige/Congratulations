@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useMemo, useState, type CSSProperties, type DragEvent as ReactDragEvent } from "react";
+import { useActionState, useMemo, useState, useTransition, type CSSProperties, type DragEvent as ReactDragEvent } from "react";
+import { useRouter } from "next/navigation";
 import type { CardMediaAsset, Contribution } from "@/lib/cards/types";
 import type { FinalCardMessageMediaLayout } from "@/lib/final-card/types";
 import { ContributionEditor } from "./contribution-editor";
@@ -50,8 +51,10 @@ export const ContentStudio = ({
   templateAccent,
   previewMessage
 }: Props) => {
+  const router = useRouter();
   const [state, formAction, isPending] = useActionState(reorderContributionsAction, initialState);
-  const [manualState, manualFormAction, isManualPending] = useActionState(addManualContributionAction, initialState);
+  const [manualState, setManualState] = useState(initialState);
+  const [isManualPending, startManualTransition] = useTransition();
   const [contributionOrder, setContributionOrder] = useState(allContributions.map((item) => item.id));
   const [draggedContributionId, setDraggedContributionId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
@@ -230,6 +233,19 @@ export const ContentStudio = ({
     }
   };
 
+  const handleManualContributionSubmit = (formData: FormData) => {
+    startManualTransition(async () => {
+      const result = await addManualContributionAction(initialState, formData);
+      setManualState(result);
+
+      if (result.ok) {
+        setIsManualFormOpen(false);
+        setActiveFilter("all");
+        router.refresh();
+      }
+    });
+  };
+
   return (
     <div className={styles.contentStudio}>
       <section className={styles.contentStatusBar}>
@@ -295,7 +311,7 @@ export const ContentStudio = ({
           </div>
 
           {isManualFormOpen ? (
-            <form action={manualFormAction} className={styles.manualContributionForm}>
+            <form action={handleManualContributionSubmit} className={styles.manualContributionForm}>
               <input type="hidden" name="manageToken" value={manageToken} />
               <div className={styles.manualContributionHeader}>
                 <div>

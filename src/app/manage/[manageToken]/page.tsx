@@ -341,6 +341,7 @@ export default async function ManagePage({ params, searchParams }: Props) {
           </div>
         ) : (
           <ContentStudio
+            key={allContributions.map((contribution) => contribution.id).join(":")}
             manageToken={manageToken}
             allContributions={allContributions}
             mediaAssets={mediaAssets}

@@ -144,6 +144,22 @@ export async function addManualContributionAction(
   }
 
   const contribution = await createContribution(validation.data);
+  const siblings = await listAllContributionsByCardId(card.id);
+  const nextOrder = siblings
+    .map((item) => item.id)
+    .filter((id) => id !== contribution.id);
+  const firstHiddenIndex = nextOrder.findIndex((id) => {
+    const item = siblings.find((sibling) => sibling.id === id);
+    return item?.status === "hidden";
+  });
+
+  if (firstHiddenIndex === -1) {
+    nextOrder.push(contribution.id);
+  } else {
+    nextOrder.splice(firstHiddenIndex, 0, contribution.id);
+  }
+
+  await reorderContributions(card.id, nextOrder);
 
   logger.info("manage.manual_contribution_created", "Manual contribution created by organizer", {
     cardId: card.id,

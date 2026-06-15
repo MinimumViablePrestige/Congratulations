@@ -169,3 +169,4 @@
    - copy participant link;
    - copy invitation text.
 4. Future menu candidates remain export, bulk actions, and filter reset, but they are intentionally not added until there is a clear need.
+5. Manual entries now close the form after a successful submit and are placed at the end of the active contribution group, before hidden cards.
