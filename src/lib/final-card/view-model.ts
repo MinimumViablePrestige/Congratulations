@@ -33,6 +33,7 @@ export type FinalCardViewModel = {
   memoryMediaAssets: CardMediaAsset[];
   memoryTitle: string;
   memoryDescription: string;
+  memoryPhotoCount: 2 | 3;
   messageLayoutMode: FinalCardMessageLayoutMode;
   messageMediaLayout: FinalCardMessageMediaLayout;
   showAllMessagesLink: boolean;
@@ -164,9 +165,10 @@ export const buildFinalCardViewModel = (
       card.finalMemorySettings?.mediaAssetIds ?? [],
       card.finalMemorySettings?.mediaSlots ?? [],
       ["memory-a", "memory-b", "memory-c"]
-    ),
+    ).slice(0, card.finalMemorySettings?.photoCount ?? 3),
     memoryTitle: card.finalMemorySettings?.title ?? "Наши воспоминания",
     memoryDescription: card.finalMemorySettings?.description ?? "Столько ярких моментов, с которыми мы идём рядом с тобой.",
+    memoryPhotoCount: card.finalMemorySettings?.photoCount ?? 3,
     messageLayoutMode,
     messageMediaLayout,
     showAllMessagesLink: contributions.length > layoutProfile.cardsPerPage,

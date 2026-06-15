@@ -213,3 +213,11 @@
 3. The `Поздравления` media block now selects photos from the matching uploaded library and preserves their order.
 4. The `Наши воспоминания` block now selects up to three horizontal photos from the shared photo library and preserves their order.
 5. Final card rendering now prefers selected asset IDs before falling back to old slot order.
+
+## Update 2026-06-15 Memories Strip And Paper Birthday Template
+
+1. Reworked the public `Наши воспоминания` block into a horizontal strip: text card on the left, selected photos on the right.
+2. Added organizer control for memory photo count: 2 or 3 selected photos.
+3. Final rendering now trims memory photos to the selected count.
+4. Added the `paper-birthday` final-card template with warm paper, confetti, taped-photo and handwritten-style visual direction.
+5. Registered the new template in card template selection and final-card layout planning.

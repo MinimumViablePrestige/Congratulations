@@ -32,6 +32,7 @@ type Props = {
   initialMemoryMediaSlots: FinalCardMediaSlot[];
   initialMessageMediaAssetIds: string[];
   initialMemoryMediaAssetIds: string[];
+  initialMemoryPhotoCount: 2 | 3;
   initialMemoryTitle: string;
   initialMemoryDescription: string;
 };
@@ -451,6 +452,7 @@ export const BlockSettingsForm = ({
   initialMemoryMediaSlots,
   initialMessageMediaAssetIds,
   initialMemoryMediaAssetIds,
+  initialMemoryPhotoCount,
   initialMemoryTitle,
   initialMemoryDescription
 }: Props) => {
@@ -465,6 +467,7 @@ export const BlockSettingsForm = ({
   const [memoryMediaSlots] = useState<FinalCardMediaSlot[]>(initialMemoryMediaSlots);
   const [messageMediaAssetIds, setMessageMediaAssetIds] = useState<string[]>(initialMessageMediaAssetIds);
   const [memoryMediaAssetIds, setMemoryMediaAssetIds] = useState<string[]>(initialMemoryMediaAssetIds);
+  const [memoryPhotoCount, setMemoryPhotoCount] = useState<2 | 3>(initialMemoryPhotoCount);
   const [memoryTitle, setMemoryTitle] = useState(initialMemoryTitle);
   const [memoryDescription, setMemoryDescription] = useState(initialMemoryDescription);
   const [draggedBlockId, setDraggedBlockId] = useState<FinalCardBlockId | null>(null);
@@ -602,6 +605,7 @@ export const BlockSettingsForm = ({
       <input type="hidden" name="mediaLayout" value={mediaLayout} />
       <input type="hidden" name="memoryTitle" value={memoryTitle} />
       <input type="hidden" name="memoryDescription" value={memoryDescription} />
+      <input type="hidden" name="memoryPhotoCount" value={memoryPhotoCount} />
 
       {normalizeSelectedSlots(messageMediaSlots, activeMessageMediaSlots, activeMessageMediaSlots.length).map((slot, index) => (
         <input key={`message-media-${slot}-${index}`} type="hidden" name="messageMediaSlots" value={slot} />
@@ -626,7 +630,7 @@ export const BlockSettingsForm = ({
         memoryMediaAssetIds,
         memoryMediaSlots,
         horizontalMediaSlots,
-        memorySlotCount
+        memoryPhotoCount
       ).map((assetId, index) => (
         <input key={`memory-media-asset-${assetId}-${index}`} type="hidden" name="memoryMediaAssetIds" value={assetId} />
       ))}
@@ -780,7 +784,7 @@ export const BlockSettingsForm = ({
                                 </button>
                               ))}
                             </div>
-                            <PhotoSequencePicker
+                          <PhotoSequencePicker
                               title="Фото и последовательность"
                               description="Выберите, какие фото и в каком порядке попадут рядом с поздравлениями."
                               assets={mediaAssets}
@@ -820,12 +824,24 @@ export const BlockSettingsForm = ({
                             </label>
                           </div>
                         </div>
+                        <div className={styles.mediaVariantTabs}>
+                          {[2, 3].map((count) => (
+                            <button
+                              key={count}
+                              type="button"
+                              className={`${styles.mediaVariantTab} ${memoryPhotoCount === count ? styles.mediaVariantTabActive : ""}`}
+                              onClick={() => setMemoryPhotoCount(count as 2 | 3)}
+                            >
+                              {count} фото
+                            </button>
+                          ))}
+                        </div>
                         <PhotoSequencePicker
                           title="Фото и последовательность"
                           description="Выберите до трех фото для блока воспоминаний."
                           assets={mediaAssets}
                           allowedSlots={horizontalMediaSlots}
-                          slotCount={memorySlotCount}
+                          slotCount={memoryPhotoCount}
                           selectedAssetIds={memoryMediaAssetIds}
                           legacySelectedSlots={memoryMediaSlots}
                           onChange={setMemoryMediaAssetIds}

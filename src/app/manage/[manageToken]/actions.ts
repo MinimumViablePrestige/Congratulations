@@ -429,6 +429,8 @@ export async function updateFinalPresentationSettingsAction(
   const memoryDescription =
     String(formData.get("memoryDescription") ?? "").trim().slice(0, 180) ||
     "Столько ярких моментов, с которыми мы идём рядом с тобой.";
+  const memoryPhotoCountValue = Number(formData.get("memoryPhotoCount"));
+  const memoryPhotoCount: FinalCardMemorySettings["photoCount"] = memoryPhotoCountValue === 2 ? 2 : 3;
   const finalBlockOrder = formData
     .getAll("blockOrder")
     .map((value) => String(value))
@@ -450,7 +452,8 @@ export async function updateFinalPresentationSettingsAction(
     title: memoryTitle,
     description: memoryDescription,
     mediaSlots: memoryMediaSlots,
-    mediaAssetIds: memoryMediaAssetIds
+    mediaAssetIds: memoryMediaAssetIds.slice(0, memoryPhotoCount),
+    photoCount: memoryPhotoCount
   };
 
   const updated = await updateCardFinalPresentationSettings(

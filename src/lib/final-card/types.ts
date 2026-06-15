@@ -14,7 +14,8 @@ export type FinalCardStyleId =
   | "warm-classic"
   | "team-modern"
   | "bright-celebration"
-  | "gentle-personal";
+  | "gentle-personal"
+  | "paper-birthday";
 
 export type FinalCardBlockDefinition = {
   id: FinalCardBlockId;
@@ -63,4 +64,5 @@ export type FinalCardMemorySettings = {
   description: string;
   mediaSlots: FinalCardMediaSlot[];
   mediaAssetIds: string[];
+  photoCount: 2 | 3;
 };

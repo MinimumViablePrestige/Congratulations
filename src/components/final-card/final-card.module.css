@@ -113,6 +113,27 @@
   --fc-card-shadow: 0 12px 26px rgba(114, 112, 88, 0.08);
 }
 
+.paper-birthday {
+  --fc-bg:
+    radial-gradient(circle at 10% 8%, rgba(255, 118, 137, 0.18), transparent 12%),
+    radial-gradient(circle at 85% 16%, rgba(73, 145, 186, 0.12), transparent 12%),
+    linear-gradient(180deg, #f7dfbf 0%, #efd1aa 100%);
+  --fc-surface: rgba(255, 239, 216, 0.9);
+  --fc-card: rgba(255, 247, 232, 0.94);
+  --fc-text: #35241c;
+  --fc-muted: #755f51;
+  --fc-line: rgba(104, 68, 45, 0.16);
+  --fc-accent: #df4f73;
+  --fc-accent-soft: rgba(223, 79, 115, 0.18);
+  --fc-hero: linear-gradient(135deg, rgba(255, 241, 216, 0.96), rgba(255, 230, 198, 0.9));
+  --fc-gap: 16px;
+  --fc-column-card-height: 190px;
+  --fc-column-stack-height: calc(var(--fc-column-card-height) * 4 + var(--fc-gap) * 3);
+  --fc-section-bg: linear-gradient(180deg, rgba(255, 238, 214, 0.92), rgba(247, 221, 185, 0.88));
+  --fc-chip-bg: rgba(255, 244, 224, 0.88);
+  --fc-card-shadow: 0 14px 28px rgba(113, 72, 42, 0.12);
+}
+
 .canvas {
   position: relative;
   display: grid;
@@ -136,6 +157,78 @@
 
 .team-modern .page::after {
   opacity: 0.08;
+}
+
+.paper-birthday.page::before {
+  background:
+    radial-gradient(circle at 8% 10%, rgba(223, 79, 115, 0.32) 0 5px, transparent 6px),
+    radial-gradient(circle at 20% 4%, rgba(89, 139, 174, 0.22) 0 4px, transparent 5px),
+    radial-gradient(circle at 72% 8%, rgba(224, 159, 68, 0.26) 0 5px, transparent 6px),
+    radial-gradient(circle at 91% 24%, rgba(223, 79, 115, 0.18), transparent 16%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 30%);
+}
+
+.paper-birthday.page::after {
+  background-image:
+    linear-gradient(rgba(98, 67, 45, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(98, 67, 45, 0.03) 1px, transparent 1px);
+  background-size: 22px 22px;
+  opacity: 0.5;
+}
+
+.paper-birthday .canvas {
+  border: 1px solid rgba(106, 72, 49, 0.16);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 14% 20%, rgba(255, 255, 255, 0.4), transparent 10%),
+    var(--fc-bg);
+}
+
+.paper-birthday .canvas::before {
+  inset: 16px;
+  border-color: rgba(126, 82, 49, 0.1);
+  border-radius: 8px;
+}
+
+.paper-birthday .hero,
+.paper-birthday .summary,
+.paper-birthday .messages,
+.paper-birthday .quotes,
+.paper-birthday .closing,
+.paper-birthday .qualities,
+.paper-birthday .memories {
+  border-radius: 10px;
+  box-shadow: 0 12px 24px rgba(113, 72, 42, 0.1);
+}
+
+.paper-birthday .hero {
+  overflow: visible;
+  border-style: dashed;
+}
+
+.paper-birthday .title {
+  max-width: 11ch;
+  color: var(--fc-accent);
+  font-family: "Comic Sans MS", "Segoe Print", Georgia, serif;
+  transform: rotate(-1deg);
+}
+
+.paper-birthday .card,
+.paper-birthday .quoteCard,
+.paper-birthday .memoryCard {
+  border-radius: 10px;
+}
+
+.paper-birthday .card:nth-child(3n + 1) {
+  background: linear-gradient(180deg, rgba(255, 226, 224, 0.9), rgba(255, 241, 232, 0.94));
+}
+
+.paper-birthday .card:nth-child(3n + 2) {
+  background: linear-gradient(180deg, rgba(255, 246, 220, 0.92), rgba(255, 241, 224, 0.94));
+}
+
+.paper-birthday .card:nth-child(3n) {
+  background: linear-gradient(180deg, rgba(231, 238, 247, 0.92), rgba(255, 241, 224, 0.94));
 }
 
 .canvas::before {
@@ -640,12 +733,40 @@
   transform: rotate(-0.7deg);
 }
 
+.memoriesStrip {
+  display: grid;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.memoryIntroCard {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  min-height: 180px;
+  padding: 22px;
+  border-radius: 24px;
+  border: 1px solid var(--fc-line);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.58)),
+    var(--fc-card);
+  box-shadow: var(--fc-card-shadow);
+}
+
+.memoryIntroIcon {
+  color: var(--fc-accent);
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
 .memoryTitle {
   margin: 0 0 8px;
   font-weight: 800;
 }
 
 .memoryPhotoCard {
+  position: relative;
   display: grid;
   gap: 12px;
   padding: 14px;
@@ -713,6 +834,37 @@
 
 .memoryCardTiltAlt {
   transform: rotate(1.8deg);
+}
+
+.paper-birthday .memoryIntroCard,
+.paper-birthday .memoryPhotoCard {
+  border-radius: 8px;
+}
+
+.paper-birthday .memoryIntroCard {
+  background:
+    linear-gradient(180deg, rgba(255, 246, 224, 0.94), rgba(255, 235, 205, 0.9)),
+    var(--fc-card);
+  transform: rotate(-0.8deg);
+}
+
+.paper-birthday .memoryPhotoCard {
+  padding: 12px 12px 18px;
+  background: #fff7ea;
+  transform: rotate(-2deg);
+}
+
+.paper-birthday .memoryPhotoCard:nth-child(3n) {
+  transform: rotate(2.2deg);
+}
+
+.paper-birthday .memoryPhotoCard:nth-child(4n) {
+  transform: rotate(-1deg);
+}
+
+.paper-birthday .memoryPhotoCaptionWrap {
+  font-family: "Segoe Print", "Comic Sans MS", cursive;
+  text-align: left;
 }
 
 .closing {
@@ -804,7 +956,11 @@
   .heroPhotoPrimary,
   .heroPhotoSecondary,
   .memoryCardTilt,
-  .memoryCardTiltAlt {
+  .memoryCardTiltAlt,
+  .paper-birthday .memoryIntroCard,
+  .paper-birthday .memoryPhotoCard,
+  .paper-birthday .memoryPhotoCard:nth-child(3n),
+  .paper-birthday .memoryPhotoCard:nth-child(4n) {
     transform: none;
   }
 
@@ -844,5 +1000,9 @@
 
   .memoriesGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .memoriesStrip {
+    grid-template-columns: minmax(190px, 0.72fr) repeat(auto-fit, minmax(190px, 1fr));
   }
 }

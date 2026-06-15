@@ -2,7 +2,8 @@ export type CardTemplateId =
   | "warm-classic"
   | "team-modern"
   | "bright-celebration"
-  | "gentle-personal";
+  | "gentle-personal"
+  | "paper-birthday";
 
 export type OccasionId =
   | "personal"
@@ -48,6 +49,13 @@ export const cardTemplates: CardTemplate[] = [
     description: "Воздушная открытка с природными деталями и мягкой атмосферой близости.",
     recommendedFor: ["personal", "caregiver", "teacher"],
     accent: "#b97c73"
+  },
+  {
+    id: "paper-birthday",
+    name: "Р‘СѓРјР°Р¶РЅС‹Р№ РґРµРЅСЊ СЂРѕР¶РґРµРЅРёСЏ",
+    description: "РџСЂР°Р·РґРЅРёС‡РЅР°СЏ РѕС‚РєСЂС‹С‚РєР° СЃ Р±СѓРјР°Р¶РЅС‹РјРё Р»РёСЃС‚Р°РјРё, СЃРєРѕС‚С‡РµРј, РїРѕР»Р°СЂРѕРёРґР°РјРё Рё СЂСѓРєРѕРїРёСЃРЅС‹Рј РЅР°СЃС‚СЂРѕРµРЅРёРµРј.",
+    recommendedFor: ["personal", "celebration", "colleague"],
+    accent: "#df4f73"
   }
 ];
 

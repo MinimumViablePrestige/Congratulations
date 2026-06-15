@@ -25,7 +25,8 @@ const defaultFinalMemorySettings: FinalCardMemorySettings = {
   title: "Наши воспоминания",
   description: "Столько ярких моментов, с которыми мы идём рядом с тобой.",
   mediaSlots: [],
-  mediaAssetIds: []
+  mediaAssetIds: [],
+  photoCount: 3
 };
 
 const normalizeCard = (card: CardDraft): CardDraft => ({

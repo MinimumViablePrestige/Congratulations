@@ -12,7 +12,8 @@ const styleClassMap = {
   "warm-classic": styles["warm-classic"],
   "team-modern": styles["team-modern"],
   "bright-celebration": styles["bright-celebration"],
-  "gentle-personal": styles["gentle-personal"]
+  "gentle-personal": styles["gentle-personal"],
+  "paper-birthday": styles["paper-birthday"]
 };
 
 const trimMessage = (message: string, maxChars: number) =>
@@ -295,9 +296,12 @@ export const FinalCard = ({ model }: Props) => {
               return (
                 <section key={block.id} className={`${styles.memories} ${styles.section}`}>
                   <h2 className={styles.sectionTitle}>Наши воспоминания</h2>
-                  <h2 className={styles.sectionTitle}>{model.memoryTitle}</h2>
-                  <p className={styles.sectionText}>{model.memoryDescription}</p>
-                  <div className={`${styles.grid} ${styles.memoriesGrid}`}>
+                  <div className={styles.memoriesStrip}>
+                    <article className={styles.memoryIntroCard}>
+                      <span className={styles.memoryIntroIcon}>♡</span>
+                      <h2 className={styles.sectionTitle}>{model.memoryTitle}</h2>
+                      <p className={styles.sectionText}>{model.memoryDescription}</p>
+                    </article>
                     {memoryAssets.length > 0
                       ? memoryAssets.map((asset, index) => (
                           <article

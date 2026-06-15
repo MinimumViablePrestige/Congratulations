@@ -53,5 +53,18 @@ export const finalCardLayouts: Record<FinalCardStyleId, FinalCardLayout> = {
       optional("ai-summary"),
       required("closing")
     ]
+  },
+  "paper-birthday": {
+    style: "paper-birthday",
+    blocks: [
+      required("hero"),
+      optional("summary"),
+      optional("qualities"),
+      required("messages"),
+      optional("memories"),
+      optional("quotes"),
+      optional("ai-summary"),
+      required("closing")
+    ]
   }
 };
