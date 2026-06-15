@@ -1,9 +1,11 @@
 "use client";
 
 import { useActionState, useMemo, useState, type DragEvent as ReactDragEvent } from "react";
+import type { CardMediaAsset, CardMediaSlot } from "@/lib/cards/types";
 import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type {
   FinalCardBlockId,
+  FinalCardMediaSlot,
   FinalCardMessageLayoutMode,
   FinalCardMessageMediaLayout,
   FinalCardOptionalBlockId
@@ -25,6 +27,11 @@ type Props = {
   initialLayoutMode: FinalCardMessageLayoutMode;
   initialMediaLayout: FinalCardMessageMediaLayout;
   initialBlockOrder: FinalCardBlockId[];
+  mediaAssets: CardMediaAsset[];
+  initialMessageMediaSlots: FinalCardMediaSlot[];
+  initialMemoryMediaSlots: FinalCardMediaSlot[];
+  initialMemoryTitle: string;
+  initialMemoryDescription: string;
 };
 
 type RenderedBlock = {
@@ -65,6 +72,24 @@ const mediaLayoutOptions: Array<{
   { id: "landscape-pair", label: "2 Горизонтальных фото" },
   { id: "landscape-trio", label: "3 горизонтальных фото" }
 ];
+
+const mediaSlotsByLayout: Record<FinalCardMessageMediaLayout, CardMediaSlot[]> = {
+  portrait: ["portrait"],
+  "landscape-pair": ["landscape-a", "landscape-b"],
+  "landscape-trio": ["landscape-a", "landscape-b", "landscape-c"]
+};
+
+const memorySlotCount = 3;
+
+const slotLabelMap: Record<CardMediaSlot, string> = {
+  portrait: "Вертикальное фото",
+  "landscape-a": "Фото поздравлений 1",
+  "landscape-b": "Фото поздравлений 2",
+  "landscape-c": "Фото поздравлений 3",
+  "memory-a": "Воспоминание 1",
+  "memory-b": "Воспоминание 2",
+  "memory-c": "Воспоминание 3"
+};
 
 const blockMeta: Record<
   FinalCardBlockId,
@@ -292,12 +317,99 @@ const LayoutDiagram = ({ mode }: { mode: FinalCardMessageLayoutMode }) => {
   );
 };
 
+const getAssetLabel = (asset: CardMediaAsset) =>
+  asset.captionTitle || asset.captionSubtitle || slotLabelMap[asset.slot] || "Фото";
+
+const normalizeSelectedSlots = (
+  selectedSlots: FinalCardMediaSlot[],
+  allowedSlots: CardMediaSlot[],
+  fallbackCount: number
+) => {
+  const allowed = new Set(allowedSlots);
+  const filtered = selectedSlots.filter((slot): slot is CardMediaSlot => allowed.has(slot as CardMediaSlot));
+  const fallback = allowedSlots.slice(0, fallbackCount);
+  return [...filtered, ...fallback.filter((slot) => !filtered.includes(slot))].slice(0, fallbackCount);
+};
+
+const PhotoSequencePicker = ({
+  title,
+  description,
+  assets,
+  allowedSlots,
+  selectedSlots,
+  onChange
+}: {
+  title: string;
+  description: string;
+  assets: CardMediaAsset[];
+  allowedSlots: CardMediaSlot[];
+  selectedSlots: FinalCardMediaSlot[];
+  onChange: (slots: FinalCardMediaSlot[]) => void;
+}) => {
+  const availableAssets = allowedSlots
+    .map((slot) => assets.find((asset) => asset.slot === slot))
+    .filter((asset): asset is CardMediaAsset => Boolean(asset));
+  const normalizedSlots = normalizeSelectedSlots(selectedSlots, allowedSlots, allowedSlots.length);
+
+  const updateSlot = (index: number, nextSlot: FinalCardMediaSlot) => {
+    const next = [...normalizedSlots];
+    next[index] = nextSlot;
+    onChange(next);
+  };
+
+  return (
+    <section className={styles.photoSequencePanel}>
+      <div className={styles.photoSequenceHeader}>
+        <div>
+          <h4 className={styles.messageSettingsTitle}>{title}</h4>
+          <p>{description}</p>
+        </div>
+        <span>{availableAssets.length} фото доступно</span>
+      </div>
+
+      {availableAssets.length === 0 ? (
+        <p className={styles.photoSequenceEmpty}>Сначала загрузите фото во вкладке «Поздравления и фото».</p>
+      ) : (
+        <div className={styles.photoSequenceList}>
+          {normalizedSlots.map((slot, index) => {
+            const selectedAsset = assets.find((asset) => asset.slot === slot);
+
+            return (
+              <label key={`${slot}-${index}`} className={styles.photoSequenceRow}>
+                <span>Позиция {index + 1}</span>
+                <select value={slot} onChange={(event) => updateSlot(index, event.target.value as FinalCardMediaSlot)}>
+                  {availableAssets.map((asset) => (
+                    <option key={asset.slot} value={asset.slot}>
+                      {getAssetLabel(asset)}
+                    </option>
+                  ))}
+                </select>
+                {selectedAsset ? (
+                  <span className={styles.photoSequencePreview}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={selectedAsset.publicUrl} alt={getAssetLabel(selectedAsset)} />
+                  </span>
+                ) : null}
+              </label>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+};
+
 export const BlockSettingsForm = ({
   manageToken,
   options,
   initialLayoutMode,
   initialMediaLayout,
-  initialBlockOrder
+  initialBlockOrder,
+  mediaAssets,
+  initialMessageMediaSlots,
+  initialMemoryMediaSlots,
+  initialMemoryTitle,
+  initialMemoryDescription
 }: Props) => {
   const [state, formAction, isPending] = useActionState(updateFinalPresentationSettingsAction, initialState);
   const [layoutMode, setLayoutMode] = useState<FinalCardMessageLayoutMode>(initialLayoutMode);
@@ -306,6 +418,10 @@ export const BlockSettingsForm = ({
     Object.fromEntries(options.map((option) => [option.id, option.checked]))
   );
   const [blockOrder, setBlockOrder] = useState<FinalCardBlockId[]>(initialBlockOrder);
+  const [messageMediaSlots, setMessageMediaSlots] = useState<FinalCardMediaSlot[]>(initialMessageMediaSlots);
+  const [memoryMediaSlots, setMemoryMediaSlots] = useState<FinalCardMediaSlot[]>(initialMemoryMediaSlots);
+  const [memoryTitle, setMemoryTitle] = useState(initialMemoryTitle);
+  const [memoryDescription, setMemoryDescription] = useState(initialMemoryDescription);
   const [draggedBlockId, setDraggedBlockId] = useState<FinalCardBlockId | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
   const [expandedBlocks, setExpandedBlocks] = useState<ExpandedState>(initialExpandedState);
@@ -323,6 +439,7 @@ export const BlockSettingsForm = ({
     .filter((blockId) => !requiredBlockIds.includes(blockId) && !blockState[blockId])
     .map((blockId) => options.find((option) => option.id === blockId))
     .filter((option): option is BlockOption => Boolean(option));
+  const activeMessageMediaSlots = mediaSlotsByLayout[mediaLayout];
 
   const resolveDropPosition = (
     targetBlockId: FinalCardBlockId,
@@ -437,6 +554,16 @@ export const BlockSettingsForm = ({
       <input type="hidden" name="manageToken" value={manageToken} />
       <input type="hidden" name="layoutMode" value={layoutMode} />
       <input type="hidden" name="mediaLayout" value={mediaLayout} />
+      <input type="hidden" name="memoryTitle" value={memoryTitle} />
+      <input type="hidden" name="memoryDescription" value={memoryDescription} />
+
+      {normalizeSelectedSlots(messageMediaSlots, activeMessageMediaSlots, activeMessageMediaSlots.length).map((slot, index) => (
+        <input key={`message-media-${slot}-${index}`} type="hidden" name="messageMediaSlots" value={slot} />
+      ))}
+
+      {normalizeSelectedSlots(memoryMediaSlots, ["memory-a", "memory-b", "memory-c"], memorySlotCount).map((slot, index) => (
+        <input key={`memory-media-${slot}-${index}`} type="hidden" name="memoryMediaSlots" value={slot} />
+      ))}
 
       {blockOrder.map((blockId) => (
         <input key={blockId} type="hidden" name="blockOrder" value={blockId} />
@@ -587,8 +714,52 @@ export const BlockSettingsForm = ({
                                 </button>
                               ))}
                             </div>
+                            <PhotoSequencePicker
+                              title="Фото и последовательность"
+                              description="Выберите, какие фото и в каком порядке попадут рядом с поздравлениями."
+                              assets={mediaAssets}
+                              allowedSlots={activeMessageMediaSlots}
+                              selectedSlots={messageMediaSlots}
+                              onChange={setMessageMediaSlots}
+                            />
                           </div>
                         ) : null}
+                      </div>
+                    ) : null}
+
+                    {block.id === "memories" ? (
+                      <div className={styles.messageSettings}>
+                        <div className={styles.messageSettingsGroup}>
+                          <h4 className={styles.messageSettingsTitle}>Общая подпись блока</h4>
+                          <div className={styles.memoryCaptionFields}>
+                            <label>
+                              <span>Заголовок</span>
+                              <input
+                                value={memoryTitle}
+                                onChange={(event) => setMemoryTitle(event.target.value)}
+                                maxLength={80}
+                                className={styles.memoryCaptionInput}
+                              />
+                            </label>
+                            <label>
+                              <span>Описание</span>
+                              <textarea
+                                value={memoryDescription}
+                                onChange={(event) => setMemoryDescription(event.target.value)}
+                                maxLength={180}
+                                className={styles.memoryCaptionTextarea}
+                              />
+                            </label>
+                          </div>
+                        </div>
+                        <PhotoSequencePicker
+                          title="Фото и последовательность"
+                          description="Выберите до трех фото для блока воспоминаний."
+                          assets={mediaAssets}
+                          allowedSlots={["memory-a", "memory-b", "memory-c"]}
+                          selectedSlots={memoryMediaSlots}
+                          onChange={setMemoryMediaSlots}
+                        />
                       </div>
                     ) : null}
                   </div>

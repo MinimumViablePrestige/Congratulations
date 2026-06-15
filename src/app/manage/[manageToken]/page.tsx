@@ -100,6 +100,11 @@ export default async function ManagePage({ params, searchParams }: Props) {
   const selectedTemplate = cardTemplates.find((template) => template.id === card.templateId) ?? cardTemplates[0];
   const layoutMode = card.finalMessageSettings?.layoutMode ?? "grid-2";
   const mediaLayout = card.finalMessageSettings?.mediaLayout ?? "portrait";
+  const messageMediaSlots = card.finalMessageSettings?.mediaSlots ?? [];
+  const memoryMediaSlots = card.finalMemorySettings?.mediaSlots ?? [];
+  const memoryTitle = card.finalMemorySettings?.title ?? "Наши воспоминания";
+  const memoryDescription =
+    card.finalMemorySettings?.description ?? "Столько ярких моментов, с которыми мы идём рядом с тобой.";
   const layoutProfile = getFinalCardMessageLayoutProfile(layoutMode);
   const optionalLayoutBlocks = finalCardLayouts[style].blocks.filter((block) => !block.required);
 
@@ -286,6 +291,11 @@ export default async function ManagePage({ params, searchParams }: Props) {
                   initialLayoutMode={layoutMode}
                   initialMediaLayout={mediaLayout}
                   initialBlockOrder={initialBlockOrder}
+                  mediaAssets={mediaAssets}
+                  initialMessageMediaSlots={messageMediaSlots}
+                  initialMemoryMediaSlots={memoryMediaSlots}
+                  initialMemoryTitle={memoryTitle}
+                  initialMemoryDescription={memoryDescription}
                 />
               </section>
             </div>

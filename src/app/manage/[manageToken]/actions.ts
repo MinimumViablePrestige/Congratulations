@@ -30,6 +30,8 @@ import type {
   FinalCardBlockId,
   FinalCardBlockOrder,
   FinalCardBlockSettings,
+  FinalCardMediaSlot,
+  FinalCardMemorySettings,
   FinalCardMessageLayoutMode,
   FinalCardMessageMediaLayout,
   FinalCardMessageSettings,
@@ -42,6 +44,7 @@ const managedBlockIds: FinalCardBlockId[] = ["hero", "summary", "qualities", "me
 const messageLayoutModes: FinalCardMessageLayoutMode[] = ["grid-2", "carousel-1", "carousel-2", "column-media"];
 const mediaLayouts: FinalCardMessageMediaLayout[] = ["portrait", "landscape-pair", "landscape-trio"];
 const mediaSlots: CardMediaSlot[] = ["portrait", "landscape-a", "landscape-b", "landscape-c", "memory-a", "memory-b", "memory-c"];
+const finalMediaSlots: FinalCardMediaSlot[] = ["portrait", "landscape-a", "landscape-b", "landscape-c", "memory-a", "memory-b", "memory-c"];
 
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const validateLength = (value: string, min: number, max: number) => value.length >= min && value.length <= max;
@@ -404,6 +407,18 @@ export async function updateFinalPresentationSettingsAction(
   const templateId = isTemplateId(rawTemplateId) ? rawTemplateId : card.templateId;
   const visibleContributions = await listContributionsByCardId(card.id);
   const layoutProfile = getFinalCardMessageLayoutProfile(layoutMode);
+  const messageMediaSlots = formData
+    .getAll("messageMediaSlots")
+    .map((value) => String(value))
+    .filter((value): value is FinalCardMediaSlot => finalMediaSlots.includes(value as FinalCardMediaSlot));
+  const memoryMediaSlots = formData
+    .getAll("memoryMediaSlots")
+    .map((value) => String(value))
+    .filter((value): value is FinalCardMediaSlot => finalMediaSlots.includes(value as FinalCardMediaSlot));
+  const memoryTitle = String(formData.get("memoryTitle") ?? "").trim().slice(0, 80) || "Наши воспоминания";
+  const memoryDescription =
+    String(formData.get("memoryDescription") ?? "").trim().slice(0, 180) ||
+    "Столько ярких моментов, с которыми мы идём рядом с тобой.";
   const finalBlockOrder = formData
     .getAll("blockOrder")
     .map((value) => String(value))
@@ -417,7 +432,13 @@ export async function updateFinalPresentationSettingsAction(
   const finalMessageSettings: FinalCardMessageSettings = {
     layoutMode,
     mediaLayout,
+    mediaSlots: messageMediaSlots,
     showAllLink: visibleContributions.length > layoutProfile.cardsPerPage
+  };
+  const finalMemorySettings: FinalCardMemorySettings = {
+    title: memoryTitle,
+    description: memoryDescription,
+    mediaSlots: memoryMediaSlots
   };
 
   const updated = await updateCardFinalPresentationSettings(
@@ -425,7 +446,8 @@ export async function updateFinalPresentationSettingsAction(
     templateId,
     finalBlockSettings,
     finalBlockOrder.length > 0 ? (finalBlockOrder as FinalCardBlockOrder) : card.finalBlockOrder,
-    finalMessageSettings
+    finalMessageSettings,
+    finalMemorySettings
   );
   if (!updated) {
     return { ok: false, message: "Не удалось сохранить состав финального экрана." };
@@ -435,7 +457,8 @@ export async function updateFinalPresentationSettingsAction(
     cardId: card.id,
     templateId,
     finalBlockSettings,
-    finalMessageSettings
+    finalMessageSettings,
+    finalMemorySettings
   });
 
   revalidateCardSurfaces(manageToken, card.publicSlug, card.finalSlug);

@@ -198,3 +198,10 @@
 2. Added need/added counters to each photo group so the organizer sees how many images are still missing.
 3. Kept existing slot storage underneath, but made the UI behave like a shared photo library for future block-level selection.
 4. Tightened right-rail form styles so inputs and file controls stay inside the page bounds.
+
+## Update 2026-06-15 Block Photo Selection
+
+1. Added block-level photo selection inside `Оформление открытки`.
+2. The `Поздравления` block now lets the organizer choose which uploaded photos appear in the media layout and in what order.
+3. The `Наши воспоминания` block now has its own shared caption text and ordered photo selection.
+4. Final card rendering now uses the selected photo order instead of fixed slot order.

@@ -161,6 +161,10 @@
   overflow: hidden;
 }
 
+.memories .sectionTitle:first-of-type:not(:last-of-type) {
+  display: none;
+}
+
 .hero {
   display: grid;
   gap: 18px;

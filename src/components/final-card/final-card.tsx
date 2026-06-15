@@ -21,15 +21,6 @@ const trimMessage = (message: string, maxChars: number) =>
 const getMediaAssetBySlot = (mediaAssets: CardMediaAsset[], slot: CardMediaAsset["slot"]) =>
   mediaAssets.find((item) => item.slot === slot);
 
-const messageMediaSlots: CardMediaAsset["slot"][] = ["portrait", "landscape-a", "landscape-b", "landscape-c"];
-const memoryMediaSlots: CardMediaAsset["slot"][] = ["memory-a", "memory-b", "memory-c"];
-
-const getMessageMediaAssets = (mediaAssets: CardMediaAsset[]) =>
-  mediaAssets.filter((asset) => messageMediaSlots.includes(asset.slot));
-
-const getMemoryMediaAssets = (mediaAssets: CardMediaAsset[]) =>
-  mediaAssets.filter((asset) => memoryMediaSlots.includes(asset.slot));
-
 const renderMessageCard = (item: Contribution, index: number, maxChars: number) => (
   <article
     key={item.id}
@@ -148,20 +139,20 @@ const renderMediaFigure = (
 };
 
 const renderMediaRail = (model: FinalCardViewModel) => {
-  const messageMediaAssets = getMessageMediaAssets(model.mediaAssets);
+  const messageMediaAssets = model.messageMediaAssets;
 
   if (model.messageMediaLayout === "landscape-pair" || model.messageMediaLayout === "landscape-trio") {
     return (
       <div className={styles.mediaRail}>
         {renderMediaFigure(
-          getMediaAssetBySlot(messageMediaAssets, "landscape-a"),
+          messageMediaAssets[0],
           "landscape-a",
           "Горизонтальное фото A",
           "Здесь может появиться первое горизонтальное фото.",
           styles.mediaCardLandscape
         )}
         {renderMediaFigure(
-          getMediaAssetBySlot(messageMediaAssets, "landscape-b"),
+          messageMediaAssets[1],
           "landscape-b",
           "Горизонтальное фото B",
           "Здесь может появиться второе горизонтальное фото.",
@@ -169,7 +160,7 @@ const renderMediaRail = (model: FinalCardViewModel) => {
         )}
         {model.messageMediaLayout === "landscape-trio"
           ? renderMediaFigure(
-              getMediaAssetBySlot(messageMediaAssets, "landscape-c"),
+              messageMediaAssets[2],
               "landscape-c",
               "Горизонтальное фото C",
               "Здесь может появиться третье горизонтальное фото.",
@@ -183,7 +174,7 @@ const renderMediaRail = (model: FinalCardViewModel) => {
   return (
     <div className={styles.mediaRail}>
       {renderMediaFigure(
-        getMediaAssetBySlot(messageMediaAssets, "portrait"),
+        messageMediaAssets[0],
         "portrait",
         "Вертикальное фото",
         "Здесь предусмотрено место под одно заметное вертикальное фото.",
@@ -299,11 +290,13 @@ export const FinalCard = ({ model }: Props) => {
             }
 
             if (block.id === "memories") {
-              const memoryAssets = getMemoryMediaAssets(model.mediaAssets);
+              const memoryAssets = model.memoryMediaAssets;
 
               return (
                 <section key={block.id} className={`${styles.memories} ${styles.section}`}>
                   <h2 className={styles.sectionTitle}>Наши воспоминания</h2>
+                  <h2 className={styles.sectionTitle}>{model.memoryTitle}</h2>
+                  <p className={styles.sectionText}>{model.memoryDescription}</p>
                   <div className={`${styles.grid} ${styles.memoriesGrid}`}>
                     {memoryAssets.length > 0
                       ? memoryAssets.map((asset, index) => (

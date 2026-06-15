@@ -2,7 +2,12 @@ import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { CardDraft, CardMediaAsset, Contribution } from "@/lib/cards/types";
 import type { CardTemplateId } from "@/lib/cards/templates";
-import type { FinalCardBlockOrder, FinalCardBlockSettings, FinalCardMessageSettings } from "@/lib/final-card/types";
+import type {
+  FinalCardBlockOrder,
+  FinalCardBlockSettings,
+  FinalCardMemorySettings,
+  FinalCardMessageSettings
+} from "@/lib/final-card/types";
 
 const cardsFilePath = join(process.cwd(), "data", "cards.json");
 const contributionsFilePath = join(process.cwd(), "data", "contributions.json");
@@ -11,7 +16,14 @@ const mediaAssetsFilePath = join(process.cwd(), "data", "media-assets.json");
 const defaultFinalMessageSettings: FinalCardMessageSettings = {
   layoutMode: "grid-2",
   mediaLayout: "portrait",
+  mediaSlots: [],
   showAllLink: true
+};
+
+const defaultFinalMemorySettings: FinalCardMemorySettings = {
+  title: "Наши воспоминания",
+  description: "Столько ярких моментов, с которыми мы идём рядом с тобой.",
+  mediaSlots: []
 };
 
 const normalizeCard = (card: CardDraft): CardDraft => ({
@@ -19,6 +31,12 @@ const normalizeCard = (card: CardDraft): CardDraft => ({
   occasionText: card.occasionText ?? card.description ?? card.occasion,
   finalBlockSettings: card.finalBlockSettings ?? null,
   finalBlockOrder: card.finalBlockOrder ?? null,
+  finalMemorySettings: card.finalMemorySettings
+    ? {
+        ...defaultFinalMemorySettings,
+        ...card.finalMemorySettings
+      }
+    : defaultFinalMemorySettings,
   finalMessageSettings: card.finalMessageSettings
     ? {
         ...defaultFinalMessageSettings,
@@ -165,7 +183,8 @@ export const updateCardFinalPresentationSettings = async (
   templateId: CardTemplateId,
   finalBlockSettings: FinalCardBlockSettings,
   finalBlockOrder: FinalCardBlockOrder | null,
-  finalMessageSettings: FinalCardMessageSettings
+  finalMessageSettings: FinalCardMessageSettings,
+  finalMemorySettings: FinalCardMemorySettings
 ) => {
   const cards = await readCards();
   const index = cards.findIndex((card) => card.id === cardId);
@@ -180,6 +199,7 @@ export const updateCardFinalPresentationSettings = async (
     finalBlockSettings,
     finalBlockOrder,
     finalMessageSettings,
+    finalMemorySettings,
     updatedAt: new Date().toISOString()
   };
 

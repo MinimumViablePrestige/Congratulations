@@ -29,6 +29,10 @@ export type FinalCardViewModel = {
     caption: string;
   }>;
   mediaAssets: CardMediaAsset[];
+  messageMediaAssets: CardMediaAsset[];
+  memoryMediaAssets: CardMediaAsset[];
+  memoryTitle: string;
+  memoryDescription: string;
   messageLayoutMode: FinalCardMessageLayoutMode;
   messageMediaLayout: FinalCardMessageMediaLayout;
   showAllMessagesLink: boolean;
@@ -89,6 +93,13 @@ const resolveStyle = (templateId: CardDraft["templateId"]): FinalCardStyleId => 
   return matched?.id ?? "warm-classic";
 };
 
+const resolveOrderedMediaAssets = (mediaAssets: CardMediaAsset[], slots: string[], fallbackSlots: string[]) => {
+  const selectedSlots = slots.length > 0 ? slots : fallbackSlots;
+  return selectedSlots
+    .map((slot) => mediaAssets.find((asset) => asset.slot === slot))
+    .filter((asset): asset is CardMediaAsset => Boolean(asset));
+};
+
 export const buildFinalCardViewModel = (
   card: CardDraft,
   contributions: Contribution[],
@@ -96,6 +107,7 @@ export const buildFinalCardViewModel = (
 ): FinalCardViewModel => {
   const style = resolveStyle(card.templateId);
   const messageLayoutMode = card.finalMessageSettings?.layoutMode ?? "grid-2";
+  const messageMediaLayout = card.finalMessageSettings?.mediaLayout ?? "portrait";
   const layoutProfile = getFinalCardMessageLayoutProfile(messageLayoutMode);
   const qualities = extractQualities(contributions);
   const quotes = extractQuotes(contributions);
@@ -124,8 +136,24 @@ export const buildFinalCardViewModel = (
     contributions,
     memories,
     mediaAssets,
+    messageMediaAssets: resolveOrderedMediaAssets(
+      mediaAssets,
+      card.finalMessageSettings?.mediaSlots ?? [],
+      messageMediaLayout === "portrait"
+        ? ["portrait"]
+        : messageMediaLayout === "landscape-pair"
+          ? ["landscape-a", "landscape-b"]
+          : ["landscape-a", "landscape-b", "landscape-c"]
+    ),
+    memoryMediaAssets: resolveOrderedMediaAssets(mediaAssets, card.finalMemorySettings?.mediaSlots ?? [], [
+      "memory-a",
+      "memory-b",
+      "memory-c"
+    ]),
+    memoryTitle: card.finalMemorySettings?.title ?? "Наши воспоминания",
+    memoryDescription: card.finalMemorySettings?.description ?? "Столько ярких моментов, с которыми мы идём рядом с тобой.",
     messageLayoutMode,
-    messageMediaLayout: card.finalMessageSettings?.mediaLayout ?? "portrait",
+    messageMediaLayout,
     showAllMessagesLink: contributions.length > layoutProfile.cardsPerPage,
     blocks: buildFinalCardLayout(style, availability, card.finalBlockSettings, card.finalBlockOrder).blocks
   };
