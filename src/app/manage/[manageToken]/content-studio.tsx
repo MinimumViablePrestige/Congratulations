@@ -103,6 +103,10 @@ export const ContentStudio = ({
     setDropTarget(null);
   };
 
+  const moveContributionToEnd = (contributionId: string) => {
+    setContributionOrder((current) => [...current.filter((item) => item !== contributionId), contributionId]);
+  };
+
   const handleDragStart = (event: ReactDragEvent<HTMLButtonElement>, contributionId: string) => {
     setDraggedContributionId(contributionId);
     setDropTarget(null);
@@ -112,7 +116,7 @@ export const ContentStudio = ({
 
     if (card instanceof HTMLElement) {
       const rect = card.getBoundingClientRect();
-      event.dataTransfer.setDragImage(card, rect.width / 2, 36);
+      event.dataTransfer.setDragImage(card, event.clientX - rect.left, event.clientY - rect.top);
     }
   };
 
@@ -332,6 +336,11 @@ export const ContentStudio = ({
                                 <button
                                   type="submit"
                                   className={`${styles.contentToggleView} ${!isHidden ? styles.contentToggleViewActive : ""}`}
+                                  onClick={() => {
+                                    if (!isHidden) {
+                                      moveContributionToEnd(contribution.id);
+                                    }
+                                  }}
                                   aria-label={isHidden ? "Показать поздравление" : "Скрыть поздравление"}
                                 >
                                   <span className={styles.contentToggleKnob} />
