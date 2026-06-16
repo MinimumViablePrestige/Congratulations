@@ -280,3 +280,9 @@
 2. Increased the hero stage height and decorative photo scale so the top block feels closer to the reference poster instead of a compact banner.
 3. Added small heart/ray doodles around the title and softened the hero meta pills to better match the handmade scrapbook direction.
 4. Kept the title and occasion editable through existing card data; no static title image was introduced.
+
+## Update 2026-06-16 Paper Birthday Hero Screenshot Fix
+
+1. Adjusted the hero decorative polaroids after visual review so the left cake photo no longer covers the first letter of the recipient name.
+2. Reduced the hero height, service note, and right-side info card scale so the top block feels less cramped and more balanced.
+3. Kept the handmade title treatment from the previous pass while making the composition safer for real recipient names and longer occasions.

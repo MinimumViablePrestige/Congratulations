@@ -319,8 +319,8 @@
 
 .paper-birthday .polaroidCakeLeft,
 .paper-birthday .polaroidFlowersTopRight {
-  width: 220px;
-  height: 276px;
+  width: 196px;
+  height: 246px;
   border: 0;
   border-radius: 6px;
   background: var(--scrapbook-top-cake) center / cover no-repeat;
@@ -338,18 +338,18 @@
 }
 
 .paper-birthday .polaroidCakeLeft {
-  left: 26px;
-  top: 112px;
-  transform: scale(0.92) rotate(-10deg);
+  left: -18px;
+  top: 108px;
+  transform: scale(0.82) rotate(-10deg);
 }
 
 .paper-birthday .polaroidCakeLeft::after {
 }
 
 .paper-birthday .polaroidFlowersTopRight {
-  right: 42px;
-  top: 42px;
-  transform: scale(0.98) rotate(7deg);
+  right: 26px;
+  top: 34px;
+  transform: scale(0.9) rotate(7deg);
   background-image: var(--scrapbook-top-bouquet);
 }
 
@@ -393,10 +393,10 @@
 }
 
 .paper-birthday .stickyNoteToday {
-  right: 64px;
-  top: 248px;
-  width: 144px;
-  min-height: 118px;
+  right: 54px;
+  top: 220px;
+  width: 124px;
+  min-height: 98px;
   display: grid;
   place-items: center;
   padding: 16px;
@@ -406,7 +406,7 @@
     var(--scrapbook-sticky-note) center / 100% 100% no-repeat;
   color: #6b3f30;
   font-family: "Segoe Print", "Comic Sans MS", cursive;
-  font-size: 1.05rem;
+  font-size: 0.94rem;
   font-weight: 800;
   line-height: 1.2;
   text-align: center;
@@ -494,7 +494,7 @@
 }
 
 .paper-birthday .hero {
-  min-height: 560px;
+  min-height: 520px;
   overflow: visible;
   border: 0;
   border-radius: 8px;
@@ -554,10 +554,10 @@
   position: relative;
   display: grid;
   justify-items: center;
-  max-width: min(720px, 74vw);
+  max-width: min(760px, 76vw);
   color: #2f1f1a;
   font-family: "Comic Sans MS", "Segoe Print", Georgia, serif;
-  font-size: clamp(3.6rem, 9.2vw, 7.6rem);
+  font-size: clamp(3.4rem, 8.7vw, 7.2rem);
   letter-spacing: -0.045em;
   transform: rotate(-1.5deg);
   text-shadow: 0 2px 0 rgba(255, 248, 231, 0.8);
@@ -613,7 +613,7 @@
   z-index: 2;
   justify-items: center;
   text-align: center;
-  padding: 56px clamp(12px, 4vw, 68px) 32px;
+  padding: 44px clamp(44px, 8vw, 112px) 28px;
 }
 
 .paper-birthday .heroMain::before {
@@ -656,7 +656,7 @@
 .paper-birthday .subtitle {
   max-width: 620px;
   color: #4f372f;
-  font-size: 1.18rem;
+  font-size: 1.08rem;
   line-height: 1.5;
 }
 
@@ -673,8 +673,8 @@
 }
 
 .paper-birthday .metaPill {
-  min-height: 44px;
-  padding-inline: 20px;
+  min-height: 36px;
+  padding-inline: 16px;
   border-color: rgba(161, 115, 67, 0.22);
   background: rgba(255, 248, 236, 0.76);
   box-shadow: 0 8px 16px rgba(92, 58, 34, 0.08);
@@ -683,6 +683,9 @@
 .paper-birthday .heroAside {
   z-index: 2;
   align-content: center;
+  max-width: 178px;
+  transform: translateX(-6px) scale(0.86);
+  transform-origin: center right;
 }
 
 .paper-birthday .heroStatCard,
