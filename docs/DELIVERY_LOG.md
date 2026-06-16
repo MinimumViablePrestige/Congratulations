@@ -304,3 +304,9 @@
 1. Reduced the live hero title scale slightly so long recipient names and occasion lines breathe more naturally.
 2. Extended the torn-paper coverage lower in the hero so the description and CTA row visually stay inside the same paper block.
 3. Forced the red CTA button into strict flex centering so `Открыть поздравления` stays centered both vertically and horizontally.
+
+## Update 2026-06-16 Paper Birthday Hero Single-Line CTA
+
+1. Removed the residual side offset from the live hero title lines so the recipient name and occasion sit more symmetrically in the center.
+2. Added a dedicated torn-paper layer to `heroMain`, so the subtitle and CTA row visually belong to the same paper block as the heading.
+3. Locked the participants block and the red CTA button into a single desktop row, with a mobile-only wrap fallback.
