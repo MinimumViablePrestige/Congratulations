@@ -333,3 +333,10 @@
 ## Update 2026-06-16 Scrapbook Torn Paper Swap
 
 1. Swapped the hero torn-paper asset to `torn-paper-section1.png` to try a cleaner paper silhouette for the scrapbook template.
+
+## Update 2026-06-16 Scrapbook Middle Section Polish
+
+1. Expanded the `РіР»Р°Р·Р°РјРё РіСЂСѓРїРїС‹` torn-paper strip so the title and summary text have more horizontal breathing room.
+2. Removed the extra dried-flower accent from the summary strip to keep the paper edges cleaner and closer to the reference.
+3. Reworked the `РљР°РєР°СЏ С‚С‹ РґР»СЏ РЅР°СЃ` paper tags from equal-width columns into intrinsic paper labels so they no longer feel stretched across the row.
+4. Increased spacing and card height in `Р›СѓС‡С€РёРµ С„СЂР°Р·С‹` so the three quote cards read more like separate scrapbook notes instead of compressed tiles.

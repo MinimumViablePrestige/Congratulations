@@ -756,10 +756,10 @@
 }
 
 .paper-birthday .summaryPanel {
-  max-width: 84%;
+  max-width: 92%;
   margin: -18px auto 0;
   clip-path: polygon(0 7%, 10% 3%, 24% 7%, 38% 2%, 52% 6%, 68% 3%, 84% 7%, 100% 4%, 99% 82%, 94% 88%, 87% 84%, 80% 90%, 72% 84%, 63% 89%, 54% 84%, 45% 90%, 36% 84%, 26% 88%, 17% 83%, 8% 89%, 0 84%);
-  padding: 30px 40px 44px;
+  padding: 26px 42px 40px;
   background:
     linear-gradient(rgba(255, 247, 229, 0.3), rgba(255, 232, 203, 0.26)),
     var(--scrapbook-torn-summary) center / 100% 100% no-repeat,
@@ -772,35 +772,28 @@
 .paper-birthday .summaryPanel::before {
   content: "♡";
   position: absolute;
-  left: 24px;
-  top: 20px;
+  left: 18px;
+  top: 16px;
   color: var(--fc-accent);
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   transform: rotate(-12deg);
 }
 
 .paper-birthday .summaryPanel .sectionTitle,
 .paper-birthday .summaryPanel .sectionText {
-  padding-left: 56px;
+  padding-left: 40px;
+  padding-right: 34px;
 }
 
 .paper-birthday .summaryPanel::after {
-  content: "";
-  position: absolute;
-  right: 30px;
-  bottom: 8px;
-  width: 96px;
-  height: 132px;
-  opacity: 0.78;
-  background: var(--scrapbook-dried-small) center / contain no-repeat;
-  transform: rotate(18deg);
+  content: none;
 }
 
 .paper-birthday .qualitiesPanel {
   background: transparent;
   border: 0;
   box-shadow: none;
-  padding: 10px 12px 20px;
+  padding: 10px 18px 22px;
   transform: rotate(-0.35deg);
 }
 
@@ -818,16 +811,21 @@
 }
 
 .paper-birthday .chipList {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 18px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px 20px;
   align-items: center;
-  padding: 8px 20px 2px;
+  padding: 12px 8px 4px;
 }
 
 .paper-birthday .chip {
+  display: inline-flex;
   justify-content: center;
-  min-height: 54px;
+  align-items: center;
+  min-width: 138px;
+  min-height: 56px;
+  padding: 12px 30px 16px;
   border: 0;
   border-radius: 3px;
   color: #4d342b;
@@ -948,9 +946,14 @@
 
 .paper-birthday .quotes {
   border: 0;
+  padding: 16px 18px 28px;
   background:
     linear-gradient(180deg, rgba(255, 238, 213, 0.78), rgba(255, 226, 196, 0.72));
   box-shadow: none;
+}
+
+.paper-birthday .quotesGrid {
+  gap: 22px;
 }
 
 .paper-birthday .quotes .sectionTitle::before {
@@ -959,6 +962,8 @@
 }
 
 .paper-birthday .quoteCard {
+  min-height: 154px;
+  padding: 22px 24px 26px;
   border: 0;
   border-radius: 7px;
   box-shadow:
