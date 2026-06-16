@@ -502,7 +502,7 @@
   align-items: center;
   background:
     linear-gradient(rgba(255, 242, 218, 0.5), rgba(255, 230, 199, 0.46)),
-    var(--scrapbook-torn-section) center 47% / 126% 118% no-repeat,
+    var(--scrapbook-torn-section) center 54% / 126% 138% no-repeat,
     linear-gradient(180deg, rgba(255, 242, 218, 0.96), rgba(255, 230, 199, 0.86)),
     repeating-linear-gradient(0deg, rgba(111, 75, 46, 0.035) 0 1px, transparent 1px 22px);
   clip-path: polygon(0 4%, 7% 2%, 17% 4%, 28% 2%, 43% 4%, 56% 2%, 70% 4%, 84% 2%, 100% 4%, 99% 92%, 88% 94%, 73% 92%, 58% 95%, 42% 92%, 28% 95%, 14% 92%, 1% 95%);
@@ -557,7 +557,7 @@
   max-width: min(760px, 76vw);
   color: #2f1f1a;
   font-family: "Segoe Print", "Comic Sans MS", Georgia, serif;
-  font-size: clamp(3.9rem, 8.7vw, 7.3rem);
+  font-size: clamp(3.55rem, 8.1vw, 6.8rem);
   letter-spacing: -0.045em;
   transform: rotate(-1.5deg);
   text-shadow: 0 2px 0 rgba(255, 248, 231, 0.8);
@@ -595,14 +595,14 @@
 
 .paper-birthday .heroNameLine {
   color: #d95a78;
-  font-size: 0.98em;
+  font-size: 0.95em;
   transform: translateX(-6px) rotate(-1deg);
 }
 
 .paper-birthday .heroOccasionLine {
   margin-top: -0.08em;
   color: #34201a;
-  font-size: 0.7em;
+  font-size: 0.66em;
   letter-spacing: -0.035em;
   text-transform: lowercase;
   transform: translateX(8px) rotate(0.8deg);
@@ -615,7 +615,7 @@
   text-align: center;
   max-width: 880px;
   margin-inline: auto;
-  padding: 26px clamp(56px, 9vw, 132px) 8px;
+  padding: 22px clamp(56px, 9vw, 132px) 2px;
 }
 
 .paper-birthday .heroMain::before {
@@ -643,7 +643,7 @@
 .paper-birthday .subtitle {
   max-width: 620px;
   color: #4f372f;
-  font-size: 1rem;
+  font-size: 0.96rem;
   line-height: 1.42;
 }
 
@@ -653,7 +653,7 @@
   justify-content: center;
   align-items: center;
   gap: 14px 24px;
-  margin-top: 2px;
+  margin-top: -2px;
 }
 
 .paper-birthday .heroParticipants {
@@ -693,6 +693,9 @@
 }
 
 .paper-birthday .heroOpenButton {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
   min-height: 52px;
   padding: 0 24px;
   border-radius: 14px;
@@ -700,6 +703,7 @@
   gap: 10px;
   justify-content: center;
   text-align: center;
+  line-height: 1;
   box-shadow: 0 16px 28px rgba(145, 61, 75, 0.24);
 }
 

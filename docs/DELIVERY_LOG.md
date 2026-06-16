@@ -298,3 +298,9 @@
 1. Removed the top `Открытка от всей группы` line from the hero to free up vertical space.
 2. Pulled the hero content and the next summary block higher so the first screen uses the paper sheet area more efficiently.
 3. Tightened the participants block typography and reduced the red CTA button height so both controls sit more naturally inside the hero paper composition.
+
+## Update 2026-06-16 Paper Birthday Hero Paper Coverage
+
+1. Reduced the live hero title scale slightly so long recipient names and occasion lines breathe more naturally.
+2. Extended the torn-paper coverage lower in the hero so the description and CTA row visually stay inside the same paper block.
+3. Forced the red CTA button into strict flex centering so `Открыть поздравления` stays centered both vertically and horizontally.
