@@ -359,3 +359,11 @@
 1. Moved the small heart on the `РіР»Р°Р·Р°РјРё РіСЂСѓРїРїС‹` strip inward so it now sits on the paper near the live heading instead of hanging off the edge.
 2. Locked the `РљР°РєР°СЏ С‚С‹ РґР»СЏ РЅР°СЃ` labels to one shared size with larger height and typography, so the whole row uses the available space more evenly.
 3. Switched the pink quote card to a versioned public file path to break browser cache and enlarged all quote-paper backgrounds to one larger shared scale.
+
+## Update 2026-06-16 Scrapbook Debug Assets Panel
+
+1. Moved scrapbook decorative floating assets into a shared config file with explicit position, size, rotation, opacity, z-index, visibility, and mobile override fields.
+2. Replaced the hardcoded `paperDecor` span list with config-driven rendering through a dedicated scrapbook decor layer component.
+3. Added a development-only `?debugAssets=1` panel on the public gift page so decorative assets can be tuned live in the browser without editing CSS.
+4. Added `Copy config` support that copies the current in-browser asset JSON, making it easy to send back final tuned values.
+5. Switched confetti decorations to versioned public SVG assets so copied config stays readable instead of embedding large data URLs.

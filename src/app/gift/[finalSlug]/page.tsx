@@ -7,10 +7,13 @@ type Props = {
   params: Promise<{
     finalSlug: string;
   }>;
+  searchParams: Promise<{
+    debugAssets?: string;
+  }>;
 };
 
-export default async function GiftPage({ params }: Props) {
-  const { finalSlug } = await params;
+export default async function GiftPage({ params, searchParams }: Props) {
+  const [{ finalSlug }, { debugAssets }] = await Promise.all([params, searchParams]);
   const cards = await listCardDrafts();
   const card = cards.find((item) => item.finalSlug === finalSlug);
 
@@ -21,6 +24,7 @@ export default async function GiftPage({ params }: Props) {
   const contributions = await listContributionsByCardId(card.id);
   const mediaAssets = await listCardMediaAssetsByCardId(card.id);
   const model = buildFinalCardViewModel(card, contributions, mediaAssets);
+  const isAssetDebugEnabled = process.env.NODE_ENV === "development" && debugAssets === "1";
 
-  return <FinalCard model={model} />;
+  return <FinalCard model={model} debugAssets={isAssetDebugEnabled} />;
 }

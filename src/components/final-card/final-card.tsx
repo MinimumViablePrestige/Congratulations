@@ -2,10 +2,12 @@ import Link from "next/link";
 import type { CardMediaAsset, Contribution } from "@/lib/cards/types";
 import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layout-rules";
 import type { FinalCardViewModel } from "@/lib/final-card/view-model";
+import { ScrapbookDecorLayer } from "./scrapbook-decor-layer";
 import styles from "./final-card.module.css";
 
 type Props = {
   model: FinalCardViewModel;
+  debugAssets?: boolean;
 };
 
 const styleClassMap = {
@@ -173,14 +175,17 @@ const renderMessagesLayout = (model: FinalCardViewModel) => {
   );
 };
 
-export const FinalCard = ({ model }: Props) => {
+export const FinalCard = ({ model, debugAssets = false }: Props) => {
   const heroScaleClass = model.style === "paper-birthday" ? getPaperBirthdayHeroScaleClass(model.recipientName) : "";
 
   return (
     <main className={`${styles.page} ${styleClassMap[model.style]}`}>
       <div className={styles.shell}>
         <div className={styles.canvas}>
-          <div className={styles.paperDecorLayer} aria-hidden="true">
+          {model.style === "paper-birthday" ? (
+            <ScrapbookDecorLayer debugEnabled={debugAssets} />
+          ) : (
+            <div className={styles.paperDecorLayer} aria-hidden="true">
             <span className={`${styles.paperDecor} ${styles.confettiTop}`} />
             <span className={`${styles.paperDecor} ${styles.heartStickerTopLeft}`} />
             <span className={`${styles.paperDecor} ${styles.polaroidCakeLeft}`} />
@@ -195,7 +200,8 @@ export const FinalCard = ({ model }: Props) => {
             <span className={`${styles.paperDecor} ${styles.goldHeartBottomRight}`} />
             <span className={`${styles.paperDecor} ${styles.driedFlowersBottomLeft}`} />
             <span className={`${styles.paperDecor} ${styles.footerFloralCluster}`} />
-          </div>
+            </div>
+          )}
           {model.blocks.map((block) => {
             if (block.id === "hero") {
               return (
