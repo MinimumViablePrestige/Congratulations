@@ -347,3 +347,9 @@
 2. Switched the `РљР°РєР°СЏ С‚С‹ РґР»СЏ РЅР°СЃ` labels from the tag-with-hole asset to the shorter torn-paper strip asset, which fits the reference better.
 3. Removed the extra gradient fills from `Р›СѓС‡С€РёРµ С„СЂР°Р·С‹` so the quote-paper assets render directly without muddy underlayers.
 4. Replaced the broken public pink quote asset copy with the original transparent source to eliminate the dark background bleed.
+
+## Update 2026-06-16 Scrapbook Midsection Scale Pass
+
+1. Enlarged the `РіР»Р°Р·Р°РјРё РіСЂСѓРїРїС‹` torn-paper asset and explicitly removed the inherited card border/radius so the leftover contour no longer fights the paper edge.
+2. Connected the new `paper-tag-short1/2/3` assets to `РљР°РєР°СЏ С‚С‹ РґР»СЏ РЅР°СЃ`, including a repeated use of `paper-tag-short1`, and increased both tag scale and label typography.
+3. Replaced the pink quote card public copy with the new source asset and increased background scale for all three quote cards so the paper artwork reads larger and cleaner.
