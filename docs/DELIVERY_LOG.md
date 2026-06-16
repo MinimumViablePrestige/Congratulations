@@ -227,3 +227,11 @@
 1. Fixed `3 horizontal photos` in the congratulations media block so all three selected images render.
 2. Kept horizontal media in a wide 16:9 photo format instead of square-like cropping.
 3. Moved the `paper-birthday` template closer to the reference with hero polaroids, taped photo cards, handwritten headings, and softer paper-style message cards.
+
+## Update 2026-06-16 Paper Birthday Reference Details
+
+1. Added a stronger decorative layer to the `paper-birthday` public card: heart marks, branch-like ornaments, side hero accents, and lightweight cake/bouquet-style objects.
+2. Reworked the `Кристина глазами группы` summary into a shorter paper strip with a torn bottom edge, closer to the reference composition.
+3. Reworked the `Какая ты для нас` qualities into separate tilted paper labels with varied warm colors and wider spacing.
+4. Added extra paper/handmade accents around messages, memories, and quote sections so the template feels less like a clean admin layout and more like a crafted birthday card.
+5. Remaining polish candidate: replace CSS-only decorative objects with real SVG/illustration assets for the cake, bouquet, branches, hearts, and handwritten notes if we want near-reference fidelity.
