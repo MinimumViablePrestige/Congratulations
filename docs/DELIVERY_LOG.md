@@ -324,3 +324,8 @@
 
 1. Added hero paper sizing modes tied to recipient-name shape so short one-line names use a more compact sheet while longer names keep a larger paper backdrop.
 2. Increased the default and expanded paper sizes so the hero torn-paper layer better matches the intended sketch outline.
+
+## Update 2026-06-16 Paper Birthday Hero Background Cleanup
+
+1. Removed the old beige hero underlay so only the torn-paper asset remains visible behind the hero content.
+2. Started the middle-section polish by widening the summary paper strip and spreading the quality tags more evenly across the available width.

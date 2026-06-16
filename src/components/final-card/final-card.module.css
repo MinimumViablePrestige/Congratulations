@@ -500,28 +500,16 @@
   border-radius: 8px;
   padding-inline: clamp(30px, 6vw, 86px);
   align-items: center;
-  background:
-    linear-gradient(rgba(255, 242, 218, 0.5), rgba(255, 230, 199, 0.46)),
-    var(--scrapbook-torn-section) center 55% / 138% 228% no-repeat,
-    linear-gradient(180deg, rgba(255, 242, 218, 0.96), rgba(255, 230, 199, 0.86)),
-    repeating-linear-gradient(0deg, rgba(111, 75, 46, 0.035) 0 1px, transparent 1px 22px);
+  background: var(--scrapbook-torn-section) center 55% / 138% 228% no-repeat;
   clip-path: polygon(0 4%, 7% 2%, 17% 4%, 28% 2%, 43% 4%, 56% 2%, 70% 4%, 84% 2%, 100% 4%, 99% 92%, 88% 94%, 73% 92%, 58% 95%, 42% 92%, 28% 95%, 14% 92%, 1% 95%);
 }
 
 .paper-birthday .hero.paperBirthdayHeroExpanded {
-  background:
-    linear-gradient(rgba(255, 242, 218, 0.5), rgba(255, 230, 199, 0.46)),
-    var(--scrapbook-torn-section) center 54% / 142% 244% no-repeat,
-    linear-gradient(180deg, rgba(255, 242, 218, 0.96), rgba(255, 230, 199, 0.86)),
-    repeating-linear-gradient(0deg, rgba(111, 75, 46, 0.035) 0 1px, transparent 1px 22px);
+  background: var(--scrapbook-torn-section) center 54% / 142% 244% no-repeat;
 }
 
 .paper-birthday .hero.paperBirthdayHeroCompact {
-  background:
-    linear-gradient(rgba(255, 242, 218, 0.5), rgba(255, 230, 199, 0.46)),
-    var(--scrapbook-torn-section) center 56% / 130% 188% no-repeat,
-    linear-gradient(180deg, rgba(255, 242, 218, 0.96), rgba(255, 230, 199, 0.86)),
-    repeating-linear-gradient(0deg, rgba(111, 75, 46, 0.035) 0 1px, transparent 1px 22px);
+  background: var(--scrapbook-torn-section) center 56% / 130% 188% no-repeat;
 }
 
 .paper-birthday .hero::before,
@@ -768,17 +756,17 @@
 }
 
 .paper-birthday .summaryPanel {
-  max-width: 78%;
-  margin: -30px auto 0;
+  max-width: 84%;
+  margin: -18px auto 0;
   clip-path: polygon(0 7%, 10% 3%, 24% 7%, 38% 2%, 52% 6%, 68% 3%, 84% 7%, 100% 4%, 99% 82%, 94% 88%, 87% 84%, 80% 90%, 72% 84%, 63% 89%, 54% 84%, 45% 90%, 36% 84%, 26% 88%, 17% 83%, 8% 89%, 0 84%);
-  padding: 34px 44px 52px;
+  padding: 30px 40px 44px;
   background:
     linear-gradient(rgba(255, 247, 229, 0.3), rgba(255, 232, 203, 0.26)),
     var(--scrapbook-torn-summary) center / 100% 100% no-repeat,
     linear-gradient(180deg, rgba(255, 247, 229, 0.98), rgba(255, 232, 203, 0.92)),
     var(--fc-surface);
-  box-shadow: 0 20px 34px rgba(92, 58, 34, 0.14);
-  transform: rotate(-1.1deg);
+  box-shadow: 0 16px 28px rgba(92, 58, 34, 0.12);
+  transform: rotate(-0.7deg);
 }
 
 .paper-birthday .summaryPanel::before {
@@ -812,12 +800,12 @@
   background: transparent;
   border: 0;
   box-shadow: none;
-  padding: 14px 28px 18px;
-  transform: rotate(-0.6deg);
+  padding: 10px 12px 20px;
+  transform: rotate(-0.35deg);
 }
 
 .paper-birthday .qualitiesPanel .sectionTitle {
-  margin-left: 18px;
+  margin-left: 22px;
   display: inline-block;
   padding: 8px 24px 12px;
   background: rgba(255, 244, 222, 0.82);
@@ -831,26 +819,27 @@
 
 .paper-birthday .chipList {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 18px 28px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px 18px;
   align-items: center;
-  padding: 4px 10px;
+  padding: 8px 20px 2px;
 }
 
 .paper-birthday .chip {
   justify-content: center;
-  min-height: 48px;
+  min-height: 54px;
   border: 0;
   border-radius: 3px;
   color: #4d342b;
   font-family: "Segoe Print", "Comic Sans MS", cursive;
   font-weight: 800;
+  font-size: 1rem;
   text-align: center;
   background:
     linear-gradient(rgba(255, 238, 218, 0.2), rgba(255, 238, 218, 0.2)),
     var(--scrapbook-paper-tag-long) center / 100% 100% no-repeat;
   box-shadow:
-    0 8px 14px rgba(92, 58, 34, 0.1),
+    0 10px 16px rgba(92, 58, 34, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
