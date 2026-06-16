@@ -180,6 +180,9 @@
   border: 1px solid rgba(106, 72, 49, 0.16);
   border-radius: 10px;
   background:
+    radial-gradient(circle at 4% 18%, rgba(151, 93, 52, 0.1) 0 24px, transparent 25px),
+    radial-gradient(circle at 97% 34%, rgba(223, 79, 115, 0.08) 0 34px, transparent 35px),
+    linear-gradient(92deg, transparent 0 49.6%, rgba(118, 75, 43, 0.035) 49.8% 50.2%, transparent 50.4%),
     radial-gradient(circle at 14% 20%, rgba(255, 255, 255, 0.4), transparent 10%),
     linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 22%, transparent 78%, rgba(255, 255, 255, 0.14)),
     var(--fc-bg);
@@ -189,6 +192,196 @@
   inset: 16px;
   border-color: rgba(126, 82, 49, 0.1);
   border-radius: 8px;
+}
+
+.paper-birthday .canvas::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 5% 5%, #df4f73 0 4px, transparent 5px),
+    radial-gradient(circle at 9% 2%, #e09f44 0 3px, transparent 4px),
+    radial-gradient(circle at 15% 5%, #7aa0b5 0 4px, transparent 5px),
+    radial-gradient(circle at 86% 3%, #df4f73 0 4px, transparent 5px),
+    radial-gradient(circle at 92% 7%, #e09f44 0 3px, transparent 4px),
+    radial-gradient(circle at 96% 13%, #7aa0b5 0 4px, transparent 5px),
+    linear-gradient(100deg, transparent 0 83%, rgba(255, 245, 222, 0.58) 83.2% 88%, transparent 88.2%);
+  opacity: 0.72;
+}
+
+.paperDecorLayer,
+.paperDecor {
+  display: none;
+}
+
+.paper-birthday .paperDecorLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+}
+
+.paper-birthday .paperDecor {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.paper-birthday .confettiTop {
+  top: 10px;
+  left: 7%;
+  width: 86%;
+  height: 78px;
+  background:
+    radial-gradient(circle at 3% 54%, #df4f73 0 5px, transparent 6px),
+    radial-gradient(circle at 10% 20%, #7aa0b5 0 4px, transparent 5px),
+    radial-gradient(circle at 18% 42%, #e09f44 0 4px, transparent 5px),
+    radial-gradient(circle at 72% 18%, #df4f73 0 5px, transparent 6px),
+    radial-gradient(circle at 82% 42%, #7aa0b5 0 4px, transparent 5px),
+    radial-gradient(circle at 94% 18%, #e09f44 0 4px, transparent 5px),
+    linear-gradient(24deg, transparent 0 38%, #e7b6a7 39% 45%, transparent 46%) 22% 10% / 28px 18px no-repeat,
+    linear-gradient(-18deg, transparent 0 38%, #f3d6a7 39% 45%, transparent 46%) 88% 72% / 28px 18px no-repeat;
+}
+
+.paper-birthday .heartStickerTopLeft,
+.paper-birthday .pinkHeartMidRight,
+.paper-birthday .goldHeartLeft,
+.paper-birthday .goldHeartBottomRight {
+  width: 48px;
+  height: 44px;
+  transform: rotate(-12deg);
+}
+
+.paper-birthday .heartStickerTopLeft::before,
+.paper-birthday .heartStickerTopLeft::after,
+.paper-birthday .pinkHeartMidRight::before,
+.paper-birthday .pinkHeartMidRight::after,
+.paper-birthday .goldHeartLeft::before,
+.paper-birthday .goldHeartLeft::after,
+.paper-birthday .goldHeartBottomRight::before,
+.paper-birthday .goldHeartBottomRight::after {
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 40px;
+  border-radius: 28px 28px 0 0;
+  transform-origin: 50% 100%;
+}
+
+.paper-birthday .heartStickerTopLeft::before,
+.paper-birthday .pinkHeartMidRight::before,
+.paper-birthday .goldHeartLeft::before,
+.paper-birthday .goldHeartBottomRight::before {
+  left: 20px;
+  transform: rotate(-45deg);
+}
+
+.paper-birthday .heartStickerTopLeft::after,
+.paper-birthday .pinkHeartMidRight::after,
+.paper-birthday .goldHeartLeft::after,
+.paper-birthday .goldHeartBottomRight::after {
+  left: 0;
+  transform: rotate(45deg);
+}
+
+.paper-birthday .heartStickerTopLeft {
+  top: 28px;
+  left: 28px;
+}
+
+.paper-birthday .heartStickerTopLeft::before,
+.paper-birthday .heartStickerTopLeft::after,
+.paper-birthday .pinkHeartMidRight::before,
+.paper-birthday .pinkHeartMidRight::after {
+  background: linear-gradient(135deg, #f4a8ad, #de6678);
+  box-shadow: 0 8px 16px rgba(115, 68, 51, 0.12);
+}
+
+.paper-birthday .goldHeartLeft {
+  left: 64px;
+  top: 360px;
+  transform: scale(0.72) rotate(18deg);
+}
+
+.paper-birthday .goldHeartBottomRight {
+  right: 72px;
+  bottom: 310px;
+  transform: scale(0.86) rotate(-18deg);
+}
+
+.paper-birthday .goldHeartLeft::before,
+.paper-birthday .goldHeartLeft::after,
+.paper-birthday .goldHeartBottomRight::before,
+.paper-birthday .goldHeartBottomRight::after {
+  background: linear-gradient(135deg, #e8b760, #b98435);
+  box-shadow: 0 8px 16px rgba(115, 68, 51, 0.13);
+}
+
+.paper-birthday .pinkHeartMidRight {
+  right: 52px;
+  top: 59%;
+  transform: scale(0.82) rotate(14deg);
+}
+
+.paper-birthday .stickyNoteToday {
+  right: 58px;
+  top: 214px;
+  width: 144px;
+  min-height: 118px;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(255, 241, 213, 0.98), rgba(255, 224, 190, 0.94));
+  color: #6b3f30;
+  font-family: "Segoe Print", "Comic Sans MS", cursive;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  box-shadow: 0 14px 24px rgba(92, 58, 34, 0.13);
+  transform: rotate(-7deg);
+}
+
+.paper-birthday .rightConfettiScatter {
+  right: 10px;
+  top: 310px;
+  width: 72px;
+  height: 360px;
+  background:
+    radial-gradient(circle at 30% 8%, #df4f73 0 4px, transparent 5px),
+    radial-gradient(circle at 72% 18%, #e09f44 0 3px, transparent 4px),
+    radial-gradient(circle at 40% 34%, #7aa0b5 0 4px, transparent 5px),
+    radial-gradient(circle at 84% 52%, #df4f73 0 3px, transparent 4px),
+    radial-gradient(circle at 22% 70%, #e09f44 0 4px, transparent 5px),
+    radial-gradient(circle at 70% 88%, #7aa0b5 0 3px, transparent 4px);
+}
+
+.paper-birthday .driedFlowersRight,
+.paper-birthday .driedFlowersBottomLeft {
+  width: 120px;
+  height: 210px;
+  opacity: 0.72;
+  background:
+    radial-gradient(ellipse at 35% 14%, transparent 0 13px, #9c9970 14px 15px, transparent 16px),
+    radial-gradient(ellipse at 66% 30%, transparent 0 13px, #9c9970 14px 15px, transparent 16px),
+    radial-gradient(ellipse at 34% 47%, transparent 0 12px, #9c9970 13px 14px, transparent 15px),
+    radial-gradient(ellipse at 70% 66%, transparent 0 12px, #9c9970 13px 14px, transparent 15px),
+    linear-gradient(105deg, transparent 0 49%, #a78758 50% 52%, transparent 53%);
+}
+
+.paper-birthday .driedFlowersRight {
+  right: -24px;
+  top: 560px;
+  transform: rotate(17deg);
+}
+
+.paper-birthday .driedFlowersBottomLeft {
+  left: -24px;
+  bottom: 140px;
+  transform: rotate(-22deg);
 }
 
 .paper-birthday .hero,
@@ -203,10 +396,16 @@
 }
 
 .paper-birthday .hero {
-  min-height: 360px;
+  min-height: 470px;
   overflow: visible;
-  border-style: dashed;
+  border: 0;
+  border-radius: 8px;
   padding-inline: clamp(28px, 5vw, 72px);
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(255, 242, 218, 0.96), rgba(255, 230, 199, 0.86)),
+    repeating-linear-gradient(0deg, rgba(111, 75, 46, 0.035) 0 1px, transparent 1px 22px);
+  clip-path: polygon(0 4%, 7% 2%, 17% 4%, 28% 2%, 43% 4%, 56% 2%, 70% 4%, 84% 2%, 100% 4%, 99% 92%, 88% 94%, 73% 92%, 58% 95%, 42% 92%, 28% 95%, 14% 92%, 1% 95%);
 }
 
 .paper-birthday .hero::before,
@@ -214,50 +413,62 @@
   content: "";
   position: absolute;
   z-index: 0;
-  width: 168px;
-  height: 210px;
-  border: 12px solid #fff8ed;
-  border-bottom-width: 34px;
-  border-radius: 4px;
+  width: 188px;
+  height: 230px;
+  border: 14px solid #fff8ed;
+  border-bottom-width: 38px;
+  border-radius: 6px;
   background:
-    radial-gradient(circle at 50% 42%, rgba(223, 79, 115, 0.28), transparent 24%),
+    radial-gradient(circle at 38% 46%, rgba(223, 79, 115, 0.36) 0 18px, transparent 19px),
+    radial-gradient(circle at 52% 44%, rgba(255, 218, 175, 0.7) 0 44px, transparent 45px),
+    linear-gradient(12deg, transparent 0 44%, rgba(98, 116, 81, 0.36) 45% 47%, transparent 48%),
     linear-gradient(135deg, rgba(95, 115, 82, 0.32), rgba(239, 198, 158, 0.45));
   box-shadow: 0 18px 30px rgba(92, 58, 34, 0.18);
   pointer-events: none;
 }
 
 .paper-birthday .hero::before {
-  left: -34px;
-  bottom: -34px;
-  transform: rotate(-10deg);
+  left: -44px;
+  bottom: 34px;
+  transform: rotate(-12deg);
 }
 
 .paper-birthday .hero::after {
-  right: -26px;
-  top: -36px;
-  transform: rotate(9deg);
+  right: -34px;
+  top: -28px;
+  transform: rotate(8deg);
+  background:
+    radial-gradient(circle at 46% 28%, rgba(244, 184, 196, 0.85) 0 18px, transparent 19px),
+    radial-gradient(circle at 60% 40%, rgba(224, 159, 68, 0.5) 0 15px, transparent 16px),
+    radial-gradient(circle at 34% 48%, rgba(223, 79, 115, 0.46) 0 15px, transparent 16px),
+    linear-gradient(28deg, transparent 0 42%, rgba(95, 118, 82, 0.45) 43% 46%, transparent 47%),
+    linear-gradient(135deg, rgba(255, 232, 206, 0.74), rgba(239, 198, 158, 0.48));
 }
 
 .paper-birthday .title {
-  max-width: 11ch;
+  max-width: 13ch;
   color: var(--fc-accent);
   font-family: "Comic Sans MS", "Segoe Print", Georgia, serif;
+  font-size: clamp(4rem, 10vw, 7.2rem);
+  letter-spacing: -0.06em;
   transform: rotate(-1deg);
+  text-shadow: 0 2px 0 rgba(255, 248, 231, 0.8);
 }
 
 .paper-birthday .heroMain {
   position: relative;
   justify-items: center;
   text-align: center;
+  padding: 24px clamp(12px, 4vw, 60px);
 }
 
 .paper-birthday .heroMain::before {
   content: "";
   position: absolute;
-  left: -72px;
-  top: 74px;
-  width: 82px;
-  height: 74px;
+  left: -104px;
+  top: 86px;
+  width: 104px;
+  height: 88px;
   border-radius: 50% 50% 46% 46%;
   background:
     linear-gradient(#6b3a24, #6b3a24) 50% 0 / 4px 30px no-repeat,
@@ -266,16 +477,16 @@
   box-shadow:
     0 14px 24px rgba(92, 58, 34, 0.16),
     inset 0 -10px 0 rgba(129, 79, 55, 0.08);
-  transform: rotate(-8deg);
+  transform: rotate(-9deg);
 }
 
 .paper-birthday .heroMain::after {
   content: "";
   position: absolute;
-  right: -82px;
-  top: 44px;
-  width: 98px;
-  height: 118px;
+  right: -118px;
+  top: 62px;
+  width: 126px;
+  height: 148px;
   border-radius: 18px 18px 44px 44px;
   background:
     radial-gradient(circle at 28% 20%, #f6b7c5 0 12px, transparent 13px),
@@ -290,6 +501,8 @@
 
 .paper-birthday .subtitle {
   max-width: 560px;
+  color: #4f372f;
+  font-size: 1.08rem;
 }
 
 .paper-birthday .heroAside {
@@ -325,18 +538,28 @@
   transform: rotate(0.15deg);
 }
 
+.paper-birthday .messages {
+  border: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 239, 218, 0.88), rgba(255, 226, 198, 0.82)),
+    repeating-linear-gradient(0deg, transparent 0 27px, rgba(109, 72, 45, 0.04) 28px 29px);
+  box-shadow: none;
+}
+
 .paper-birthday .sectionTitle {
   font-family: "Segoe Print", "Comic Sans MS", Georgia, serif;
 }
 
 .paper-birthday .summaryPanel {
-  max-width: 84%;
+  max-width: 78%;
   margin-inline: auto;
-  clip-path: polygon(0 0, 100% 0, 98.5% 82%, 94% 88%, 87% 84%, 80% 90%, 72% 84%, 63% 89%, 54% 84%, 45% 90%, 36% 84%, 26% 88%, 17% 83%, 8% 89%, 0 84%);
-  padding: 28px 34px 42px;
+  clip-path: polygon(0 7%, 10% 3%, 24% 7%, 38% 2%, 52% 6%, 68% 3%, 84% 7%, 100% 4%, 99% 82%, 94% 88%, 87% 84%, 80% 90%, 72% 84%, 63% 89%, 54% 84%, 45% 90%, 36% 84%, 26% 88%, 17% 83%, 8% 89%, 0 84%);
+  padding: 34px 44px 52px;
   background:
-    linear-gradient(180deg, rgba(255, 246, 228, 0.96), rgba(255, 232, 203, 0.9)),
+    linear-gradient(180deg, rgba(255, 247, 229, 0.98), rgba(255, 232, 203, 0.92)),
     var(--fc-surface);
+  box-shadow: 0 20px 34px rgba(92, 58, 34, 0.14);
+  transform: rotate(-1.1deg);
 }
 
 .paper-birthday .summaryPanel::before {
@@ -354,15 +577,35 @@
   padding-left: 56px;
 }
 
+.paper-birthday .summaryPanel::after {
+  content: "";
+  position: absolute;
+  right: 30px;
+  bottom: 18px;
+  width: 70px;
+  height: 88px;
+  opacity: 0.72;
+  background:
+    radial-gradient(ellipse at 30% 22%, transparent 0 10px, #8b9b75 11px 12px, transparent 13px),
+    radial-gradient(ellipse at 62% 38%, transparent 0 10px, #8b9b75 11px 12px, transparent 13px),
+    linear-gradient(104deg, transparent 0 48%, #8b9b75 49% 51%, transparent 52%);
+  transform: rotate(18deg);
+}
+
 .paper-birthday .qualitiesPanel {
   background: transparent;
   border: 0;
   box-shadow: none;
-  padding-inline: 8px;
+  padding: 14px 28px 18px;
+  transform: rotate(-0.6deg);
 }
 
 .paper-birthday .qualitiesPanel .sectionTitle {
   margin-left: 18px;
+  display: inline-block;
+  padding: 8px 24px 12px;
+  background: rgba(255, 244, 222, 0.82);
+  clip-path: polygon(0 12%, 100% 2%, 96% 88%, 4% 100%);
 }
 
 .paper-birthday .qualitiesPanel .sectionTitle::after {
@@ -372,16 +615,17 @@
 
 .paper-birthday .chipList {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 16px 24px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 18px 28px;
   align-items: center;
+  padding: 4px 10px;
 }
 
 .paper-birthday .chip {
   justify-content: center;
   min-height: 48px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 3px;
   color: #4d342b;
   font-family: "Segoe Print", "Comic Sans MS", cursive;
   font-weight: 800;
@@ -426,15 +670,55 @@
 }
 
 .paper-birthday .messages::before {
-  right: 18px;
-  top: -20px;
-  width: 74px;
-  height: 120px;
+  right: -8px;
+  top: -34px;
+  width: 104px;
+  height: 164px;
   background:
     radial-gradient(ellipse at 42% 16%, transparent 0 10px, #b9a27a 11px 12px, transparent 13px),
     radial-gradient(ellipse at 58% 32%, transparent 0 10px, #b9a27a 11px 12px, transparent 13px),
     linear-gradient(100deg, transparent 0 46%, #b9a27a 47% 49%, transparent 50%);
   transform: rotate(16deg);
+}
+
+.paper-birthday .messages .sectionTitle::before {
+  content: "\2661  ";
+  color: var(--fc-accent);
+}
+
+.paper-birthday .sectionBadge {
+  min-height: 32px;
+  background: rgba(255, 235, 213, 0.76);
+  box-shadow: none;
+}
+
+.paper-birthday .messageColumnPage .card {
+  border-radius: 8px;
+  box-shadow: 0 8px 18px rgba(92, 58, 34, 0.1);
+}
+
+.paper-birthday .messageColumnPage .card:nth-child(4n + 1) {
+  background:
+    linear-gradient(180deg, rgba(255, 228, 226, 0.95), rgba(255, 240, 229, 0.96)),
+    repeating-linear-gradient(0deg, transparent 0 20px, rgba(112, 94, 83, 0.05) 21px 22px);
+}
+
+.paper-birthday .messageColumnPage .card:nth-child(4n + 2) {
+  background:
+    linear-gradient(180deg, rgba(255, 243, 211, 0.95), rgba(255, 236, 212, 0.96));
+}
+
+.paper-birthday .messageColumnPage .card:nth-child(4n + 3) {
+  background:
+    linear-gradient(180deg, rgba(226, 238, 250, 0.94), rgba(255, 241, 226, 0.96)),
+    linear-gradient(90deg, rgba(93, 135, 180, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(93, 135, 180, 0.08) 1px, transparent 1px);
+  background-size: auto, 22px 22px, 22px 22px;
+}
+
+.paper-birthday .messageColumnPage .card:nth-child(4n) {
+  background:
+    linear-gradient(180deg, rgba(255, 233, 203, 0.95), rgba(255, 242, 226, 0.96));
 }
 
 .paper-birthday .quotes::before {
@@ -445,6 +729,51 @@
   border: 3px solid rgba(223, 79, 115, 0.5);
   border-radius: 58% 42% 50% 50%;
   transform: rotate(-18deg);
+}
+
+.paper-birthday .quotes {
+  border: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 238, 213, 0.78), rgba(255, 226, 196, 0.72));
+  box-shadow: none;
+}
+
+.paper-birthday .quotes .sectionTitle::before {
+  content: "\2606  ";
+  color: #b27d3d;
+}
+
+.paper-birthday .quoteCard {
+  border: 0;
+  border-radius: 7px;
+  box-shadow:
+    0 14px 24px rgba(92, 58, 34, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.paper-birthday .quoteCard:nth-child(3n + 1) {
+  background: linear-gradient(180deg, rgba(255, 218, 212, 0.96), rgba(255, 236, 222, 0.94));
+  transform: rotate(-1.2deg);
+}
+
+.paper-birthday .quoteCard:nth-child(3n + 2) {
+  background: linear-gradient(180deg, rgba(255, 240, 205, 0.96), rgba(255, 235, 211, 0.94));
+  transform: rotate(0.8deg);
+}
+
+.paper-birthday .quoteCard:nth-child(3n) {
+  background:
+    linear-gradient(180deg, rgba(224, 235, 247, 0.96), rgba(255, 235, 218, 0.94));
+  transform: rotate(-0.5deg);
+}
+
+.paper-birthday .quoteCard::after {
+  content: "\2661";
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  color: rgba(161, 115, 67, 0.62);
+  font-size: 1.4rem;
 }
 
 .paper-birthday .memories::after {
@@ -458,6 +787,24 @@
     radial-gradient(ellipse at 36% 52%, transparent 0 10px, #98a06f 11px 12px, transparent 13px),
     linear-gradient(104deg, transparent 0 49%, #98a06f 50% 52%, transparent 53%);
   transform: rotate(16deg);
+}
+
+.paper-birthday .closing {
+  border: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 235, 205, 0.78), rgba(247, 215, 180, 0.68));
+  box-shadow: none;
+}
+
+.paper-birthday .primaryButton {
+  border-radius: 9px;
+  background: linear-gradient(135deg, #df4f73, #f06b87);
+  box-shadow: 0 14px 24px rgba(145, 61, 75, 0.2);
+}
+
+.paper-birthday .secondaryButton {
+  border-radius: 9px;
+  background: rgba(255, 244, 224, 0.86);
 }
 
 .paper-birthday .card:nth-child(3n + 1) {
@@ -921,6 +1268,15 @@
   transform: rotate(-2deg);
 }
 
+.paper-birthday .messageSplitFixed {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.paper-birthday .mediaRail {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  height: auto;
+}
+
 .paper-birthday .mediaCardLandscape:nth-child(2) {
   transform: rotate(1.5deg);
 }
@@ -1169,12 +1525,17 @@
     linear-gradient(180deg, rgba(255, 246, 224, 0.94), rgba(255, 235, 205, 0.9)),
     var(--fc-card);
   transform: rotate(-0.8deg);
+  min-height: 150px;
+  clip-path: polygon(0 0, 100% 3%, 96% 100%, 0 94%);
 }
 
 .paper-birthday .memoryPhotoCard {
   padding: 12px 12px 18px;
   background: #fff7ea;
   transform: rotate(-2deg);
+  box-shadow:
+    0 16px 26px rgba(92, 58, 34, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .paper-birthday .memoryPhotoCard:nth-child(3n) {
@@ -1188,6 +1549,30 @@
 .paper-birthday .memoryPhotoCaptionWrap {
   font-family: "Segoe Print", "Comic Sans MS", cursive;
   text-align: left;
+}
+
+.paper-birthday .memories > .sectionTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+  padding: 8px 18px;
+  background: rgba(255, 238, 208, 0.74);
+  clip-path: polygon(0 9%, 100% 0, 96% 94%, 4% 100%);
+}
+
+.paper-birthday .memories > .sectionTitle::before {
+  content: "\2606";
+  color: #9c7249;
+}
+
+.paper-birthday .memoriesStrip {
+  gap: 20px;
+  padding-top: 10px;
+}
+
+.paper-birthday .memoryPhotoImage {
+  border-radius: 4px;
 }
 
 .closing {
@@ -1250,6 +1635,28 @@
 }
 
 @media (max-width: 899px) {
+  .paper-birthday .paperDecorLayer {
+    display: none;
+  }
+
+  .paper-birthday .hero {
+    min-height: auto;
+    clip-path: none;
+  }
+
+  .paper-birthday .hero::before,
+  .paper-birthday .hero::after,
+  .paper-birthday .heroMain::before,
+  .paper-birthday .heroMain::after {
+    opacity: 0.26;
+    transform: scale(0.72);
+  }
+
+  .paper-birthday .summaryPanel {
+    max-width: 100%;
+    clip-path: none;
+  }
+
   .messageTrackGrid2,
   .messageTrackRow1,
   .messageTrackRows2 {

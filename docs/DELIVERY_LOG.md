@@ -235,3 +235,11 @@
 3. Reworked the `Какая ты для нас` qualities into separate tilted paper labels with varied warm colors and wider spacing.
 4. Added extra paper/handmade accents around messages, memories, and quote sections so the template feels less like a clean admin layout and more like a crafted birthday card.
 5. Remaining polish candidate: replace CSS-only decorative objects with real SVG/illustration assets for the cake, bouquet, branches, hearts, and handwritten notes if we want near-reference fidelity.
+
+## Update 2026-06-16 Paper Birthday Decorative Layers
+
+1. Added a dedicated decorative layer for the `paper-birthday` template instead of relying on one background image.
+2. Split the visual language into reusable decorative objects: top confetti, sticker hearts, a sticky note, right-side confetti, dried-flower accents, and bottom corner ornaments.
+3. Kept the public card block order intact; `Наши воспоминания` stays as a lower horizontal ribbon rather than moving into a side column.
+4. Strengthened the reference look with a torn hero paper shape, polaroid-style hero accents, colored quality paper tags, greeting paper cards, camera/star title accents, and paper-like action buttons.
+5. Added mobile safeguards so decorative elements are reduced or hidden when they could interfere with reading.

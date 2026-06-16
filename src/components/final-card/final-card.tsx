@@ -226,6 +226,17 @@ export const FinalCard = ({ model }: Props) => {
     <main className={`${styles.page} ${styleClassMap[model.style]}`}>
       <div className={styles.shell}>
         <div className={styles.canvas}>
+          <div className={styles.paperDecorLayer} aria-hidden="true">
+            <span className={`${styles.paperDecor} ${styles.confettiTop}`} />
+            <span className={`${styles.paperDecor} ${styles.heartStickerTopLeft}`} />
+            <span className={`${styles.paperDecor} ${styles.goldHeartLeft}`} />
+            <span className={`${styles.paperDecor} ${styles.stickyNoteToday}`}>Сегодня твой день!</span>
+            <span className={`${styles.paperDecor} ${styles.rightConfettiScatter}`} />
+            <span className={`${styles.paperDecor} ${styles.driedFlowersRight}`} />
+            <span className={`${styles.paperDecor} ${styles.pinkHeartMidRight}`} />
+            <span className={`${styles.paperDecor} ${styles.goldHeartBottomRight}`} />
+            <span className={`${styles.paperDecor} ${styles.driedFlowersBottomLeft}`} />
+          </div>
           {model.blocks.map((block) => {
             if (block.id === "hero") {
               return (
