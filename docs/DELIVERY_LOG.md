@@ -257,3 +257,11 @@
 3. Connected real paper texture, torn-paper sections, sticky note, and polaroid frame assets to the `paper-birthday` template while keeping names, texts, photos, greetings, captions, and buttons as live HTML content.
 4. Kept the existing section structure intact: the scrapbook assets only decorate the template and do not replace dynamic content or rearrange organizer-selected blocks.
 5. Remaining visual polish: replace or adjust the current polaroid-frame assets if we want larger visible photo areas closer to the reference.
+
+## Update 2026-06-16 Additional Scrapbook Assets
+
+1. Processed the newly added scrapbook assets with baked checkerboard backgrounds into clean public PNGs.
+2. Connected real dried-flower assets to the decorative layer and section accents.
+3. Connected paper tag assets to the `Какая ты для нас` quality labels.
+4. Connected greeting-card and quote-card assets to the live congratulations and best-phrase cards without replacing text content.
+5. Kept the existing polaroid layout unchanged while evaluating the new assets in the public final card.

@@ -122,6 +122,15 @@
   --scrapbook-sticky-square: url("/templates/scrapbook-clean/sticky-note-square.png");
   --scrapbook-torn-section: url("/templates/scrapbook-clean/torn-paper-section.png");
   --scrapbook-torn-summary: url("/templates/scrapbook-clean/torn-paper-summary.png");
+  --scrapbook-dried-right: url("/templates/scrapbook-clean/dried-flowers-right.png");
+  --scrapbook-dried-bottom-left: url("/templates/scrapbook-clean/dried-flowers-bottom-left.png");
+  --scrapbook-dried-small: url("/templates/scrapbook-clean/dried-flowers-small.png");
+  --scrapbook-paper-tag-long: url("/templates/scrapbook-clean/paper-tag-long.png");
+  --scrapbook-paper-tag-short: url("/templates/scrapbook-clean/paper-tag-short.png");
+  --scrapbook-greeting-pink: url("/templates/scrapbook-clean/greeting-card-pink.png");
+  --scrapbook-greeting-cream: url("/templates/scrapbook-clean/greeting-card-cream.png");
+  --scrapbook-greeting-blue: url("/templates/scrapbook-clean/greeting-card-blue.png");
+  --scrapbook-quote-pink: url("/templates/scrapbook-clean/quote-card-pink.png");
   --fc-bg:
     radial-gradient(circle at 10% 8%, rgba(255, 118, 137, 0.18), transparent 12%),
     radial-gradient(circle at 85% 16%, rgba(73, 145, 186, 0.12), transparent 12%),
@@ -437,15 +446,10 @@
 
 .paper-birthday .driedFlowersRight,
 .paper-birthday .driedFlowersBottomLeft {
-  width: 120px;
-  height: 210px;
-  opacity: 0.72;
-  background:
-    radial-gradient(ellipse at 35% 14%, transparent 0 13px, #9c9970 14px 15px, transparent 16px),
-    radial-gradient(ellipse at 66% 30%, transparent 0 13px, #9c9970 14px 15px, transparent 16px),
-    radial-gradient(ellipse at 34% 47%, transparent 0 12px, #9c9970 13px 14px, transparent 15px),
-    radial-gradient(ellipse at 70% 66%, transparent 0 12px, #9c9970 13px 14px, transparent 15px),
-    linear-gradient(105deg, transparent 0 49%, #a78758 50% 52%, transparent 53%);
+  width: 152px;
+  height: 252px;
+  opacity: 0.9;
+  background: var(--scrapbook-dried-right) center / contain no-repeat;
 }
 
 .paper-birthday .driedFlowersRight {
@@ -458,6 +462,7 @@
   left: -24px;
   bottom: 140px;
   transform: rotate(-22deg);
+  background-image: var(--scrapbook-dried-bottom-left);
 }
 
 .paper-birthday .hero,
@@ -668,14 +673,11 @@
   content: "";
   position: absolute;
   right: 30px;
-  bottom: 18px;
-  width: 70px;
-  height: 88px;
-  opacity: 0.72;
-  background:
-    radial-gradient(ellipse at 30% 22%, transparent 0 10px, #8b9b75 11px 12px, transparent 13px),
-    radial-gradient(ellipse at 62% 38%, transparent 0 10px, #8b9b75 11px 12px, transparent 13px),
-    linear-gradient(104deg, transparent 0 48%, #8b9b75 49% 51%, transparent 52%);
+  bottom: 8px;
+  width: 96px;
+  height: 132px;
+  opacity: 0.78;
+  background: var(--scrapbook-dried-small) center / contain no-repeat;
   transform: rotate(18deg);
 }
 
@@ -717,33 +719,46 @@
   font-family: "Segoe Print", "Comic Sans MS", cursive;
   font-weight: 800;
   text-align: center;
+  background:
+    linear-gradient(rgba(255, 238, 218, 0.2), rgba(255, 238, 218, 0.2)),
+    var(--scrapbook-paper-tag-long) center / 100% 100% no-repeat;
   box-shadow:
     0 8px 14px rgba(92, 58, 34, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .paper-birthday .chip:nth-child(5n + 1) {
-  background: #f6c7bd;
+  background:
+    linear-gradient(rgba(246, 199, 189, 0.4), rgba(246, 199, 189, 0.4)),
+    var(--scrapbook-paper-tag-long) center / 100% 100% no-repeat;
   transform: rotate(-3deg);
 }
 
 .paper-birthday .chip:nth-child(5n + 2) {
-  background: #f7e1ba;
+  background:
+    linear-gradient(rgba(247, 225, 186, 0.44), rgba(247, 225, 186, 0.44)),
+    var(--scrapbook-paper-tag-long) center / 100% 100% no-repeat;
   transform: rotate(2deg);
 }
 
 .paper-birthday .chip:nth-child(5n + 3) {
-  background: #dce8f3;
+  background:
+    linear-gradient(rgba(220, 232, 243, 0.46), rgba(220, 232, 243, 0.46)),
+    var(--scrapbook-paper-tag-long) center / 100% 100% no-repeat;
   transform: rotate(-1deg);
 }
 
 .paper-birthday .chip:nth-child(5n + 4) {
-  background: #f4cfc7;
+  background:
+    linear-gradient(rgba(244, 207, 199, 0.42), rgba(244, 207, 199, 0.42)),
+    var(--scrapbook-paper-tag-long) center / 100% 100% no-repeat;
   transform: rotate(2.8deg);
 }
 
 .paper-birthday .chip:nth-child(5n) {
-  background: #f3e5c9;
+  background:
+    linear-gradient(rgba(243, 229, 201, 0.46), rgba(243, 229, 201, 0.46)),
+    var(--scrapbook-paper-tag-long) center / 100% 100% no-repeat;
   transform: rotate(-2deg);
 }
 
@@ -759,12 +774,9 @@
 .paper-birthday .messages::before {
   right: -8px;
   top: -34px;
-  width: 104px;
-  height: 164px;
-  background:
-    radial-gradient(ellipse at 42% 16%, transparent 0 10px, #b9a27a 11px 12px, transparent 13px),
-    radial-gradient(ellipse at 58% 32%, transparent 0 10px, #b9a27a 11px 12px, transparent 13px),
-    linear-gradient(100deg, transparent 0 46%, #b9a27a 47% 49%, transparent 50%);
+  width: 118px;
+  height: 170px;
+  background: var(--scrapbook-dried-small) center / contain no-repeat;
   transform: rotate(16deg);
 }
 
@@ -786,26 +798,26 @@
 
 .paper-birthday .messageColumnPage .card:nth-child(4n + 1) {
   background:
-    linear-gradient(180deg, rgba(255, 228, 226, 0.95), rgba(255, 240, 229, 0.96)),
-    repeating-linear-gradient(0deg, transparent 0 20px, rgba(112, 94, 83, 0.05) 21px 22px);
+    linear-gradient(rgba(255, 228, 226, 0.18), rgba(255, 240, 229, 0.18)),
+    var(--scrapbook-greeting-pink) center / 100% 100% no-repeat;
 }
 
 .paper-birthday .messageColumnPage .card:nth-child(4n + 2) {
   background:
-    linear-gradient(180deg, rgba(255, 243, 211, 0.95), rgba(255, 236, 212, 0.96));
+    linear-gradient(rgba(255, 243, 211, 0.18), rgba(255, 236, 212, 0.18)),
+    var(--scrapbook-greeting-cream) center / 100% 100% no-repeat;
 }
 
 .paper-birthday .messageColumnPage .card:nth-child(4n + 3) {
   background:
-    linear-gradient(180deg, rgba(226, 238, 250, 0.94), rgba(255, 241, 226, 0.96)),
-    linear-gradient(90deg, rgba(93, 135, 180, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(93, 135, 180, 0.08) 1px, transparent 1px);
-  background-size: auto, 22px 22px, 22px 22px;
+    linear-gradient(rgba(226, 238, 250, 0.18), rgba(255, 241, 226, 0.18)),
+    var(--scrapbook-greeting-blue) center / 100% 100% no-repeat;
 }
 
 .paper-birthday .messageColumnPage .card:nth-child(4n) {
   background:
-    linear-gradient(180deg, rgba(255, 233, 203, 0.95), rgba(255, 242, 226, 0.96));
+    linear-gradient(rgba(255, 233, 203, 0.18), rgba(255, 242, 226, 0.18)),
+    var(--scrapbook-greeting-cream) center / 100% 100% no-repeat;
 }
 
 .paper-birthday .quotes::before {
@@ -839,18 +851,23 @@
 }
 
 .paper-birthday .quoteCard:nth-child(3n + 1) {
-  background: linear-gradient(180deg, rgba(255, 218, 212, 0.96), rgba(255, 236, 222, 0.94));
+  background:
+    linear-gradient(rgba(255, 218, 212, 0.14), rgba(255, 236, 222, 0.14)),
+    var(--scrapbook-quote-pink) center / 100% 100% no-repeat;
   transform: rotate(-1.2deg);
 }
 
 .paper-birthday .quoteCard:nth-child(3n + 2) {
-  background: linear-gradient(180deg, rgba(255, 240, 205, 0.96), rgba(255, 235, 211, 0.94));
+  background:
+    linear-gradient(rgba(255, 240, 205, 0.14), rgba(255, 235, 211, 0.14)),
+    var(--scrapbook-greeting-cream) center / 100% 100% no-repeat;
   transform: rotate(0.8deg);
 }
 
 .paper-birthday .quoteCard:nth-child(3n) {
   background:
-    linear-gradient(180deg, rgba(224, 235, 247, 0.96), rgba(255, 235, 218, 0.94));
+    linear-gradient(rgba(224, 235, 247, 0.14), rgba(255, 235, 218, 0.14)),
+    var(--scrapbook-greeting-blue) center / 100% 100% no-repeat;
   transform: rotate(-0.5deg);
 }
 
