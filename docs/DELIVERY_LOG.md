@@ -353,3 +353,9 @@
 1. Enlarged the `РіР»Р°Р·Р°РјРё РіСЂСѓРїРїС‹` torn-paper asset and explicitly removed the inherited card border/radius so the leftover contour no longer fights the paper edge.
 2. Connected the new `paper-tag-short1/2/3` assets to `РљР°РєР°СЏ С‚С‹ РґР»СЏ РЅР°СЃ`, including a repeated use of `paper-tag-short1`, and increased both tag scale and label typography.
 3. Replaced the pink quote card public copy with the new source asset and increased background scale for all three quote cards so the paper artwork reads larger and cleaner.
+
+## Update 2026-06-16 Scrapbook Midsection Uniformity Pass
+
+1. Moved the small heart on the `РіР»Р°Р·Р°РјРё РіСЂСѓРїРїС‹` strip inward so it now sits on the paper near the live heading instead of hanging off the edge.
+2. Locked the `РљР°РєР°СЏ С‚С‹ РґР»СЏ РЅР°СЃ` labels to one shared size with larger height and typography, so the whole row uses the available space more evenly.
+3. Switched the pink quote card to a versioned public file path to break browser cache and enlarged all quote-paper backgrounds to one larger shared scale.

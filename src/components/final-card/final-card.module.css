@@ -133,7 +133,7 @@
   --scrapbook-greeting-pink: url("/templates/scrapbook-clean/greeting-card-pink.png");
   --scrapbook-greeting-cream: url("/templates/scrapbook-clean/greeting-card-cream.png");
   --scrapbook-greeting-blue: url("/templates/scrapbook-clean/greeting-card-blue.png");
-  --scrapbook-quote-pink: url("/templates/scrapbook-clean/quote-card-pink.png");
+  --scrapbook-quote-pink: url("/templates/scrapbook-clean/quote-card-pink-v2.png");
   --scrapbook-quote-beige: url("/templates/scrapbook-clean/quote-card-beige.png");
   --scrapbook-quote-blue: url("/templates/scrapbook-clean/quote-card-blue.png");
   --scrapbook-heart-pink: url("/templates/scrapbook-clean/heart-sticker-puffy-pink.png");
@@ -773,8 +773,8 @@
 .paper-birthday .summaryPanel::before {
   content: "♡";
   position: absolute;
-  left: 18px;
-  top: 16px;
+  left: 46px;
+  top: 28px;
   color: var(--fc-accent);
   font-size: 1.5rem;
   transform: rotate(-12deg);
@@ -782,7 +782,7 @@
 
 .paper-birthday .summaryPanel .sectionTitle,
 .paper-birthday .summaryPanel .sectionText {
-  padding-left: 36px;
+  padding-left: 72px;
   padding-right: 20px;
 }
 
@@ -824,17 +824,20 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  min-width: 168px;
-  min-height: 72px;
-  padding: 16px 34px 20px;
+  width: 220px;
+  min-width: 220px;
+  height: 94px;
+  min-height: 94px;
+  padding: 18px 24px 22px;
   border: 0;
   border-radius: 3px;
   color: #4d342b;
   font-family: "Segoe Print", "Comic Sans MS", cursive;
   font-weight: 800;
-  font-size: 1.18rem;
+  font-size: 1.32rem;
+  line-height: 1.05;
   text-align: center;
-  background: var(--scrapbook-paper-tag-short1) center / 104% 104% no-repeat;
+  background: var(--scrapbook-paper-tag-short1) center / 100% 100% no-repeat;
   box-shadow:
     0 10px 16px rgba(92, 58, 34, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.45);
@@ -843,35 +846,35 @@
 .paper-birthday .chip:nth-child(5n + 1) {
   background:
     linear-gradient(rgba(246, 199, 189, 0.18), rgba(246, 199, 189, 0.18)),
-    var(--scrapbook-paper-tag-short1) center / 104% 104% no-repeat;
+    var(--scrapbook-paper-tag-short1) center / 100% 100% no-repeat;
   transform: rotate(-3deg);
 }
 
 .paper-birthday .chip:nth-child(5n + 2) {
   background:
     linear-gradient(rgba(247, 225, 186, 0.16), rgba(247, 225, 186, 0.16)),
-    var(--scrapbook-paper-tag-short2) center / 104% 104% no-repeat;
+    var(--scrapbook-paper-tag-short2) center / 100% 100% no-repeat;
   transform: rotate(2deg);
 }
 
 .paper-birthday .chip:nth-child(5n + 3) {
   background:
     linear-gradient(rgba(220, 232, 243, 0.16), rgba(220, 232, 243, 0.16)),
-    var(--scrapbook-paper-tag-short3) center / 104% 104% no-repeat;
+    var(--scrapbook-paper-tag-short3) center / 100% 100% no-repeat;
   transform: rotate(-1deg);
 }
 
 .paper-birthday .chip:nth-child(5n + 4) {
   background:
     linear-gradient(rgba(244, 207, 199, 0.16), rgba(244, 207, 199, 0.16)),
-    var(--scrapbook-paper-tag-short1) center / 104% 104% no-repeat;
+    var(--scrapbook-paper-tag-short1) center / 100% 100% no-repeat;
   transform: rotate(2.8deg);
 }
 
 .paper-birthday .chip:nth-child(5n) {
   background:
     linear-gradient(rgba(243, 229, 201, 0.16), rgba(243, 229, 201, 0.16)),
-    var(--scrapbook-paper-tag-short2) center / 104% 104% no-repeat;
+    var(--scrapbook-paper-tag-short2) center / 100% 100% no-repeat;
   transform: rotate(-2deg);
 }
 
@@ -960,8 +963,8 @@
 }
 
 .paper-birthday .quoteCard {
-  min-height: 154px;
-  padding: 22px 24px 26px;
+  min-height: 188px;
+  padding: 26px 28px 30px;
   border: 0;
   border-radius: 7px;
   box-shadow:
@@ -970,17 +973,17 @@
 }
 
 .paper-birthday .quoteCard:nth-child(3n + 1) {
-  background: var(--scrapbook-quote-pink) center / 108% 108% no-repeat;
+  background: var(--scrapbook-quote-pink) center / 116% 116% no-repeat;
   transform: rotate(-1.2deg);
 }
 
 .paper-birthday .quoteCard:nth-child(3n + 2) {
-  background: var(--scrapbook-quote-beige) center / 108% 108% no-repeat;
+  background: var(--scrapbook-quote-beige) center / 116% 116% no-repeat;
   transform: rotate(0.8deg);
 }
 
 .paper-birthday .quoteCard:nth-child(3n) {
-  background: var(--scrapbook-quote-blue) center / 108% 108% no-repeat;
+  background: var(--scrapbook-quote-blue) center / 116% 116% no-repeat;
   transform: rotate(-0.5deg);
 }
 
