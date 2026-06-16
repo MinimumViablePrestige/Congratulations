@@ -502,10 +502,26 @@
   align-items: center;
   background:
     linear-gradient(rgba(255, 242, 218, 0.5), rgba(255, 230, 199, 0.46)),
-    var(--scrapbook-torn-section) center 55% / 134% 214% no-repeat,
+    var(--scrapbook-torn-section) center 55% / 138% 228% no-repeat,
     linear-gradient(180deg, rgba(255, 242, 218, 0.96), rgba(255, 230, 199, 0.86)),
     repeating-linear-gradient(0deg, rgba(111, 75, 46, 0.035) 0 1px, transparent 1px 22px);
   clip-path: polygon(0 4%, 7% 2%, 17% 4%, 28% 2%, 43% 4%, 56% 2%, 70% 4%, 84% 2%, 100% 4%, 99% 92%, 88% 94%, 73% 92%, 58% 95%, 42% 92%, 28% 95%, 14% 92%, 1% 95%);
+}
+
+.paper-birthday .hero.paperBirthdayHeroExpanded {
+  background:
+    linear-gradient(rgba(255, 242, 218, 0.5), rgba(255, 230, 199, 0.46)),
+    var(--scrapbook-torn-section) center 54% / 142% 244% no-repeat,
+    linear-gradient(180deg, rgba(255, 242, 218, 0.96), rgba(255, 230, 199, 0.86)),
+    repeating-linear-gradient(0deg, rgba(111, 75, 46, 0.035) 0 1px, transparent 1px 22px);
+}
+
+.paper-birthday .hero.paperBirthdayHeroCompact {
+  background:
+    linear-gradient(rgba(255, 242, 218, 0.5), rgba(255, 230, 199, 0.46)),
+    var(--scrapbook-torn-section) center 56% / 130% 188% no-repeat,
+    linear-gradient(180deg, rgba(255, 242, 218, 0.96), rgba(255, 230, 199, 0.86)),
+    repeating-linear-gradient(0deg, rgba(111, 75, 46, 0.035) 0 1px, transparent 1px 22px);
 }
 
 .paper-birthday .hero::before,
@@ -561,6 +577,14 @@
   letter-spacing: -0.045em;
   transform: rotate(-1.5deg);
   text-shadow: 0 2px 0 rgba(255, 248, 231, 0.8);
+}
+
+.paper-birthday .hero.paperBirthdayHeroCompact .title {
+  font-size: clamp(3.15rem, 7vw, 5.9rem);
+}
+
+.paper-birthday .hero.paperBirthdayHeroExpanded .title {
+  font-size: clamp(3.7rem, 8.5vw, 7.2rem);
 }
 
 .paper-birthday .title::before {

@@ -19,6 +19,24 @@ const styleClassMap = {
 const trimMessage = (message: string, maxChars: number) =>
   message.length > maxChars ? `${message.slice(0, maxChars - 1).trimEnd()}...` : message;
 
+const getPaperBirthdayHeroScaleClass = (recipientName: string) => {
+  const words = recipientName
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  const longestWord = words.reduce((max, word) => Math.max(max, word.length), 0);
+
+  if (words.length <= 1 && longestWord <= 10) {
+    return styles.paperBirthdayHeroCompact;
+  }
+
+  if (words.length >= 2 || recipientName.length >= 16 || longestWord >= 12) {
+    return styles.paperBirthdayHeroExpanded;
+  }
+
+  return "";
+};
+
 const renderMessageCard = (item: Contribution, index: number, maxChars: number) => (
   <article
     key={item.id}
@@ -156,6 +174,8 @@ const renderMessagesLayout = (model: FinalCardViewModel) => {
 };
 
 export const FinalCard = ({ model }: Props) => {
+  const heroScaleClass = model.style === "paper-birthday" ? getPaperBirthdayHeroScaleClass(model.recipientName) : "";
+
   return (
     <main className={`${styles.page} ${styleClassMap[model.style]}`}>
       <div className={styles.shell}>
@@ -179,7 +199,7 @@ export const FinalCard = ({ model }: Props) => {
           {model.blocks.map((block) => {
             if (block.id === "hero") {
               return (
-                <section key={block.id} className={styles.hero}>
+                <section key={block.id} className={`${styles.hero} ${heroScaleClass}`.trim()}>
                   <div className={styles.heroGlow} />
                   <div className={styles.heroMain}>
                     <h1 className={styles.title}>

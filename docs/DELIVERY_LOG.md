@@ -319,3 +319,8 @@
 ## Update 2026-06-16 Paper Birthday Hero Paper Scale
 
 1. Expanded the main torn-paper layer vertically so it better matches the intended full sketch-paper silhouette behind the hero content.
+
+## Update 2026-06-16 Paper Birthday Hero Adaptive Paper
+
+1. Added hero paper sizing modes tied to recipient-name shape so short one-line names use a more compact sheet while longer names keep a larger paper backdrop.
+2. Increased the default and expanded paper sizes so the hero torn-paper layer better matches the intended sketch outline.
