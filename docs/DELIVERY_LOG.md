@@ -249,3 +249,11 @@
 1. Restored the `Поздравления` column-media layout so the block again shows four greetings in the left scroll column and three selected photos in the right rail.
 2. Added explicit decorative photo-slot objects for the hero: a left cake polaroid and a right flower polaroid.
 3. Moved decorative hero objects behind the meaningful title/content layer so the card stays readable while keeping the scrapbook look.
+
+## Update 2026-06-16 Scrapbook Asset Integration
+
+1. Added the available scrapbook PNG assets to the public template asset pipeline so the final card can use real decorative resources instead of one flattened image.
+2. Generated clean public asset copies with the baked checkerboard background removed from frame/paper assets.
+3. Connected real paper texture, torn-paper sections, sticky note, and polaroid frame assets to the `paper-birthday` template while keeping names, texts, photos, greetings, captions, and buttons as live HTML content.
+4. Kept the existing section structure intact: the scrapbook assets only decorate the template and do not replace dynamic content or rearrange organizer-selected blocks.
+5. Remaining visual polish: replace or adjust the current polaroid-frame assets if we want larger visible photo areas closer to the reference.
