@@ -329,3 +329,7 @@
 
 1. Removed the old beige hero underlay so only the torn-paper asset remains visible behind the hero content.
 2. Started the middle-section polish by widening the summary paper strip and spreading the quality tags more evenly across the available width.
+
+## Update 2026-06-16 Scrapbook Torn Paper Swap
+
+1. Swapped the hero torn-paper asset to `torn-paper-section1.png` to try a cleaner paper silhouette for the scrapbook template.
