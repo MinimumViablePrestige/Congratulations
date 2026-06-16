@@ -310,3 +310,8 @@
 1. Removed the residual side offset from the live hero title lines so the recipient name and occasion sit more symmetrically in the center.
 2. Added a dedicated torn-paper layer to `heroMain`, so the subtitle and CTA row visually belong to the same paper block as the heading.
 3. Locked the participants block and the red CTA button into a single desktop row, with a mobile-only wrap fallback.
+
+## Update 2026-06-16 Paper Birthday Hero Single Paper Fix
+
+1. Removed the extra torn-paper background from `heroMain` after visual review showed a duplicated paper sheet.
+2. Extended the main hero torn-paper layer lower so the subtitle and CTA row remain inside the same visible paper block.
