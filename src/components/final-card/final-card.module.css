@@ -319,8 +319,8 @@
 
 .paper-birthday .polaroidCakeLeft,
 .paper-birthday .polaroidFlowersTopRight {
-  width: 188px;
-  height: 236px;
+  width: 220px;
+  height: 276px;
   border: 0;
   border-radius: 6px;
   background: var(--scrapbook-top-cake) center / cover no-repeat;
@@ -338,18 +338,18 @@
 }
 
 .paper-birthday .polaroidCakeLeft {
-  left: 4px;
-  top: 128px;
-  transform: scale(0.82) rotate(-11deg);
+  left: 26px;
+  top: 112px;
+  transform: scale(0.92) rotate(-10deg);
 }
 
 .paper-birthday .polaroidCakeLeft::after {
 }
 
 .paper-birthday .polaroidFlowersTopRight {
-  right: 50px;
-  top: 58px;
-  transform: scale(0.94) rotate(7deg);
+  right: 42px;
+  top: 42px;
+  transform: scale(0.98) rotate(7deg);
   background-image: var(--scrapbook-top-bouquet);
 }
 
@@ -393,8 +393,8 @@
 }
 
 .paper-birthday .stickyNoteToday {
-  right: 58px;
-  top: 214px;
+  right: 64px;
+  top: 248px;
   width: 144px;
   min-height: 118px;
   display: grid;
@@ -494,11 +494,11 @@
 }
 
 .paper-birthday .hero {
-  min-height: 470px;
+  min-height: 560px;
   overflow: visible;
   border: 0;
   border-radius: 8px;
-  padding-inline: clamp(28px, 5vw, 72px);
+  padding-inline: clamp(30px, 6vw, 86px);
   align-items: center;
   background:
     linear-gradient(rgba(255, 242, 218, 0.5), rgba(255, 230, 199, 0.46)),
@@ -551,13 +551,61 @@
 }
 
 .paper-birthday .title {
-  max-width: 13ch;
-  color: var(--fc-accent);
+  position: relative;
+  display: grid;
+  justify-items: center;
+  max-width: min(720px, 74vw);
+  color: #2f1f1a;
   font-family: "Comic Sans MS", "Segoe Print", Georgia, serif;
-  font-size: clamp(4rem, 10vw, 7.2rem);
-  letter-spacing: -0.06em;
-  transform: rotate(-1deg);
+  font-size: clamp(3.6rem, 9.2vw, 7.6rem);
+  letter-spacing: -0.045em;
+  transform: rotate(-1.5deg);
   text-shadow: 0 2px 0 rgba(255, 248, 231, 0.8);
+}
+
+.paper-birthday .title::before {
+  content: "\2661";
+  position: absolute;
+  right: clamp(0px, 2vw, 48px);
+  top: -18px;
+  color: #d95a78;
+  font-size: clamp(2.4rem, 4vw, 3.7rem);
+  font-weight: 400;
+  transform: rotate(12deg);
+}
+
+.paper-birthday .title::after {
+  content: "";
+  position: absolute;
+  right: -42px;
+  top: 48%;
+  width: 54px;
+  height: 42px;
+  background:
+    linear-gradient(24deg, transparent 0 45%, #d95a78 46% 51%, transparent 52%) 0 8px / 44px 8px no-repeat,
+    linear-gradient(-16deg, transparent 0 45%, #d95a78 46% 51%, transparent 52%) 10px 22px / 46px 8px no-repeat;
+  opacity: 0.75;
+}
+
+.heroNameLine,
+.heroOccasionLine {
+  display: block;
+  line-height: 0.9;
+}
+
+.paper-birthday .heroNameLine {
+  color: #d95a78;
+  font-size: 0.98em;
+  transform: translateX(-6px) rotate(-1deg);
+}
+
+.paper-birthday .heroOccasionLine {
+  margin-top: -0.08em;
+  color: #34201a;
+  font-size: 0.74em;
+  letter-spacing: -0.035em;
+  text-transform: lowercase;
+  transform: translateX(26px) rotate(0.8deg);
 }
 
 .paper-birthday .heroMain {
@@ -565,7 +613,7 @@
   z-index: 2;
   justify-items: center;
   text-align: center;
-  padding: 24px clamp(12px, 4vw, 60px);
+  padding: 56px clamp(12px, 4vw, 68px) 32px;
 }
 
 .paper-birthday .heroMain::before {
@@ -606,9 +654,30 @@
 }
 
 .paper-birthday .subtitle {
-  max-width: 560px;
+  max-width: 620px;
   color: #4f372f;
-  font-size: 1.08rem;
+  font-size: 1.18rem;
+  line-height: 1.5;
+}
+
+.paper-birthday .eyebrow {
+  margin-bottom: -4px;
+  color: #df4f73;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+}
+
+.paper-birthday .heroMeta {
+  justify-content: center;
+  gap: 16px;
+}
+
+.paper-birthday .metaPill {
+  min-height: 44px;
+  padding-inline: 20px;
+  border-color: rgba(161, 115, 67, 0.22);
+  background: rgba(255, 248, 236, 0.76);
+  box-shadow: 0 8px 16px rgba(92, 58, 34, 0.08);
 }
 
 .paper-birthday .heroAside {

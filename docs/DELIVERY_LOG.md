@@ -273,3 +273,10 @@
 3. Replaced CSS-only hero/photo decorations where real assets are now available, while preserving the current polaroid and memory-strip layout for further visual tuning.
 4. Removed accidental utility-only generated files from the public clean asset set so only usable template resources are shipped.
 5. Remaining polish candidate: tune asset scale, density, and exact placement against the reference after reviewing the full card visually.
+
+## Update 2026-06-16 Paper Birthday Hero Scale Pass
+
+1. Reworked the `paper-birthday` hero title into a two-line live heading: recipient name first, occasion/context as a handwritten second line.
+2. Increased the hero stage height and decorative photo scale so the top block feels closer to the reference poster instead of a compact banner.
+3. Added small heart/ray doodles around the title and softened the hero meta pills to better match the handmade scrapbook direction.
+4. Kept the title and occasion editable through existing card data; no static title image was introduced.

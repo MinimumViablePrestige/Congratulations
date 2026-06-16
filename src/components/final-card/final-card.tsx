@@ -249,7 +249,10 @@ export const FinalCard = ({ model }: Props) => {
                   <div className={styles.heroGlow} />
                   <div className={styles.heroMain}>
                     <p className={styles.eyebrow}>Открытка от всей группы</p>
-                    <h1 className={styles.title}>{model.recipientName}</h1>
+                    <h1 className={styles.title}>
+                      <span className={styles.heroNameLine}>{model.recipientName},</span>
+                      <span className={styles.heroOccasionLine}>{model.occasionLabel}!</span>
+                    </h1>
                     <p className={styles.subtitle}>
                       Эту открытку для тебя собрали <strong>{model.fromLabel}</strong>. Здесь уже живут теплые слова,
                       важные воспоминания и атмосфера общего подарка.
