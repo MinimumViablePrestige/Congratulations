@@ -7,6 +7,7 @@ import {
   useMemo,
   useState
 } from "react";
+import { createPortal } from "react-dom";
 import styles from "./final-card.module.css";
 import {
   SCRAPBOOK_DECOR_ANCHORS,
@@ -309,7 +310,7 @@ export const ScrapbookDecorDebugPanel = () => {
     return null;
   }
 
-  return (
+  const panel = (
     <aside className={styles.assetDebugPanel}>
       <div className={styles.assetDebugHeader}>
         <strong>Asset Debug</strong>
@@ -506,4 +507,10 @@ export const ScrapbookDecorDebugPanel = () => {
       </div>
     </aside>
   );
+
+  if (typeof document === "undefined") {
+    return panel;
+  }
+
+  return createPortal(panel, document.body);
 };

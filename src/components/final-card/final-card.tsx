@@ -426,7 +426,11 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
   );
 
   return (
-    <main className={`${styles.page} ${styleClassMap[model.style]}`}>
+    <main
+      className={`${styles.page} ${styleClassMap[model.style]} ${
+        isPaperBirthday && debugAssets ? styles.assetDebugActive : ""
+      }`.trim()}
+    >
       <div className={styles.shell}>
         <div className={`${styles.canvas} ${isPaperBirthday ? styles.decorAnchor : ""}`.trim()}>
           {isPaperBirthday ? (
