@@ -382,3 +382,16 @@
 3. Attached decor layers directly to the corresponding content sections, so visual elements now move with their block when the layout height changes.
 4. Added asset grouping plus live `anchor` reassignment inside the debug panel, making the tuning flow noticeably closer to a universal template-adjustment tool.
 5. Kept this phase limited to floating visuals only; component backgrounds, paper sheets, frames, and per-block inset tuning remain the next extension point.
+
+## Update 2026-06-17 Universal Visual Tuning Phase 3
+
+1. Added the first reusable component-asset layer for scrapbook sections in addition to floating decor.
+2. The public `paper-birthday` card can now tune live paper assets for:
+   - hero paper;
+   - summary paper;
+   - qualities title strip;
+   - quality tags;
+   - quote cards.
+3. Component assets now have live debug controls for background size, position, opacity, inner paddings, and minimum height, with mobile overrides included.
+4. Rebuilt those scrapbook surfaces to render as live HTML content inside configurable paper frames instead of depending only on hardcoded CSS backgrounds.
+5. The debug panel still remains dev-only and now works as a side dock, so visual tuning is practical while the card stays visible.

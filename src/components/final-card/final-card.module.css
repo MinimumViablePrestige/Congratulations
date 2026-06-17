@@ -312,6 +312,54 @@
   text-align: center;
 }
 
+.componentAssetFrame {
+  position: relative;
+  min-height: var(--component-asset-min-height, auto);
+  padding:
+    var(--component-asset-padding-top, 0)
+    var(--component-asset-padding-right, 0)
+    var(--component-asset-padding-bottom, 0)
+    var(--component-asset-padding-left, 0);
+}
+
+.componentAssetFrame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--component-asset-image, none);
+  background-repeat: no-repeat;
+  background-position: var(--component-asset-bg-position-x, center) var(--component-asset-bg-position-y, center);
+  background-size: var(--component-asset-bg-size, 100% 100%);
+  opacity: var(--component-asset-opacity, 1);
+}
+
+.componentAssetContent {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 780px) {
+  .componentAssetFrame {
+    min-height: var(--component-asset-mobile-min-height, var(--component-asset-min-height, auto));
+    padding:
+      var(--component-asset-mobile-padding-top, var(--component-asset-padding-top, 0))
+      var(--component-asset-mobile-padding-right, var(--component-asset-padding-right, 0))
+      var(--component-asset-mobile-padding-bottom, var(--component-asset-padding-bottom, 0))
+      var(--component-asset-mobile-padding-left, var(--component-asset-padding-left, 0));
+  }
+
+  .componentAssetFrame::before {
+    background-image: var(--component-asset-mobile-image, var(--component-asset-image, none));
+    background-size: var(--component-asset-mobile-bg-size, var(--component-asset-bg-size, 100% 100%));
+    background-position:
+      var(--component-asset-mobile-bg-position-x, var(--component-asset-bg-position-x, center))
+      var(--component-asset-mobile-bg-position-y, var(--component-asset-bg-position-y, center));
+    opacity: var(--component-asset-mobile-opacity, var(--component-asset-opacity, 1));
+  }
+}
+
 .assetDebugPanel {
   position: fixed;
   top: 14px;
@@ -654,22 +702,11 @@
 }
 
 .paper-birthday .hero {
-  min-height: 462px;
   overflow: visible;
   border: 0;
   border-radius: 8px;
-  padding-inline: clamp(30px, 6vw, 86px);
   align-items: center;
-  background: var(--scrapbook-torn-section) center 55% / 138% 228% no-repeat;
   clip-path: polygon(0 4%, 7% 2%, 17% 4%, 28% 2%, 43% 4%, 56% 2%, 70% 4%, 84% 2%, 100% 4%, 99% 92%, 88% 94%, 73% 92%, 58% 95%, 42% 92%, 28% 95%, 14% 92%, 1% 95%);
-}
-
-.paper-birthday .hero.paperBirthdayHeroExpanded {
-  background: var(--scrapbook-torn-section) center 54% / 142% 244% no-repeat;
-}
-
-.paper-birthday .hero.paperBirthdayHeroCompact {
-  background: var(--scrapbook-torn-section) center 56% / 130% 188% no-repeat;
 }
 
 .paper-birthday .hero::before,
@@ -787,7 +824,7 @@
   text-align: center;
   max-width: 880px;
   margin-inline: auto;
-  padding: 22px clamp(56px, 9vw, 132px) 10px;
+  padding: 0;
 }
 
 .paper-birthday .heroMain::before {
@@ -921,8 +958,6 @@
   clip-path: none;
   border: 0;
   border-radius: 0;
-  padding: 20px 40px 30px;
-  background: var(--scrapbook-torn-summary) center / 104% 112% no-repeat;
   box-shadow: none;
   transform: rotate(-0.7deg);
 }
@@ -955,15 +990,13 @@
   transform: rotate(-0.35deg);
 }
 
-.paper-birthday .qualitiesPanel .sectionTitle {
+.paper-birthday .qualitiesTitleFrame {
   margin-left: 22px;
   display: inline-block;
-  padding: 8px 24px 12px;
-  background: rgba(255, 244, 222, 0.82);
   clip-path: polygon(0 12%, 100% 2%, 96% 88%, 4% 100%);
 }
 
-.paper-birthday .qualitiesPanel .sectionTitle::after {
+.paper-birthday .qualitiesTitleFrame .sectionTitle::after {
   content: " ✨";
   color: #d88949;
 }
@@ -977,61 +1010,56 @@
   padding: 14px 8px 6px;
 }
 
-.paper-birthday .chip {
+.paper-birthday .qualityChipFrame {
+  width: 220px;
+  min-width: 220px;
+}
+
+.paper-birthday .qualityChipContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.paper-birthday .qualityChipFrame .chip {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 220px;
-  min-width: 220px;
-  height: 94px;
-  min-height: 94px;
-  padding: 18px 24px 22px;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  padding: 0;
   border: 0;
-  border-radius: 3px;
+  border-radius: 0;
   color: #4d342b;
   font-family: "Segoe Print", "Comic Sans MS", cursive;
   font-weight: 800;
   font-size: 1.32rem;
   line-height: 1.05;
   text-align: center;
-  background: var(--scrapbook-paper-tag-short1) center / 100% 100% no-repeat;
+  background: transparent;
   box-shadow:
-    0 10px 16px rgba(92, 58, 34, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    none;
 }
 
-.paper-birthday .chip:nth-child(5n + 1) {
-  background:
-    linear-gradient(rgba(246, 199, 189, 0.18), rgba(246, 199, 189, 0.18)),
-    var(--scrapbook-paper-tag-short1) center / 100% 100% no-repeat;
+.paper-birthday .qualityChipFrame:nth-child(5n + 1) {
   transform: rotate(-3deg);
 }
 
-.paper-birthday .chip:nth-child(5n + 2) {
-  background:
-    linear-gradient(rgba(247, 225, 186, 0.16), rgba(247, 225, 186, 0.16)),
-    var(--scrapbook-paper-tag-short2) center / 100% 100% no-repeat;
+.paper-birthday .qualityChipFrame:nth-child(5n + 2) {
   transform: rotate(2deg);
 }
 
-.paper-birthday .chip:nth-child(5n + 3) {
-  background:
-    linear-gradient(rgba(220, 232, 243, 0.16), rgba(220, 232, 243, 0.16)),
-    var(--scrapbook-paper-tag-short3) center / 100% 100% no-repeat;
+.paper-birthday .qualityChipFrame:nth-child(5n + 3) {
   transform: rotate(-1deg);
 }
 
-.paper-birthday .chip:nth-child(5n + 4) {
-  background:
-    linear-gradient(rgba(244, 207, 199, 0.16), rgba(244, 207, 199, 0.16)),
-    var(--scrapbook-paper-tag-short1) center / 100% 100% no-repeat;
+.paper-birthday .qualityChipFrame:nth-child(5n + 4) {
   transform: rotate(2.8deg);
 }
 
-.paper-birthday .chip:nth-child(5n) {
-  background:
-    linear-gradient(rgba(243, 229, 201, 0.16), rgba(243, 229, 201, 0.16)),
-    var(--scrapbook-paper-tag-short2) center / 100% 100% no-repeat;
+.paper-birthday .qualityChipFrame:nth-child(5n) {
   transform: rotate(-2deg);
 }
 
@@ -1120,8 +1148,6 @@
 }
 
 .paper-birthday .quoteCard {
-  min-height: 188px;
-  padding: 26px 28px 30px;
   border: 0;
   border-radius: 7px;
   box-shadow:
@@ -1129,19 +1155,20 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
-.paper-birthday .quoteCard:nth-child(3n + 1) {
-  background: var(--scrapbook-quote-pink) center / 116% 116% no-repeat;
+.paper-birthday .paperBirthdayQuoteFrame:nth-child(3n + 1) {
   transform: rotate(-1.2deg);
 }
 
-.paper-birthday .quoteCard:nth-child(3n + 2) {
-  background: var(--scrapbook-quote-beige) center / 116% 116% no-repeat;
+.paper-birthday .paperBirthdayQuoteFrame:nth-child(3n + 2) {
   transform: rotate(0.8deg);
 }
 
-.paper-birthday .quoteCard:nth-child(3n) {
-  background: var(--scrapbook-quote-blue) center / 116% 116% no-repeat;
+.paper-birthday .paperBirthdayQuoteFrame:nth-child(3n) {
   transform: rotate(-0.5deg);
+}
+
+.paper-birthday .paperBirthdayQuoteFrame .message {
+  margin-top: 6px;
 }
 
 .paper-birthday .quoteCard::after {

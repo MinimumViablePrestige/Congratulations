@@ -1,20 +1,19 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
-import {
-  createContext,
-  useContext,
-  useMemo,
-  useState
-} from "react";
+import type { CSSProperties, ElementType, ReactNode } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import styles from "./final-card.module.css";
 import {
   SCRAPBOOK_DECOR_ANCHORS,
-  SCRAPBOOK_DECOR_GROUPS,
-  scrapbookDecorAssets,
+  SCRAPBOOK_VISUAL_GROUPS,
+  scrapbookComponentAssets,
+  scrapbookFloatingAssets,
+  scrapbookVisualAssets,
+  type ScrapbookComponentAsset,
   type ScrapbookDecorAnchor,
-  type ScrapbookDecorAsset
+  type ScrapbookFloatingAsset,
+  type ScrapbookVisualAsset
 } from "./scrapbook-decor-config";
 
 type ProviderProps = {
@@ -26,7 +25,15 @@ type LayerProps = {
   anchor: ScrapbookDecorAnchor;
 };
 
-type AssetField =
+type FrameProps = {
+  assetId: string;
+  children: ReactNode;
+  className?: string;
+  contentClassName?: string;
+  as?: ElementType;
+};
+
+type FloatingField =
   | "anchor"
   | "top"
   | "left"
@@ -39,19 +46,36 @@ type AssetField =
   | "visible"
   | "hideOnMobile";
 
-type MobileField = "top" | "left" | "right" | "bottom" | "width" | "rotate" | "opacity" | "zIndex" | "visible";
+type FloatingMobileField = "top" | "left" | "right" | "bottom" | "width" | "rotate" | "opacity" | "zIndex" | "visible";
+
+type ComponentField =
+  | "visible"
+  | "backgroundSize"
+  | "backgroundPositionX"
+  | "backgroundPositionY"
+  | "opacity"
+  | "paddingTop"
+  | "paddingRight"
+  | "paddingBottom"
+  | "paddingLeft"
+  | "minHeight";
+
+type ComponentMobileField = ComponentField;
 
 type DecorContextValue = {
-  assets: ScrapbookDecorAsset[];
+  floatingAssets: ScrapbookFloatingAsset[];
+  componentAssets: ScrapbookComponentAsset[];
   debugEnabled: boolean;
   selectedAssetId: string;
-  selectedGroup: (typeof SCRAPBOOK_DECOR_GROUPS)[number];
-  selectedAsset?: ScrapbookDecorAsset;
-  filteredAssets: ScrapbookDecorAsset[];
+  selectedGroup: (typeof SCRAPBOOK_VISUAL_GROUPS)[number];
+  selectedAsset?: ScrapbookVisualAsset;
+  filteredAssets: ScrapbookVisualAsset[];
   setSelectedAssetId: (assetId: string) => void;
-  setSelectedGroup: (group: (typeof SCRAPBOOK_DECOR_GROUPS)[number]) => void;
-  updateField: (field: AssetField, value: string | boolean) => void;
-  updateMobileField: (field: MobileField, value: string | boolean) => void;
+  setSelectedGroup: (group: (typeof SCRAPBOOK_VISUAL_GROUPS)[number]) => void;
+  updateFloatingField: (field: FloatingField, value: string | boolean) => void;
+  updateFloatingMobileField: (field: FloatingMobileField, value: string | boolean) => void;
+  updateComponentField: (field: ComponentField, value: string | boolean) => void;
+  updateComponentMobileField: (field: ComponentMobileField, value: string | boolean) => void;
   copyConfig: () => Promise<void>;
   copySelectedAssetConfig: () => Promise<void>;
   resetSelectedAsset: () => void;
@@ -61,8 +85,13 @@ type DecorContextValue = {
 const ScrapbookDecorContext = createContext<DecorContextValue | null>(null);
 
 const toCssValue = (value?: string) => value ?? "auto";
+const normalizeString = (value: string) => (value.trim() === "" ? undefined : value);
+const numberField = (value: number) => String(value);
 
-const toAssetStyle = (asset: ScrapbookDecorAsset) =>
+const defaultFloatingAssetsById = new Map(scrapbookFloatingAssets.map((asset) => [asset.id, asset]));
+const defaultComponentAssetsById = new Map(scrapbookComponentAssets.map((asset) => [asset.id, asset]));
+
+const toFloatingAssetStyle = (asset: ScrapbookFloatingAsset) =>
   ({
     "--asset-top": toCssValue(asset.top),
     "--asset-left": toCssValue(asset.left),
@@ -82,11 +111,29 @@ const toAssetStyle = (asset: ScrapbookDecorAsset) =>
     "--asset-mobile-z-index": String(asset.mobile?.zIndex ?? asset.zIndex)
   }) as CSSProperties;
 
-const normalizeString = (value: string) => (value.trim() === "" ? undefined : value);
-
-const numberField = (value: number) => String(value);
-
-const defaultAssetsById = new Map(scrapbookDecorAssets.map((asset) => [asset.id, asset]));
+const toComponentAssetStyle = (asset: ScrapbookComponentAsset) =>
+  ({
+    "--component-asset-image": asset.visible ? `url(${asset.src})` : "none",
+    "--component-asset-bg-size": asset.backgroundSize,
+    "--component-asset-bg-position-x": asset.backgroundPositionX,
+    "--component-asset-bg-position-y": asset.backgroundPositionY,
+    "--component-asset-opacity": String(asset.visible ? asset.opacity : 0),
+    "--component-asset-padding-top": asset.paddingTop,
+    "--component-asset-padding-right": asset.paddingRight,
+    "--component-asset-padding-bottom": asset.paddingBottom,
+    "--component-asset-padding-left": asset.paddingLeft,
+    "--component-asset-min-height": asset.minHeight ?? "auto",
+    "--component-asset-mobile-image": asset.mobile?.visible === false ? "none" : asset.visible ? `url(${asset.src})` : "none",
+    "--component-asset-mobile-bg-size": asset.mobile?.backgroundSize ?? asset.backgroundSize,
+    "--component-asset-mobile-bg-position-x": asset.mobile?.backgroundPositionX ?? asset.backgroundPositionX,
+    "--component-asset-mobile-bg-position-y": asset.mobile?.backgroundPositionY ?? asset.backgroundPositionY,
+    "--component-asset-mobile-opacity": String(asset.mobile?.visible === false ? 0 : asset.mobile?.opacity ?? asset.opacity),
+    "--component-asset-mobile-padding-top": asset.mobile?.paddingTop ?? asset.paddingTop,
+    "--component-asset-mobile-padding-right": asset.mobile?.paddingRight ?? asset.paddingRight,
+    "--component-asset-mobile-padding-bottom": asset.mobile?.paddingBottom ?? asset.paddingBottom,
+    "--component-asset-mobile-padding-left": asset.mobile?.paddingLeft ?? asset.paddingLeft,
+    "--component-asset-mobile-min-height": asset.mobile?.minHeight ?? asset.minHeight ?? "auto"
+  }) as CSSProperties;
 
 const useDecorContext = () => {
   const value = useContext(ScrapbookDecorContext);
@@ -98,94 +145,124 @@ const useDecorContext = () => {
   return value;
 };
 
+const isFloatingAsset = (asset: ScrapbookVisualAsset | undefined): asset is ScrapbookFloatingAsset => asset?.type === "floating";
+const isComponentAsset = (asset: ScrapbookVisualAsset | undefined): asset is ScrapbookComponentAsset => asset?.type === "component";
+
 export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps) => {
-  const [assets, setAssets] = useState<ScrapbookDecorAsset[]>(scrapbookDecorAssets);
-  const [selectedAssetId, setSelectedAssetId] = useState<string>(scrapbookDecorAssets[0]?.id ?? "");
-  const [selectedGroup, setSelectedGroup] = useState<(typeof SCRAPBOOK_DECOR_GROUPS)[number]>("All");
+  const [floatingAssets, setFloatingAssets] = useState<ScrapbookFloatingAsset[]>(scrapbookFloatingAssets);
+  const [componentAssets, setComponentAssets] = useState<ScrapbookComponentAsset[]>(scrapbookComponentAssets);
+  const [selectedAssetId, setSelectedAssetId] = useState<string>(scrapbookVisualAssets[0]?.id ?? "");
+  const [selectedGroup, setSelectedGroup] = useState<(typeof SCRAPBOOK_VISUAL_GROUPS)[number]>("All");
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
 
+  const allAssets = useMemo(() => [...floatingAssets, ...componentAssets], [floatingAssets, componentAssets]);
+
   const filteredAssets = useMemo(
-    () => assets.filter((asset) => selectedGroup === "All" || asset.group === selectedGroup),
-    [assets, selectedGroup]
+    () => allAssets.filter((asset) => selectedGroup === "All" || asset.group === selectedGroup),
+    [allAssets, selectedGroup]
   );
 
   const selectedAsset = useMemo(
-    () => assets.find((asset) => asset.id === selectedAssetId) ?? filteredAssets[0] ?? assets[0],
-    [assets, filteredAssets, selectedAssetId]
+    () => allAssets.find((asset) => asset.id === selectedAssetId) ?? filteredAssets[0] ?? allAssets[0],
+    [allAssets, filteredAssets, selectedAssetId]
   );
 
-  const updateAsset = (assetId: string, updater: (asset: ScrapbookDecorAsset) => ScrapbookDecorAsset) => {
-    setAssets((current) => current.map((asset) => (asset.id === assetId ? updater(asset) : asset)));
+  const updateFloatingAsset = (assetId: string, updater: (asset: ScrapbookFloatingAsset) => ScrapbookFloatingAsset) => {
+    setFloatingAssets((current) => current.map((asset) => (asset.id === assetId ? updater(asset) : asset)));
   };
 
-  const updateField = (field: AssetField, value: string | boolean) => {
-    if (!selectedAsset) {
+  const updateComponentAsset = (assetId: string, updater: (asset: ScrapbookComponentAsset) => ScrapbookComponentAsset) => {
+    setComponentAssets((current) => current.map((asset) => (asset.id === assetId ? updater(asset) : asset)));
+  };
+
+  const updateFloatingField = (field: FloatingField, value: string | boolean) => {
+    if (!isFloatingAsset(selectedAsset)) {
       return;
     }
 
-    updateAsset(selectedAsset.id, (asset) => {
+    updateFloatingAsset(selectedAsset.id, (asset) => {
       if (field === "visible" || field === "hideOnMobile") {
-        return {
-          ...asset,
-          [field]: Boolean(value)
-        };
+        return { ...asset, [field]: Boolean(value) };
       }
 
       if (field === "anchor") {
-        return {
-          ...asset,
-          anchor: value as ScrapbookDecorAnchor
-        };
+        return { ...asset, anchor: value as ScrapbookDecorAnchor };
+      }
+
+      if (field === "rotate" || field === "opacity" || field === "zIndex") {
+        return { ...asset, [field]: value === "" ? 0 : Number(value) };
+      }
+
+      return { ...asset, [field]: normalizeString(String(value)) };
+    });
+  };
+
+  const updateFloatingMobileField = (field: FloatingMobileField, value: string | boolean) => {
+    if (!isFloatingAsset(selectedAsset)) {
+      return;
+    }
+
+    updateFloatingAsset(selectedAsset.id, (asset) => {
+      const currentMobile = asset.mobile ?? {};
+
+      if (field === "visible") {
+        return { ...asset, mobile: { ...currentMobile, visible: Boolean(value) } };
       }
 
       if (field === "rotate" || field === "opacity" || field === "zIndex") {
         return {
           ...asset,
-          [field]: value === "" ? 0 : Number(value)
+          mobile: { ...currentMobile, [field]: value === "" ? undefined : Number(value) }
         };
       }
 
       return {
         ...asset,
-        [field]: normalizeString(String(value))
+        mobile: { ...currentMobile, [field]: normalizeString(String(value)) }
       };
     });
   };
 
-  const updateMobileField = (field: MobileField, value: string | boolean) => {
-    if (!selectedAsset) {
+  const updateComponentField = (field: ComponentField, value: string | boolean) => {
+    if (!isComponentAsset(selectedAsset)) {
       return;
     }
 
-    updateAsset(selectedAsset.id, (asset) => {
+    updateComponentAsset(selectedAsset.id, (asset) => {
+      if (field === "visible") {
+        return { ...asset, visible: Boolean(value) };
+      }
+
+      if (field === "opacity") {
+        return { ...asset, opacity: value === "" ? 0 : Number(value) };
+      }
+
+      return { ...asset, [field]: normalizeString(String(value)) };
+    });
+  };
+
+  const updateComponentMobileField = (field: ComponentMobileField, value: string | boolean) => {
+    if (!isComponentAsset(selectedAsset)) {
+      return;
+    }
+
+    updateComponentAsset(selectedAsset.id, (asset) => {
       const currentMobile = asset.mobile ?? {};
 
       if (field === "visible") {
-        return {
-          ...asset,
-          mobile: {
-            ...currentMobile,
-            visible: Boolean(value)
-          }
-        };
+        return { ...asset, mobile: { ...currentMobile, visible: Boolean(value) } };
       }
 
-      if (field === "rotate" || field === "opacity" || field === "zIndex") {
+      if (field === "opacity") {
         return {
           ...asset,
-          mobile: {
-            ...currentMobile,
-            [field]: value === "" ? undefined : Number(value)
-          }
+          mobile: { ...currentMobile, opacity: value === "" ? undefined : Number(value) }
         };
       }
 
       return {
         ...asset,
-        mobile: {
-          ...currentMobile,
-          [field]: normalizeString(String(value))
-        }
+        mobile: { ...currentMobile, [field]: normalizeString(String(value)) }
       };
     });
   };
@@ -201,7 +278,17 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
     }
   };
 
-  const copyConfig = async () => withCopyState(JSON.stringify(assets, null, 2));
+  const copyConfig = async () =>
+    withCopyState(
+      JSON.stringify(
+        {
+          floatingAssets,
+          componentAssets
+        },
+        null,
+        2
+      )
+    );
 
   const copySelectedAssetConfig = async () => {
     if (!selectedAsset) {
@@ -216,19 +303,28 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
       return;
     }
 
-    const defaultAsset = defaultAssetsById.get(selectedAsset.id);
+    if (selectedAsset.type === "floating") {
+      const defaultAsset = defaultFloatingAssetsById.get(selectedAsset.id);
 
-    if (!defaultAsset) {
+      if (defaultAsset) {
+        updateFloatingAsset(selectedAsset.id, () => ({ ...defaultAsset }));
+      }
+
       return;
     }
 
-    updateAsset(selectedAsset.id, () => ({ ...defaultAsset }));
+    const defaultAsset = defaultComponentAssetsById.get(selectedAsset.id);
+
+    if (defaultAsset) {
+      updateComponentAsset(selectedAsset.id, () => ({ ...defaultAsset }));
+    }
   };
 
   return (
     <ScrapbookDecorContext.Provider
       value={{
-        assets,
+        floatingAssets,
+        componentAssets,
         debugEnabled,
         selectedAssetId,
         selectedGroup,
@@ -236,8 +332,10 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
         filteredAssets,
         setSelectedAssetId,
         setSelectedGroup,
-        updateField,
-        updateMobileField,
+        updateFloatingField,
+        updateFloatingMobileField,
+        updateComponentField,
+        updateComponentMobileField,
         copyConfig,
         copySelectedAssetConfig,
         resetSelectedAsset,
@@ -250,9 +348,8 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
 };
 
 export const ScrapbookDecorLayer = ({ anchor }: LayerProps) => {
-  const { assets } = useDecorContext();
-
-  const anchorAssets = assets.filter((asset) => asset.visible && asset.anchor === anchor);
+  const { floatingAssets } = useDecorContext();
+  const anchorAssets = floatingAssets.filter((asset) => asset.visible && asset.anchor === anchor);
 
   if (anchorAssets.length === 0) {
     return null;
@@ -270,7 +367,7 @@ export const ScrapbookDecorLayer = ({ anchor }: LayerProps) => {
           <div
             key={asset.id}
             className={className}
-            style={toAssetStyle(asset)}
+            style={toFloatingAssetStyle(asset)}
             data-hide-on-mobile={asset.hideOnMobile}
             data-mobile-visible={asset.mobile?.visible ?? true}
           >
@@ -289,17 +386,34 @@ export const ScrapbookDecorLayer = ({ anchor }: LayerProps) => {
   );
 };
 
+export const ScrapbookComponentFrame = ({ assetId, children, className, contentClassName, as }: FrameProps) => {
+  const { componentAssets } = useDecorContext();
+  const asset = componentAssets.find((item) => item.id === assetId);
+  const Tag = (as ?? "div") as ElementType;
+
+  if (!asset) {
+    return <Tag className={className}>{children}</Tag>;
+  }
+
+  return (
+    <Tag className={`${styles.componentAssetFrame} ${className ?? ""}`.trim()} style={toComponentAssetStyle(asset)}>
+      <div className={`${styles.componentAssetContent} ${contentClassName ?? ""}`.trim()}>{children}</div>
+    </Tag>
+  );
+};
+
 export const ScrapbookDecorDebugPanel = () => {
   const {
     debugEnabled,
     selectedAsset,
-    selectedAssetId,
     selectedGroup,
     filteredAssets,
     setSelectedAssetId,
     setSelectedGroup,
-    updateField,
-    updateMobileField,
+    updateFloatingField,
+    updateFloatingMobileField,
+    updateComponentField,
+    updateComponentMobileField,
     copyConfig,
     copySelectedAssetConfig,
     resetSelectedAsset,
@@ -330,8 +444,8 @@ export const ScrapbookDecorDebugPanel = () => {
 
       <label className={styles.assetDebugField}>
         <span>Group</span>
-        <select value={selectedGroup} onChange={(event) => setSelectedGroup(event.target.value as (typeof SCRAPBOOK_DECOR_GROUPS)[number])}>
-          {SCRAPBOOK_DECOR_GROUPS.map((group) => (
+        <select value={selectedGroup} onChange={(event) => setSelectedGroup(event.target.value as (typeof SCRAPBOOK_VISUAL_GROUPS)[number])}>
+          {SCRAPBOOK_VISUAL_GROUPS.map((group) => (
             <option key={group} value={group}>
               {group}
             </option>
@@ -350,157 +464,324 @@ export const ScrapbookDecorDebugPanel = () => {
         </select>
       </label>
 
-      <label className={styles.assetDebugField}>
-        <span>Anchor</span>
-        <select value={selectedAsset.anchor} onChange={(event) => updateField("anchor", event.target.value)}>
-          {SCRAPBOOK_DECOR_ANCHORS.map((anchor) => (
-            <option key={anchor} value={anchor}>
-              {anchor}
-            </option>
-          ))}
-        </select>
-      </label>
+      {selectedAsset.type === "floating" ? (
+        <>
+          <label className={styles.assetDebugField}>
+            <span>Anchor</span>
+            <select value={selectedAsset.anchor} onChange={(event) => updateFloatingField("anchor", event.target.value)}>
+              {SCRAPBOOK_DECOR_ANCHORS.map((anchor) => (
+                <option key={anchor} value={anchor}>
+                  {anchor}
+                </option>
+              ))}
+            </select>
+          </label>
 
-      <div className={styles.assetDebugGrid}>
-        <label className={styles.assetDebugField}>
-          <span>top</span>
-          <input value={selectedAsset.top ?? ""} onChange={(event) => updateField("top", event.target.value)} />
-        </label>
-        <label className={styles.assetDebugField}>
-          <span>left</span>
-          <input value={selectedAsset.left ?? ""} onChange={(event) => updateField("left", event.target.value)} />
-        </label>
-        <label className={styles.assetDebugField}>
-          <span>right</span>
-          <input value={selectedAsset.right ?? ""} onChange={(event) => updateField("right", event.target.value)} />
-        </label>
-        <label className={styles.assetDebugField}>
-          <span>bottom</span>
-          <input value={selectedAsset.bottom ?? ""} onChange={(event) => updateField("bottom", event.target.value)} />
-        </label>
-        <label className={styles.assetDebugField}>
-          <span>width</span>
-          <input value={selectedAsset.width} onChange={(event) => updateField("width", event.target.value)} />
-        </label>
-        <label className={styles.assetDebugField}>
-          <span>rotate</span>
-          <input
-            type="number"
-            value={numberField(selectedAsset.rotate)}
-            onChange={(event) => updateField("rotate", event.target.value)}
-          />
-        </label>
-        <label className={styles.assetDebugField}>
-          <span>opacity</span>
-          <input
-            type="number"
-            step="0.05"
-            value={numberField(selectedAsset.opacity)}
-            onChange={(event) => updateField("opacity", event.target.value)}
-          />
-        </label>
-        <label className={styles.assetDebugField}>
-          <span>zIndex</span>
-          <input
-            type="number"
-            value={numberField(selectedAsset.zIndex)}
-            onChange={(event) => updateField("zIndex", event.target.value)}
-          />
-        </label>
-      </div>
+          <div className={styles.assetDebugGrid}>
+            <label className={styles.assetDebugField}>
+              <span>top</span>
+              <input value={selectedAsset.top ?? ""} onChange={(event) => updateFloatingField("top", event.target.value)} />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>left</span>
+              <input value={selectedAsset.left ?? ""} onChange={(event) => updateFloatingField("left", event.target.value)} />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>right</span>
+              <input value={selectedAsset.right ?? ""} onChange={(event) => updateFloatingField("right", event.target.value)} />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>bottom</span>
+              <input
+                value={selectedAsset.bottom ?? ""}
+                onChange={(event) => updateFloatingField("bottom", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>width</span>
+              <input value={selectedAsset.width} onChange={(event) => updateFloatingField("width", event.target.value)} />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>rotate</span>
+              <input
+                type="number"
+                value={numberField(selectedAsset.rotate)}
+                onChange={(event) => updateFloatingField("rotate", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>opacity</span>
+              <input
+                type="number"
+                step="0.05"
+                value={numberField(selectedAsset.opacity)}
+                onChange={(event) => updateFloatingField("opacity", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>zIndex</span>
+              <input
+                type="number"
+                value={numberField(selectedAsset.zIndex)}
+                onChange={(event) => updateFloatingField("zIndex", event.target.value)}
+              />
+            </label>
+          </div>
 
-      <div className={styles.assetDebugToggles}>
-        <label>
-          <input
-            type="checkbox"
-            checked={selectedAsset.visible}
-            onChange={(event) => updateField("visible", event.target.checked)}
-          />
-          <span>visible</span>
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={selectedAsset.hideOnMobile}
-            onChange={(event) => updateField("hideOnMobile", event.target.checked)}
-          />
-          <span>hideOnMobile</span>
-        </label>
-      </div>
+          <div className={styles.assetDebugToggles}>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedAsset.visible}
+                onChange={(event) => updateFloatingField("visible", event.target.checked)}
+              />
+              <span>visible</span>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedAsset.hideOnMobile}
+                onChange={(event) => updateFloatingField("hideOnMobile", event.target.checked)}
+              />
+              <span>hideOnMobile</span>
+            </label>
+          </div>
 
-      <div className={styles.assetDebugMobileSection}>
-        <strong>Mobile overrides</strong>
-        <div className={styles.assetDebugGrid}>
-          <label className={styles.assetDebugField}>
-            <span>mobileTop</span>
-            <input
-              value={selectedAsset.mobile?.top ?? ""}
-              onChange={(event) => updateMobileField("top", event.target.value)}
-            />
-          </label>
-          <label className={styles.assetDebugField}>
-            <span>mobileLeft</span>
-            <input
-              value={selectedAsset.mobile?.left ?? ""}
-              onChange={(event) => updateMobileField("left", event.target.value)}
-            />
-          </label>
-          <label className={styles.assetDebugField}>
-            <span>mobileRight</span>
-            <input
-              value={selectedAsset.mobile?.right ?? ""}
-              onChange={(event) => updateMobileField("right", event.target.value)}
-            />
-          </label>
-          <label className={styles.assetDebugField}>
-            <span>mobileBottom</span>
-            <input
-              value={selectedAsset.mobile?.bottom ?? ""}
-              onChange={(event) => updateMobileField("bottom", event.target.value)}
-            />
-          </label>
-          <label className={styles.assetDebugField}>
-            <span>mobileWidth</span>
-            <input
-              value={selectedAsset.mobile?.width ?? ""}
-              onChange={(event) => updateMobileField("width", event.target.value)}
-            />
-          </label>
-          <label className={styles.assetDebugField}>
-            <span>mobileRotate</span>
-            <input
-              type="number"
-              value={selectedAsset.mobile?.rotate ?? ""}
-              onChange={(event) => updateMobileField("rotate", event.target.value)}
-            />
-          </label>
-          <label className={styles.assetDebugField}>
-            <span>mobileOpacity</span>
-            <input
-              type="number"
-              step="0.05"
-              value={selectedAsset.mobile?.opacity ?? ""}
-              onChange={(event) => updateMobileField("opacity", event.target.value)}
-            />
-          </label>
-          <label className={styles.assetDebugField}>
-            <span>mobileZIndex</span>
-            <input
-              type="number"
-              value={selectedAsset.mobile?.zIndex ?? ""}
-              onChange={(event) => updateMobileField("zIndex", event.target.value)}
-            />
-          </label>
-        </div>
-        <label className={styles.assetDebugToggleSingle}>
-          <input
-            type="checkbox"
-            checked={selectedAsset.mobile?.visible ?? true}
-            onChange={(event) => updateMobileField("visible", event.target.checked)}
-          />
-          <span>mobileVisible</span>
-        </label>
-      </div>
+          <div className={styles.assetDebugMobileSection}>
+            <strong>Mobile overrides</strong>
+            <div className={styles.assetDebugGrid}>
+              <label className={styles.assetDebugField}>
+                <span>mobileTop</span>
+                <input
+                  value={selectedAsset.mobile?.top ?? ""}
+                  onChange={(event) => updateFloatingMobileField("top", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileLeft</span>
+                <input
+                  value={selectedAsset.mobile?.left ?? ""}
+                  onChange={(event) => updateFloatingMobileField("left", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileRight</span>
+                <input
+                  value={selectedAsset.mobile?.right ?? ""}
+                  onChange={(event) => updateFloatingMobileField("right", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileBottom</span>
+                <input
+                  value={selectedAsset.mobile?.bottom ?? ""}
+                  onChange={(event) => updateFloatingMobileField("bottom", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileWidth</span>
+                <input
+                  value={selectedAsset.mobile?.width ?? ""}
+                  onChange={(event) => updateFloatingMobileField("width", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileRotate</span>
+                <input
+                  type="number"
+                  value={selectedAsset.mobile?.rotate ?? ""}
+                  onChange={(event) => updateFloatingMobileField("rotate", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileOpacity</span>
+                <input
+                  type="number"
+                  step="0.05"
+                  value={selectedAsset.mobile?.opacity ?? ""}
+                  onChange={(event) => updateFloatingMobileField("opacity", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileZIndex</span>
+                <input
+                  type="number"
+                  value={selectedAsset.mobile?.zIndex ?? ""}
+                  onChange={(event) => updateFloatingMobileField("zIndex", event.target.value)}
+                />
+              </label>
+            </div>
+            <label className={styles.assetDebugToggleSingle}>
+              <input
+                type="checkbox"
+                checked={selectedAsset.mobile?.visible ?? true}
+                onChange={(event) => updateFloatingMobileField("visible", event.target.checked)}
+              />
+              <span>mobileVisible</span>
+            </label>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className={styles.assetDebugGrid}>
+            <label className={styles.assetDebugField}>
+              <span>backgroundSize</span>
+              <input
+                value={selectedAsset.backgroundSize}
+                onChange={(event) => updateComponentField("backgroundSize", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>positionX</span>
+              <input
+                value={selectedAsset.backgroundPositionX}
+                onChange={(event) => updateComponentField("backgroundPositionX", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>positionY</span>
+              <input
+                value={selectedAsset.backgroundPositionY}
+                onChange={(event) => updateComponentField("backgroundPositionY", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>opacity</span>
+              <input
+                type="number"
+                step="0.05"
+                value={numberField(selectedAsset.opacity)}
+                onChange={(event) => updateComponentField("opacity", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>paddingTop</span>
+              <input
+                value={selectedAsset.paddingTop}
+                onChange={(event) => updateComponentField("paddingTop", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>paddingRight</span>
+              <input
+                value={selectedAsset.paddingRight}
+                onChange={(event) => updateComponentField("paddingRight", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>paddingBottom</span>
+              <input
+                value={selectedAsset.paddingBottom}
+                onChange={(event) => updateComponentField("paddingBottom", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>paddingLeft</span>
+              <input
+                value={selectedAsset.paddingLeft}
+                onChange={(event) => updateComponentField("paddingLeft", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>minHeight</span>
+              <input
+                value={selectedAsset.minHeight ?? ""}
+                onChange={(event) => updateComponentField("minHeight", event.target.value)}
+              />
+            </label>
+          </div>
+
+          <div className={styles.assetDebugToggles}>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedAsset.visible}
+                onChange={(event) => updateComponentField("visible", event.target.checked)}
+              />
+              <span>visible</span>
+            </label>
+          </div>
+
+          <div className={styles.assetDebugMobileSection}>
+            <strong>Mobile overrides</strong>
+            <div className={styles.assetDebugGrid}>
+              <label className={styles.assetDebugField}>
+                <span>mobileSize</span>
+                <input
+                  value={selectedAsset.mobile?.backgroundSize ?? ""}
+                  onChange={(event) => updateComponentMobileField("backgroundSize", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePosX</span>
+                <input
+                  value={selectedAsset.mobile?.backgroundPositionX ?? ""}
+                  onChange={(event) => updateComponentMobileField("backgroundPositionX", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePosY</span>
+                <input
+                  value={selectedAsset.mobile?.backgroundPositionY ?? ""}
+                  onChange={(event) => updateComponentMobileField("backgroundPositionY", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileOpacity</span>
+                <input
+                  type="number"
+                  step="0.05"
+                  value={selectedAsset.mobile?.opacity ?? ""}
+                  onChange={(event) => updateComponentMobileField("opacity", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePadTop</span>
+                <input
+                  value={selectedAsset.mobile?.paddingTop ?? ""}
+                  onChange={(event) => updateComponentMobileField("paddingTop", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePadRight</span>
+                <input
+                  value={selectedAsset.mobile?.paddingRight ?? ""}
+                  onChange={(event) => updateComponentMobileField("paddingRight", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePadBottom</span>
+                <input
+                  value={selectedAsset.mobile?.paddingBottom ?? ""}
+                  onChange={(event) => updateComponentMobileField("paddingBottom", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePadLeft</span>
+                <input
+                  value={selectedAsset.mobile?.paddingLeft ?? ""}
+                  onChange={(event) => updateComponentMobileField("paddingLeft", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileMinHeight</span>
+                <input
+                  value={selectedAsset.mobile?.minHeight ?? ""}
+                  onChange={(event) => updateComponentMobileField("minHeight", event.target.value)}
+                />
+              </label>
+            </div>
+            <label className={styles.assetDebugToggleSingle}>
+              <input
+                type="checkbox"
+                checked={selectedAsset.mobile?.visible ?? true}
+                onChange={(event) => updateComponentMobileField("visible", event.target.checked)}
+              />
+              <span>mobileVisible</span>
+            </label>
+          </div>
+        </>
+      )}
 
       <div className={styles.assetDebugStatus}>
         {copyState === "copied" ? "Config copied" : copyState === "failed" ? "Copy failed" : "Live preview enabled"}

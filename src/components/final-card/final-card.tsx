@@ -4,6 +4,7 @@ import { getFinalCardMessageLayoutProfile } from "@/lib/final-card/message-layou
 import type { FinalCardViewModel } from "@/lib/final-card/view-model";
 import type { ScrapbookDecorAnchor } from "./scrapbook-decor-config";
 import {
+  ScrapbookComponentFrame,
   ScrapbookDecorDebugPanel,
   ScrapbookDecorLayer,
   ScrapbookDecorProvider
@@ -42,6 +43,16 @@ const getPaperBirthdayHeroScaleClass = (recipientName: string) => {
   }
 
   return "";
+};
+
+const getQualityAssetId = (index: number) => {
+  const cycle = ["qualityTagShort1", "qualityTagShort2", "qualityTagShort3", "qualityTagShort1", "qualityTagShort2"] as const;
+  return cycle[index % cycle.length];
+};
+
+const getQuoteAssetId = (index: number) => {
+  const cycle = ["quoteCardPink", "quoteCardBeige", "quoteCardBlue"] as const;
+  return cycle[index % cycle.length];
 };
 
 const renderMessageCard = (item: Contribution, index: number, maxChars: number) => (
@@ -212,11 +223,8 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
 
       {model.blocks.map((block) => {
         if (block.id === "hero") {
-          return (
-            <section
-              key={block.id}
-              className={`${styles.hero} ${heroScaleClass} ${isPaperBirthday ? styles.decorAnchor : ""}`.trim()}
-            >
+          const heroBody = (
+            <>
               {renderAnchorLayer("hero")}
               <div className={styles.heroGlow} />
               <div className={styles.heroMain}>
@@ -240,21 +248,46 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
                   </a>
                 </div>
               </div>
+            </>
+          );
+
+          return isPaperBirthday ? (
+            <ScrapbookComponentFrame
+              key={block.id}
+              as="section"
+              assetId="heroPaper"
+              className={`${styles.hero} ${heroScaleClass} ${styles.decorAnchor}`.trim()}
+            >
+              {heroBody}
+            </ScrapbookComponentFrame>
+          ) : (
+            <section key={block.id} className={`${styles.hero} ${heroScaleClass}`.trim()}>
+              {heroBody}
             </section>
           );
         }
 
         if (block.id === "summary") {
-          return (
-            <section
-              key={block.id}
-              className={`${styles.summary} ${styles.section} ${styles.summaryPanel} ${
-                isPaperBirthday ? styles.decorAnchor : ""
-              }`}
-            >
+          const summaryContent = (
+            <>
               {renderAnchorLayer("summary")}
               <h2 className={styles.sectionTitle}>{model.summaryTitle}</h2>
               <p className={styles.sectionText}>{model.summaryText}</p>
+            </>
+          );
+
+          return isPaperBirthday ? (
+            <ScrapbookComponentFrame
+              key={block.id}
+              as="section"
+              assetId="summaryPaper"
+              className={`${styles.summary} ${styles.section} ${styles.summaryPanel} ${styles.decorAnchor}`}
+            >
+              {summaryContent}
+            </ScrapbookComponentFrame>
+          ) : (
+            <section key={block.id} className={`${styles.summary} ${styles.section} ${styles.summaryPanel}`}>
+              {summaryContent}
             </section>
           );
         }
@@ -268,13 +301,30 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
               }`}
             >
               {renderAnchorLayer("qualities")}
-              <h2 className={styles.sectionTitle}>Какая ты для нас</h2>
+              {isPaperBirthday ? (
+                <ScrapbookComponentFrame assetId="qualitiesTitlePaper" className={styles.qualitiesTitleFrame}>
+                  <h2 className={styles.sectionTitle}>Какая ты для нас</h2>
+                </ScrapbookComponentFrame>
+              ) : (
+                <h2 className={styles.sectionTitle}>Какая ты для нас</h2>
+              )}
               <div className={styles.chipList}>
-                {model.qualities.map((quality) => (
-                  <span key={quality} className={styles.chip}>
-                    {quality}
-                  </span>
-                ))}
+                {model.qualities.map((quality, index) =>
+                  isPaperBirthday ? (
+                    <ScrapbookComponentFrame
+                      key={quality}
+                      assetId={getQualityAssetId(index)}
+                      className={styles.qualityChipFrame}
+                      contentClassName={styles.qualityChipContent}
+                    >
+                      <span className={styles.chip}>{quality}</span>
+                    </ScrapbookComponentFrame>
+                  ) : (
+                    <span key={quality} className={styles.chip}>
+                      {quality}
+                    </span>
+                  )
+                )}
               </div>
             </section>
           );
@@ -369,12 +419,23 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
               {renderAnchorLayer("bestPhrases")}
               <h2 className={styles.sectionTitle}>Лучшие фразы</h2>
               <div className={`${styles.grid} ${styles.quotesGrid}`}>
-                {model.quotes.map((quote) => (
-                  <article key={quote} className={styles.quoteCard}>
-                    <span className={styles.quoteMark}>&quot;</span>
-                    <p className={styles.message}>{quote}</p>
-                  </article>
-                ))}
+                {model.quotes.map((quote, index) =>
+                  isPaperBirthday ? (
+                    <ScrapbookComponentFrame
+                      key={quote}
+                      assetId={getQuoteAssetId(index)}
+                      className={`${styles.quoteCard} ${styles.paperBirthdayQuoteFrame}`}
+                    >
+                      <span className={styles.quoteMark}>&quot;</span>
+                      <p className={styles.message}>{quote}</p>
+                    </ScrapbookComponentFrame>
+                  ) : (
+                    <article key={quote} className={styles.quoteCard}>
+                      <span className={styles.quoteMark}>&quot;</span>
+                      <p className={styles.message}>{quote}</p>
+                    </article>
+                  )
+                )}
               </div>
             </section>
           );
@@ -402,8 +463,8 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
               <div className={styles.closingContent}>
                 <h2 className={styles.sectionTitle}>Спасибо, что вы вместе</h2>
                 <p className={styles.sectionText}>
-                  Это уже не просто список сообщений, а собранный цифровой подарок. Дальше мы будем усиливать
-                  медиа, публикацию и сам эффект вручения.
+                  Это уже не просто список сообщений, а собранный цифровой подарок. Дальше мы будем усиливать медиа,
+                  публикацию и сам эффект вручения.
                 </p>
               </div>
               <div className={styles.actions}>
