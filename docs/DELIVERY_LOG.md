@@ -367,3 +367,10 @@
 3. Added a development-only `?debugAssets=1` panel on the public gift page so decorative assets can be tuned live in the browser without editing CSS.
 4. Added `Copy config` support that copies the current in-browser asset JSON, making it easy to send back final tuned values.
 5. Switched confetti decorations to versioned public SVG assets so copied config stays readable instead of embedding large data URLs.
+
+## Update 2026-06-17 Universal Visual Tuning Phase 1
+
+1. Promoted the scrapbook debug-assets tooling into the first reusable layer for future final-card themes: config-driven floating visuals, live browser editing, desktop/mobile overrides, and JSON export.
+2. Kept all meaningful content live in HTML while moving only visual scrapbook decoration into the debugged asset layer, so the same approach can be extended to other templates later.
+3. Locked the debug panel behind development mode plus `?debugAssets=1`, making it safe for production while still usable for visual calibration.
+4. Left section-anchored assets and component-background tuning for the next phase, so the current base remains small, testable, and easy to extend.
