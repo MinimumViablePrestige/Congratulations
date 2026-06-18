@@ -314,15 +314,11 @@
 
 .componentAssetFrame {
   position: relative;
+  box-sizing: border-box;
   width: var(--component-asset-width, auto);
   max-width: var(--component-asset-max-width, none);
   min-height: var(--component-asset-min-height, auto);
-  transform: rotate(var(--component-asset-rotate, 0deg));
-  padding:
-    var(--component-asset-padding-top, 0)
-    var(--component-asset-padding-right, 0)
-    var(--component-asset-padding-bottom, 0)
-    var(--component-asset-padding-left, 0);
+  z-index: var(--component-asset-z-index, auto);
 }
 
 .componentAssetFrame::before {
@@ -336,11 +332,19 @@
   background-position: var(--component-asset-bg-position-x, center) var(--component-asset-bg-position-y, center);
   background-size: var(--component-asset-bg-size, 100% 100%);
   opacity: var(--component-asset-opacity, 1);
+  transform: rotate(var(--component-asset-rotate, 0deg));
+  transform-origin: center;
 }
 
 .componentAssetContent {
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
+  padding:
+    var(--component-asset-padding-top, 0)
+    var(--component-asset-padding-right, 0)
+    var(--component-asset-padding-bottom, 0)
+    var(--component-asset-padding-left, 0);
 }
 
 @media (max-width: 780px) {
@@ -348,7 +352,10 @@
     width: var(--component-asset-mobile-width, var(--component-asset-width, auto));
     max-width: var(--component-asset-mobile-max-width, var(--component-asset-max-width, none));
     min-height: var(--component-asset-mobile-min-height, var(--component-asset-min-height, auto));
-    transform: rotate(var(--component-asset-mobile-rotate, var(--component-asset-rotate, 0deg)));
+    z-index: var(--component-asset-mobile-z-index, var(--component-asset-z-index, auto));
+  }
+
+  .componentAssetContent {
     padding:
       var(--component-asset-mobile-padding-top, var(--component-asset-padding-top, 0))
       var(--component-asset-mobile-padding-right, var(--component-asset-padding-right, 0))
@@ -363,6 +370,7 @@
       var(--component-asset-mobile-bg-position-x, var(--component-asset-bg-position-x, center))
       var(--component-asset-mobile-bg-position-y, var(--component-asset-bg-position-y, center));
     opacity: var(--component-asset-mobile-opacity, var(--component-asset-opacity, 1));
+    transform: rotate(var(--component-asset-mobile-rotate, var(--component-asset-rotate, 0deg)));
   }
 }
 
@@ -412,6 +420,33 @@
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+}
+
+.assetDebugImport {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid rgba(104, 68, 45, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.assetDebugImport summary {
+  color: #4b372c;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.assetDebugImport textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 92px;
+  padding: 10px;
+  border: 1px solid rgba(104, 68, 45, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.94);
+  font: 0.82rem/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .assetDebugGrid {
@@ -965,7 +1000,7 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  transform: rotate(var(--component-asset-rotate, -0.7deg));
+  transform: none;
 }
 
 .paper-birthday .summaryPanel::before {
@@ -1020,7 +1055,6 @@
   width: var(--component-asset-width, 220px);
   min-width: var(--component-asset-width, 220px);
   max-width: var(--component-asset-max-width, 220px);
-  transform: rotate(var(--component-asset-rotate, 0deg));
 }
 
 .paper-birthday .qualityChipContent {
@@ -1138,21 +1172,10 @@
 .paper-birthday .quoteCard {
   border: 0;
   border-radius: 7px;
+  padding: 0;
   box-shadow:
     0 14px 24px rgba(92, 58, 34, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
-}
-
-.paper-birthday .paperBirthdayQuoteFrame:nth-child(3n + 1) {
-  transform: rotate(-1.2deg);
-}
-
-.paper-birthday .paperBirthdayQuoteFrame:nth-child(3n + 2) {
-  transform: rotate(0.8deg);
-}
-
-.paper-birthday .paperBirthdayQuoteFrame:nth-child(3n) {
-  transform: rotate(-0.5deg);
 }
 
 .paper-birthday .paperBirthdayQuoteFrame .message {

@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, ElementType, ReactNode } from "react";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import styles from "./final-card.module.css";
 import {
@@ -57,6 +57,7 @@ type ComponentField =
   | "width"
   | "maxWidth"
   | "rotate"
+  | "zIndex"
   | "paddingTop"
   | "paddingRight"
   | "paddingBottom"
@@ -82,8 +83,18 @@ type DecorContextValue = {
   updateComponentMobileField: (field: ComponentMobileField, value: string | boolean) => void;
   copyConfig: () => Promise<void>;
   copySelectedAssetConfig: () => Promise<void>;
+  importConfigText: string;
+  importState: "idle" | "applied" | "failed";
+  setImportConfigText: (value: string) => void;
+  applyImportedConfig: () => void;
+  clearLocalConfig: () => void;
   resetSelectedAsset: () => void;
   copyState: "idle" | "copied" | "failed";
+};
+
+type StoredVisualConfig = {
+  floatingAssets: ScrapbookFloatingAsset[];
+  componentAssets: ScrapbookComponentAsset[];
 };
 
 const ScrapbookDecorContext = createContext<DecorContextValue | null>(null);
@@ -94,6 +105,43 @@ const numberField = (value: number) => String(value);
 
 const defaultFloatingAssetsById = new Map(scrapbookFloatingAssets.map((asset) => [asset.id, asset]));
 const defaultComponentAssetsById = new Map(scrapbookComponentAssets.map((asset) => [asset.id, asset]));
+const LOCAL_CONFIG_STORAGE_KEY = "scrapbook-visual-config";
+
+const parseVisualConfig = (payload: unknown): StoredVisualConfig | null => {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const nextConfig = payload as Partial<StoredVisualConfig>;
+
+  if (!Array.isArray(nextConfig.floatingAssets) || !Array.isArray(nextConfig.componentAssets)) {
+    return null;
+  }
+
+  return {
+    floatingAssets: nextConfig.floatingAssets,
+    componentAssets: nextConfig.componentAssets
+  };
+};
+
+const readLocalVisualConfig = (debugEnabled: boolean): { config: StoredVisualConfig | null; raw: string } => {
+  if (!debugEnabled || typeof window === "undefined") {
+    return { config: null, raw: "" };
+  }
+
+  const rawConfig = window.localStorage.getItem(LOCAL_CONFIG_STORAGE_KEY) ?? "";
+
+  if (!rawConfig) {
+    return { config: null, raw: "" };
+  }
+
+  try {
+    return { config: parseVisualConfig(JSON.parse(rawConfig)), raw: rawConfig };
+  } catch {
+    window.localStorage.removeItem(LOCAL_CONFIG_STORAGE_KEY);
+    return { config: null, raw: "" };
+  }
+};
 
 const toFloatingAssetStyle = (asset: ScrapbookFloatingAsset) =>
   ({
@@ -125,6 +173,7 @@ const toComponentAssetStyle = (asset: ScrapbookComponentAsset) =>
     "--component-asset-width": asset.width ?? "auto",
     "--component-asset-max-width": asset.maxWidth ?? "none",
     "--component-asset-rotate": `${asset.rotate ?? 0}deg`,
+    "--component-asset-z-index": String(asset.zIndex ?? "auto"),
     "--component-asset-padding-top": asset.paddingTop,
     "--component-asset-padding-right": asset.paddingRight,
     "--component-asset-padding-bottom": asset.paddingBottom,
@@ -138,6 +187,7 @@ const toComponentAssetStyle = (asset: ScrapbookComponentAsset) =>
     "--component-asset-mobile-width": asset.mobile?.width ?? asset.width ?? "auto",
     "--component-asset-mobile-max-width": asset.mobile?.maxWidth ?? asset.maxWidth ?? "none",
     "--component-asset-mobile-rotate": `${asset.mobile?.rotate ?? asset.rotate ?? 0}deg`,
+    "--component-asset-mobile-z-index": String(asset.mobile?.zIndex ?? asset.zIndex ?? "auto"),
     "--component-asset-mobile-padding-top": asset.mobile?.paddingTop ?? asset.paddingTop,
     "--component-asset-mobile-padding-right": asset.mobile?.paddingRight ?? asset.paddingRight,
     "--component-asset-mobile-padding-bottom": asset.mobile?.paddingBottom ?? asset.paddingBottom,
@@ -159,11 +209,17 @@ const isFloatingAsset = (asset: ScrapbookVisualAsset | undefined): asset is Scra
 const isComponentAsset = (asset: ScrapbookVisualAsset | undefined): asset is ScrapbookComponentAsset => asset?.type === "component";
 
 export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps) => {
-  const [floatingAssets, setFloatingAssets] = useState<ScrapbookFloatingAsset[]>(scrapbookFloatingAssets);
-  const [componentAssets, setComponentAssets] = useState<ScrapbookComponentAsset[]>(scrapbookComponentAssets);
+  const [floatingAssets, setFloatingAssets] = useState<ScrapbookFloatingAsset[]>(
+    () => readLocalVisualConfig(debugEnabled).config?.floatingAssets ?? scrapbookFloatingAssets
+  );
+  const [componentAssets, setComponentAssets] = useState<ScrapbookComponentAsset[]>(
+    () => readLocalVisualConfig(debugEnabled).config?.componentAssets ?? scrapbookComponentAssets
+  );
   const [selectedAssetId, setSelectedAssetId] = useState<string>(scrapbookVisualAssets[0]?.id ?? "");
   const [selectedGroup, setSelectedGroup] = useState<(typeof SCRAPBOOK_VISUAL_GROUPS)[number]>("All");
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+  const [importConfigText, setImportConfigText] = useState(() => readLocalVisualConfig(debugEnabled).raw);
+  const [importState, setImportState] = useState<"idle" | "applied" | "failed">("idle");
 
   const allAssets = useMemo(() => [...floatingAssets, ...componentAssets], [floatingAssets, componentAssets]);
 
@@ -181,6 +237,64 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
 
     return filteredAssets[0] ?? allAssets[0];
   }, [allAssets, filteredAssets, selectedAssetId]);
+
+  const applyConfigPayload = (payload: unknown) => {
+    const nextConfig = parseVisualConfig(payload);
+
+    if (!nextConfig) {
+      return false;
+    }
+
+    setFloatingAssets(nextConfig.floatingAssets);
+    setComponentAssets(nextConfig.componentAssets);
+    setSelectedAssetId(nextConfig.floatingAssets[0]?.id ?? nextConfig.componentAssets[0]?.id ?? "");
+
+    return true;
+  };
+
+  const applyImportedConfig = () => {
+    try {
+      const parsedConfig = JSON.parse(importConfigText);
+
+      if (!applyConfigPayload(parsedConfig)) {
+        throw new Error("Invalid scrapbook config.");
+      }
+
+      window.localStorage.setItem(LOCAL_CONFIG_STORAGE_KEY, JSON.stringify(parsedConfig, null, 2));
+      setImportState("applied");
+      window.setTimeout(() => setImportState("idle"), 1800);
+    } catch {
+      setImportState("failed");
+      window.setTimeout(() => setImportState("idle"), 1800);
+    }
+  };
+
+  const clearLocalConfig = () => {
+    window.localStorage.removeItem(LOCAL_CONFIG_STORAGE_KEY);
+    setFloatingAssets(scrapbookFloatingAssets);
+    setComponentAssets(scrapbookComponentAssets);
+    setImportConfigText("");
+    setImportState("idle");
+    setSelectedAssetId(scrapbookVisualAssets[0]?.id ?? "");
+  };
+
+  useEffect(() => {
+    if (!debugEnabled) {
+      return;
+    }
+
+    window.localStorage.setItem(
+      LOCAL_CONFIG_STORAGE_KEY,
+      JSON.stringify(
+        {
+          floatingAssets,
+          componentAssets
+        },
+        null,
+        2
+      )
+    );
+  }, [componentAssets, debugEnabled, floatingAssets]);
 
   const updateFloatingAsset = (assetId: string, updater: (asset: ScrapbookFloatingAsset) => ScrapbookFloatingAsset) => {
     setFloatingAssets((current) => current.map((asset) => (asset.id === assetId ? updater(asset) : asset)));
@@ -248,7 +362,7 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
         return { ...asset, visible: Boolean(value) };
       }
 
-      if (field === "opacity" || field === "rotate") {
+      if (field === "opacity" || field === "rotate" || field === "zIndex") {
         return { ...asset, [field]: value === "" ? 0 : Number(value) };
       }
 
@@ -268,7 +382,7 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
         return { ...asset, mobile: { ...currentMobile, visible: Boolean(value) } };
       }
 
-      if (field === "opacity" || field === "rotate") {
+      if (field === "opacity" || field === "rotate" || field === "zIndex") {
         return {
           ...asset,
           mobile: { ...currentMobile, [field]: value === "" ? undefined : Number(value) }
@@ -354,6 +468,11 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
         updateComponentMobileField,
         copyConfig,
         copySelectedAssetConfig,
+        importConfigText,
+        importState,
+        setImportConfigText,
+        applyImportedConfig,
+        clearLocalConfig,
         resetSelectedAsset,
         copyState
       }}
@@ -433,6 +552,11 @@ export const ScrapbookDecorDebugPanel = () => {
     updateComponentMobileField,
     copyConfig,
     copySelectedAssetConfig,
+    importConfigText,
+    importState,
+    setImportConfigText,
+    applyImportedConfig,
+    clearLocalConfig,
     resetSelectedAsset,
     copyState
   } = useDecorContext();
@@ -458,6 +582,27 @@ export const ScrapbookDecorDebugPanel = () => {
           Reset asset
         </button>
       </div>
+
+      <details className={styles.assetDebugImport}>
+        <summary>Paste config</summary>
+        <textarea
+          value={importConfigText}
+          onChange={(event) => setImportConfigText(event.target.value)}
+          placeholder="Paste full Copy config JSON here"
+          rows={5}
+        />
+        <div className={styles.assetDebugActions}>
+          <button type="button" className={styles.assetDebugCopyButton} onClick={applyImportedConfig}>
+            Apply config
+          </button>
+          <button type="button" className={styles.assetDebugCopyButton} onClick={clearLocalConfig}>
+            Reset local
+          </button>
+        </div>
+        <span className={styles.assetDebugStatus}>
+          {importState === "applied" ? "Config applied" : importState === "failed" ? "Invalid JSON/config" : "Saved locally in this browser"}
+        </span>
+      </details>
 
       <label className={styles.assetDebugField}>
         <span>Group</span>
@@ -704,6 +849,14 @@ export const ScrapbookDecorDebugPanel = () => {
               />
             </label>
             <label className={styles.assetDebugField}>
+              <span>zIndex</span>
+              <input
+                type="number"
+                value={selectedAsset.zIndex ?? ""}
+                onChange={(event) => updateComponentField("zIndex", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
               <span>paddingTop</span>
               <input
                 value={selectedAsset.paddingTop}
@@ -805,6 +958,14 @@ export const ScrapbookDecorDebugPanel = () => {
                   step="0.1"
                   value={selectedAsset.mobile?.rotate ?? ""}
                   onChange={(event) => updateComponentMobileField("rotate", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileZIndex</span>
+                <input
+                  type="number"
+                  value={selectedAsset.mobile?.zIndex ?? ""}
+                  onChange={(event) => updateComponentMobileField("zIndex", event.target.value)}
                 />
               </label>
               <label className={styles.assetDebugField}>

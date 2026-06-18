@@ -19,6 +19,7 @@ export type ScrapbookComponentAssetMobileOverrides = {
   width?: string;
   maxWidth?: string;
   rotate?: number;
+  zIndex?: number;
   paddingTop?: string;
   paddingRight?: string;
   paddingBottom?: string;
@@ -90,6 +91,7 @@ export type ScrapbookComponentAsset = {
   width?: string;
   maxWidth?: string;
   rotate?: number;
+  zIndex?: number;
   paddingTop: string;
   paddingRight: string;
   paddingBottom: string;
@@ -337,10 +339,13 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Paper layers",
     src: "/templates/scrapbook-clean/torn-paper-section1.png",
     visible: true,
-    backgroundSize: "138% 228%",
-    backgroundPositionX: "center",
+    backgroundSize: "120% 228%",
+    backgroundPositionX: "70px",
     backgroundPositionY: "55%",
     opacity: 1,
+    width: "1100px",
+    maxWidth: "1100px",
+    rotate: 0,
     paddingTop: "58px",
     paddingRight: "86px",
     paddingBottom: "82px",
@@ -372,7 +377,7 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     paddingRight: "40px",
     paddingBottom: "30px",
     paddingLeft: "40px",
-    minHeight: "136px",
+    minHeight: "13px",
     mobile: {
       backgroundSize: "118% 118%",
       paddingTop: "18px",
@@ -388,7 +393,7 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Paper layers",
     src: "/templates/scrapbook-clean/torn-paper-summary.png",
     visible: true,
-    backgroundSize: "100% 100%",
+    backgroundSize: "120% 100%",
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 0.92,
@@ -408,14 +413,14 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
-    width: "188px",
-    maxWidth: "188px",
-    rotate: -3,
-    paddingTop: "18px",
+    width: "180px",
+    maxWidth: "100px",
+    rotate: 1,
+    paddingTop: "30px",
     paddingRight: "24px",
     paddingBottom: "22px",
     paddingLeft: "24px",
-    minHeight: "94px"
+    minHeight: "4px"
   },
   {
     type: "component",
@@ -424,14 +429,14 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Quality tags",
     src: "/templates/scrapbook-clean/paper-tag-short2.png",
     visible: true,
-    backgroundSize: "100% 100%",
+    backgroundSize: "100% 80%",
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
     width: "188px",
     maxWidth: "188px",
     rotate: 2,
-    paddingTop: "18px",
+    paddingTop: "35px",
     paddingRight: "24px",
     paddingBottom: "22px",
     paddingLeft: "24px",
@@ -444,14 +449,14 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Quality tags",
     src: "/templates/scrapbook-clean/paper-tag-short3.png",
     visible: true,
-    backgroundSize: "100% 100%",
+    backgroundSize: "100% 80%",
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
     width: "188px",
     maxWidth: "188px",
     rotate: -1,
-    paddingTop: "18px",
+    paddingTop: "35px",
     paddingRight: "24px",
     paddingBottom: "22px",
     paddingLeft: "24px",
@@ -464,9 +469,9 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Quote cards",
     src: "/templates/scrapbook-clean/quote-card-pink-v2.png",
     visible: true,
-    backgroundSize: "116% 116%",
+    backgroundSize: "120% 122%",
     backgroundPositionX: "center",
-    backgroundPositionY: "center",
+    backgroundPositionY: "-16px",
     opacity: 1,
     paddingTop: "26px",
     paddingRight: "28px",
@@ -481,7 +486,7 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Quote cards",
     src: "/templates/scrapbook-clean/quote-card-beige.png",
     visible: true,
-    backgroundSize: "116% 116%",
+    backgroundSize: "135% 135%",
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
@@ -498,9 +503,9 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Quote cards",
     src: "/templates/scrapbook-clean/quote-card-blue.png",
     visible: true,
-    backgroundSize: "116% 116%",
-    backgroundPositionX: "center",
-    backgroundPositionY: "center",
+    backgroundSize: "116% 125%",
+    backgroundPositionX: "70%",
+    backgroundPositionY: "45%",
     opacity: 1,
     paddingTop: "26px",
     paddingRight: "28px",
