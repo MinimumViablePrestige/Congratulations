@@ -109,6 +109,21 @@ const ScrapbookDecorContext = createContext<DecorContextValue | null>(null);
 const toCssValue = (value?: string) => value ?? "auto";
 const normalizeString = (value: string) => (value.trim() === "" ? undefined : value);
 const numberField = (value: number) => String(value);
+const safePaperSize = (value?: string) => {
+  const normalized = value?.trim();
+
+  if (!normalized || normalized === "auto") {
+    return "auto";
+  }
+
+  const numericValue = Number(normalized.replace("px", ""));
+
+  if (Number.isFinite(numericValue) && numericValue <= 2) {
+    return "auto";
+  }
+
+  return normalized;
+};
 
 const defaultFloatingAssetsById = new Map(scrapbookFloatingAssets.map((asset) => [asset.id, asset]));
 const defaultComponentAssetsById = new Map(scrapbookComponentAssets.map((asset) => [asset.id, asset]));
@@ -197,8 +212,8 @@ const toComponentAssetStyle = (asset: ScrapbookComponentAsset) =>
     "--component-asset-paper-left": asset.paperLeft ?? "0",
     "--component-asset-paper-right": asset.paperRight ?? "0",
     "--component-asset-paper-bottom": asset.paperBottom ?? "0",
-    "--component-asset-paper-width": asset.paperWidth ?? "auto",
-    "--component-asset-paper-height": asset.paperHeight ?? "auto",
+    "--component-asset-paper-width": safePaperSize(asset.paperWidth),
+    "--component-asset-paper-height": safePaperSize(asset.paperHeight),
     "--component-asset-width": asset.width ?? "auto",
     "--component-asset-max-width": asset.maxWidth ?? "none",
     "--component-asset-rotate": `${asset.rotate ?? 0}deg`,
@@ -217,8 +232,8 @@ const toComponentAssetStyle = (asset: ScrapbookComponentAsset) =>
     "--component-asset-mobile-paper-left": asset.mobile?.paperLeft ?? asset.paperLeft ?? "0",
     "--component-asset-mobile-paper-right": asset.mobile?.paperRight ?? asset.paperRight ?? "0",
     "--component-asset-mobile-paper-bottom": asset.mobile?.paperBottom ?? asset.paperBottom ?? "0",
-    "--component-asset-mobile-paper-width": asset.mobile?.paperWidth ?? asset.paperWidth ?? "auto",
-    "--component-asset-mobile-paper-height": asset.mobile?.paperHeight ?? asset.paperHeight ?? "auto",
+    "--component-asset-mobile-paper-width": safePaperSize(asset.mobile?.paperWidth ?? asset.paperWidth),
+    "--component-asset-mobile-paper-height": safePaperSize(asset.mobile?.paperHeight ?? asset.paperHeight),
     "--component-asset-mobile-width": asset.mobile?.width ?? asset.width ?? "auto",
     "--component-asset-mobile-max-width": asset.mobile?.maxWidth ?? asset.maxWidth ?? "none",
     "--component-asset-mobile-rotate": `${asset.mobile?.rotate ?? asset.rotate ?? 0}deg`,
