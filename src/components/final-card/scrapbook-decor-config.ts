@@ -372,12 +372,14 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
-    rotate: -5.7,
+    width: "92%",
+    maxWidth: "980px",
+    rotate: 0,
     paddingTop: "20px",
     paddingRight: "40px",
     paddingBottom: "30px",
     paddingLeft: "40px",
-    minHeight: "13px",
+    minHeight: "126px",
     mobile: {
       backgroundSize: "118% 118%",
       paddingTop: "18px",
@@ -414,7 +416,7 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundPositionY: "center",
     opacity: 1,
     width: "180px",
-    maxWidth: "100px",
+    maxWidth: "180px",
     rotate: 1,
     paddingTop: "30px",
     paddingRight: "24px",
@@ -523,11 +525,11 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundSize: "118% 118%",
     backgroundPositionX: "center",
     backgroundPositionY: "center",
-    opacity: 0.28,
-    paddingTop: "0px",
-    paddingRight: "0px",
-    paddingBottom: "0px",
-    paddingLeft: "0px",
+    opacity: 0.62,
+    paddingTop: "24px",
+    paddingRight: "28px",
+    paddingBottom: "28px",
+    paddingLeft: "28px",
     minHeight: "auto"
   },
   {
@@ -540,11 +542,11 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundSize: "108% 130%",
     backgroundPositionX: "center",
     backgroundPositionY: "center",
-    opacity: 0.22,
-    paddingTop: "0px",
-    paddingRight: "0px",
-    paddingBottom: "0px",
-    paddingLeft: "0px",
+    opacity: 0.62,
+    paddingTop: "24px",
+    paddingRight: "28px",
+    paddingBottom: "26px",
+    paddingLeft: "28px",
     minHeight: "auto"
   },
   {
@@ -557,12 +559,12 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundSize: "100% 100%",
     backgroundPositionX: "center",
     backgroundPositionY: "center",
-    opacity: 0.7,
-    paddingTop: "0px",
-    paddingRight: "0px",
-    paddingBottom: "0px",
-    paddingLeft: "0px",
-    minHeight: "auto"
+    opacity: 1,
+    paddingTop: "30px",
+    paddingRight: "38px",
+    paddingBottom: "34px",
+    paddingLeft: "38px",
+    minHeight: "150px"
   },
   {
     type: "component",
@@ -574,12 +576,12 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundSize: "104% 130%",
     backgroundPositionX: "center",
     backgroundPositionY: "center",
-    opacity: 0.24,
-    paddingTop: "0px",
-    paddingRight: "0px",
-    paddingBottom: "0px",
-    paddingLeft: "0px",
-    minHeight: "auto"
+    opacity: 0.72,
+    paddingTop: "28px",
+    paddingRight: "32px",
+    paddingBottom: "30px",
+    paddingLeft: "32px",
+    minHeight: "156px"
   }
 ];
 
