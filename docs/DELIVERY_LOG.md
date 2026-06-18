@@ -410,3 +410,8 @@
 3. Component assets now have live debug controls for background size, position, opacity, inner paddings, and minimum height, with mobile overrides included.
 4. Rebuilt those scrapbook surfaces to render as live HTML content inside configurable paper frames instead of depending only on hardcoded CSS backgrounds.
 5. The debug panel still remains dev-only and now works as a side dock, so visual tuning is practical while the card stays visible.
+
+## Update 2026-06-18 Scrapbook Paper Layer Fix
+
+1. Fixed component paper layers that disappeared when debug config used `auto` or tiny placeholder values for paper width and height.
+2. Paper-layer `auto` sizing now renders as full-frame sizing, so Hero Paper, Summary Paper, and AI Summary Paper stay visible while still accepting live debug tuning.

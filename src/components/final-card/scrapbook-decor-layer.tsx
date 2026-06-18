@@ -113,13 +113,13 @@ const safePaperSize = (value?: string) => {
   const normalized = value?.trim();
 
   if (!normalized || normalized === "auto") {
-    return "auto";
+    return "100%";
   }
 
   const numericValue = Number(normalized.replace("px", ""));
 
   if (Number.isFinite(numericValue) && numericValue <= 2) {
-    return "auto";
+    return "100%";
   }
 
   return normalized;
