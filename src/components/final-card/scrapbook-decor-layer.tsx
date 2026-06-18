@@ -28,6 +28,7 @@ type LayerProps = {
 type FrameProps = {
   assetId: string;
   children: ReactNode;
+  id?: string;
   className?: string;
   contentClassName?: string;
   as?: ElementType;
@@ -124,6 +125,20 @@ const parseVisualConfig = (payload: unknown): StoredVisualConfig | null => {
   };
 };
 
+const mergeAssetList = <T extends ScrapbookVisualAsset>(defaultAssets: T[], incomingAssets: T[]) => {
+  const incomingById = new Map(incomingAssets.map((asset) => [asset.id, asset]));
+  const defaultIds = new Set(defaultAssets.map((asset) => asset.id));
+  const mergedDefaults = defaultAssets.map((asset) => ({ ...asset, ...incomingById.get(asset.id) }));
+  const customAssets = incomingAssets.filter((asset) => !defaultIds.has(asset.id));
+
+  return [...mergedDefaults, ...customAssets] as T[];
+};
+
+const mergeVisualConfig = (config: StoredVisualConfig): StoredVisualConfig => ({
+  floatingAssets: mergeAssetList(scrapbookFloatingAssets, config.floatingAssets),
+  componentAssets: mergeAssetList(scrapbookComponentAssets, config.componentAssets)
+});
+
 const readLocalVisualConfig = (debugEnabled: boolean): { config: StoredVisualConfig | null; raw: string } => {
   if (!debugEnabled || typeof window === "undefined") {
     return { config: null, raw: "" };
@@ -136,7 +151,9 @@ const readLocalVisualConfig = (debugEnabled: boolean): { config: StoredVisualCon
   }
 
   try {
-    return { config: parseVisualConfig(JSON.parse(rawConfig)), raw: rawConfig };
+    const parsedConfig = parseVisualConfig(JSON.parse(rawConfig));
+
+    return { config: parsedConfig ? mergeVisualConfig(parsedConfig) : null, raw: rawConfig };
   } catch {
     window.localStorage.removeItem(LOCAL_CONFIG_STORAGE_KEY);
     return { config: null, raw: "" };
@@ -245,9 +262,11 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
       return false;
     }
 
-    setFloatingAssets(nextConfig.floatingAssets);
-    setComponentAssets(nextConfig.componentAssets);
-    setSelectedAssetId(nextConfig.floatingAssets[0]?.id ?? nextConfig.componentAssets[0]?.id ?? "");
+    const mergedConfig = mergeVisualConfig(nextConfig);
+
+    setFloatingAssets(mergedConfig.floatingAssets);
+    setComponentAssets(mergedConfig.componentAssets);
+    setSelectedAssetId(mergedConfig.floatingAssets[0]?.id ?? mergedConfig.componentAssets[0]?.id ?? "");
 
     return true;
   };
@@ -521,17 +540,21 @@ export const ScrapbookDecorLayer = ({ anchor }: LayerProps) => {
   );
 };
 
-export const ScrapbookComponentFrame = ({ assetId, children, className, contentClassName, as }: FrameProps) => {
+export const ScrapbookComponentFrame = ({ assetId, children, id, className, contentClassName, as }: FrameProps) => {
   const { componentAssets } = useDecorContext();
   const asset = componentAssets.find((item) => item.id === assetId);
   const Tag = (as ?? "div") as ElementType;
 
   if (!asset) {
-    return <Tag className={className}>{children}</Tag>;
+    return (
+      <Tag id={id} className={className}>
+        {children}
+      </Tag>
+    );
   }
 
   return (
-    <Tag className={`${styles.componentAssetFrame} ${className ?? ""}`.trim()} style={toComponentAssetStyle(asset)}>
+    <Tag id={id} className={`${styles.componentAssetFrame} ${className ?? ""}`.trim()} style={toComponentAssetStyle(asset)}>
       <div className={`${styles.componentAssetContent} ${contentClassName ?? ""}`.trim()}>{children}</div>
     </Tag>
   );

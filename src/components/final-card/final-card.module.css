@@ -1023,6 +1023,35 @@
   content: none;
 }
 
+.paper-birthday .heroMain::before {
+  display: none;
+}
+
+.paper-birthday .summaryPanel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: auto;
+  top: auto;
+  z-index: 0;
+  pointer-events: none;
+  color: inherit;
+  font-size: inherit;
+  background-image: var(--component-asset-image, none);
+  background-repeat: no-repeat;
+  background-position: var(--component-asset-bg-position-x, center) var(--component-asset-bg-position-y, center);
+  background-size: var(--component-asset-bg-size, 100% 100%);
+  opacity: var(--component-asset-opacity, 1);
+  transform: rotate(var(--component-asset-rotate, 0deg));
+  transform-origin: center;
+}
+
+.paper-birthday .summaryPanel .sectionTitle,
+.paper-birthday .summaryPanel .sectionText {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .paper-birthday .qualitiesPanel {
   background: transparent;
   border: 0;

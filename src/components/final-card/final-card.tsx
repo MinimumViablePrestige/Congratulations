@@ -331,12 +331,8 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
         }
 
         if (block.id === "messages") {
-          return (
-            <section
-              id="messages"
-              key={block.id}
-              className={`${styles.messages} ${styles.section} ${isPaperBirthday ? styles.decorAnchor : ""}`}
-            >
+          const messagesContent = (
+            <>
               {renderAnchorLayer("greetings")}
               <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Поздравления</h2>
@@ -352,6 +348,22 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
                   </Link>
                 </div>
               ) : null}
+            </>
+          );
+
+          return isPaperBirthday ? (
+            <ScrapbookComponentFrame
+              id="messages"
+              key={block.id}
+              as="section"
+              assetId="messagesPaper"
+              className={`${styles.messages} ${styles.section} ${styles.decorAnchor}`}
+            >
+              {messagesContent}
+            </ScrapbookComponentFrame>
+          ) : (
+            <section id="messages" key={block.id} className={`${styles.messages} ${styles.section}`}>
+              {messagesContent}
             </section>
           );
         }
@@ -359,11 +371,8 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
         if (block.id === "memories") {
           const memoryAssets = model.memoryMediaAssets;
 
-          return (
-            <section
-              key={block.id}
-              className={`${styles.memories} ${styles.section} ${isPaperBirthday ? styles.decorAnchor : ""}`}
-            >
+          const memoriesContent = (
+            <>
               {renderAnchorLayer("memories")}
               <h2 className={styles.sectionTitle}>Наши воспоминания</h2>
               <div className={styles.memoriesStrip}>
@@ -406,6 +415,21 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
                       </article>
                     ))}
               </div>
+            </>
+          );
+
+          return isPaperBirthday ? (
+            <ScrapbookComponentFrame
+              key={block.id}
+              as="section"
+              assetId="memoriesPaper"
+              className={`${styles.memories} ${styles.section} ${styles.decorAnchor}`}
+            >
+              {memoriesContent}
+            </ScrapbookComponentFrame>
+          ) : (
+            <section key={block.id} className={`${styles.memories} ${styles.section}`}>
+              {memoriesContent}
             </section>
           );
         }
@@ -442,23 +466,33 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
         }
 
         if (block.id === "ai-summary") {
-          return (
-            <section
-              key={block.id}
-              className={`${styles.summary} ${styles.section} ${styles.aiSummaryPanel} ${
-                isPaperBirthday ? styles.decorAnchor : ""
-              }`}
-            >
+          const aiSummaryContent = (
+            <>
               {renderAnchorLayer("bestPhrases")}
               <h2 className={styles.sectionTitle}>{model.aiSummaryTitle}</h2>
               <p className={styles.sectionText}>{model.aiSummaryText}</p>
+            </>
+          );
+
+          return isPaperBirthday ? (
+            <ScrapbookComponentFrame
+              key={block.id}
+              as="section"
+              assetId="aiSummaryPaper"
+              className={`${styles.summary} ${styles.section} ${styles.aiSummaryPanel} ${styles.decorAnchor}`}
+            >
+              {aiSummaryContent}
+            </ScrapbookComponentFrame>
+          ) : (
+            <section key={block.id} className={`${styles.summary} ${styles.section} ${styles.aiSummaryPanel}`}>
+              {aiSummaryContent}
             </section>
           );
         }
 
         if (block.id === "closing") {
-          return (
-            <section key={block.id} className={`${styles.closing} ${isPaperBirthday ? styles.decorAnchor : ""}`}>
+          const closingContent = (
+            <>
               {renderAnchorLayer("footer")}
               <div className={styles.closingContent}>
                 <h2 className={styles.sectionTitle}>Спасибо, что вы вместе</h2>
@@ -475,6 +509,21 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
                   Собрать похожую открытку
                 </button>
               </div>
+            </>
+          );
+
+          return isPaperBirthday ? (
+            <ScrapbookComponentFrame
+              key={block.id}
+              as="section"
+              assetId="closingPaper"
+              className={`${styles.closing} ${styles.decorAnchor}`}
+            >
+              {closingContent}
+            </ScrapbookComponentFrame>
+          ) : (
+            <section key={block.id} className={styles.closing}>
+              {closingContent}
             </section>
           );
         }
