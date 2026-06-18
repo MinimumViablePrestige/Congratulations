@@ -16,6 +16,9 @@ export type ScrapbookComponentAssetMobileOverrides = {
   backgroundPositionX?: string;
   backgroundPositionY?: string;
   opacity?: number;
+  width?: string;
+  maxWidth?: string;
+  rotate?: number;
   paddingTop?: string;
   paddingRight?: string;
   paddingBottom?: string;
@@ -84,6 +87,9 @@ export type ScrapbookComponentAsset = {
   backgroundPositionX: string;
   backgroundPositionY: string;
   opacity: number;
+  width?: string;
+  maxWidth?: string;
+  rotate?: number;
   paddingTop: string;
   paddingRight: string;
   paddingBottom: string;
@@ -361,6 +367,7 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
+    rotate: -0.7,
     paddingTop: "20px",
     paddingRight: "40px",
     paddingBottom: "30px",
@@ -401,6 +408,9 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
+    width: "188px",
+    maxWidth: "188px",
+    rotate: -3,
     paddingTop: "18px",
     paddingRight: "24px",
     paddingBottom: "22px",
@@ -418,6 +428,9 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
+    width: "188px",
+    maxWidth: "188px",
+    rotate: 2,
     paddingTop: "18px",
     paddingRight: "24px",
     paddingBottom: "22px",
@@ -435,6 +448,9 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
+    width: "188px",
+    maxWidth: "188px",
+    rotate: -1,
     paddingTop: "18px",
     paddingRight: "24px",
     paddingBottom: "22px",

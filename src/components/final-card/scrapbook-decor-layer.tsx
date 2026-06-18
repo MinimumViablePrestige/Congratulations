@@ -54,6 +54,9 @@ type ComponentField =
   | "backgroundPositionX"
   | "backgroundPositionY"
   | "opacity"
+  | "width"
+  | "maxWidth"
+  | "rotate"
   | "paddingTop"
   | "paddingRight"
   | "paddingBottom"
@@ -65,6 +68,7 @@ type ComponentMobileField = ComponentField;
 type DecorContextValue = {
   floatingAssets: ScrapbookFloatingAsset[];
   componentAssets: ScrapbookComponentAsset[];
+  allAssets: ScrapbookVisualAsset[];
   debugEnabled: boolean;
   selectedAssetId: string;
   selectedGroup: (typeof SCRAPBOOK_VISUAL_GROUPS)[number];
@@ -118,6 +122,9 @@ const toComponentAssetStyle = (asset: ScrapbookComponentAsset) =>
     "--component-asset-bg-position-x": asset.backgroundPositionX,
     "--component-asset-bg-position-y": asset.backgroundPositionY,
     "--component-asset-opacity": String(asset.visible ? asset.opacity : 0),
+    "--component-asset-width": asset.width ?? "auto",
+    "--component-asset-max-width": asset.maxWidth ?? "none",
+    "--component-asset-rotate": `${asset.rotate ?? 0}deg`,
     "--component-asset-padding-top": asset.paddingTop,
     "--component-asset-padding-right": asset.paddingRight,
     "--component-asset-padding-bottom": asset.paddingBottom,
@@ -128,6 +135,9 @@ const toComponentAssetStyle = (asset: ScrapbookComponentAsset) =>
     "--component-asset-mobile-bg-position-x": asset.mobile?.backgroundPositionX ?? asset.backgroundPositionX,
     "--component-asset-mobile-bg-position-y": asset.mobile?.backgroundPositionY ?? asset.backgroundPositionY,
     "--component-asset-mobile-opacity": String(asset.mobile?.visible === false ? 0 : asset.mobile?.opacity ?? asset.opacity),
+    "--component-asset-mobile-width": asset.mobile?.width ?? asset.width ?? "auto",
+    "--component-asset-mobile-max-width": asset.mobile?.maxWidth ?? asset.maxWidth ?? "none",
+    "--component-asset-mobile-rotate": `${asset.mobile?.rotate ?? asset.rotate ?? 0}deg`,
     "--component-asset-mobile-padding-top": asset.mobile?.paddingTop ?? asset.paddingTop,
     "--component-asset-mobile-padding-right": asset.mobile?.paddingRight ?? asset.paddingRight,
     "--component-asset-mobile-padding-bottom": asset.mobile?.paddingBottom ?? asset.paddingBottom,
@@ -162,10 +172,15 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
     [allAssets, selectedGroup]
   );
 
-  const selectedAsset = useMemo(
-    () => allAssets.find((asset) => asset.id === selectedAssetId) ?? filteredAssets[0] ?? allAssets[0],
-    [allAssets, filteredAssets, selectedAssetId]
-  );
+  const selectedAsset = useMemo(() => {
+    const selectedFromGroup = filteredAssets.find((asset) => asset.id === selectedAssetId);
+
+    if (selectedFromGroup) {
+      return selectedFromGroup;
+    }
+
+    return filteredAssets[0] ?? allAssets[0];
+  }, [allAssets, filteredAssets, selectedAssetId]);
 
   const updateFloatingAsset = (assetId: string, updater: (asset: ScrapbookFloatingAsset) => ScrapbookFloatingAsset) => {
     setFloatingAssets((current) => current.map((asset) => (asset.id === assetId ? updater(asset) : asset)));
@@ -233,8 +248,8 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
         return { ...asset, visible: Boolean(value) };
       }
 
-      if (field === "opacity") {
-        return { ...asset, opacity: value === "" ? 0 : Number(value) };
+      if (field === "opacity" || field === "rotate") {
+        return { ...asset, [field]: value === "" ? 0 : Number(value) };
       }
 
       return { ...asset, [field]: normalizeString(String(value)) };
@@ -253,10 +268,10 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
         return { ...asset, mobile: { ...currentMobile, visible: Boolean(value) } };
       }
 
-      if (field === "opacity") {
+      if (field === "opacity" || field === "rotate") {
         return {
           ...asset,
-          mobile: { ...currentMobile, opacity: value === "" ? undefined : Number(value) }
+          mobile: { ...currentMobile, [field]: value === "" ? undefined : Number(value) }
         };
       }
 
@@ -325,6 +340,7 @@ export const ScrapbookDecorProvider = ({ children, debugEnabled }: ProviderProps
       value={{
         floatingAssets,
         componentAssets,
+        allAssets,
         debugEnabled,
         selectedAssetId,
         selectedGroup,
@@ -404,6 +420,7 @@ export const ScrapbookComponentFrame = ({ assetId, children, className, contentC
 
 export const ScrapbookDecorDebugPanel = () => {
   const {
+    allAssets,
     debugEnabled,
     selectedAsset,
     selectedGroup,
@@ -444,7 +461,16 @@ export const ScrapbookDecorDebugPanel = () => {
 
       <label className={styles.assetDebugField}>
         <span>Group</span>
-        <select value={selectedGroup} onChange={(event) => setSelectedGroup(event.target.value as (typeof SCRAPBOOK_VISUAL_GROUPS)[number])}>
+        <select
+          value={selectedGroup}
+          onChange={(event) => {
+            const nextGroup = event.target.value as (typeof SCRAPBOOK_VISUAL_GROUPS)[number];
+            const nextFilteredAssets = allAssets.filter((asset) => nextGroup === "All" || asset.group === nextGroup);
+
+            setSelectedGroup(nextGroup);
+            setSelectedAssetId(nextFilteredAssets[0]?.id ?? "");
+          }}
+        >
           {SCRAPBOOK_VISUAL_GROUPS.map((group) => (
             <option key={group} value={group}>
               {group}
@@ -655,6 +681,29 @@ export const ScrapbookDecorDebugPanel = () => {
               />
             </label>
             <label className={styles.assetDebugField}>
+              <span>width</span>
+              <input
+                value={selectedAsset.width ?? ""}
+                onChange={(event) => updateComponentField("width", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>maxWidth</span>
+              <input
+                value={selectedAsset.maxWidth ?? ""}
+                onChange={(event) => updateComponentField("maxWidth", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>rotate</span>
+              <input
+                type="number"
+                step="0.1"
+                value={selectedAsset.rotate ?? ""}
+                onChange={(event) => updateComponentField("rotate", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
               <span>paddingTop</span>
               <input
                 value={selectedAsset.paddingTop}
@@ -733,6 +782,29 @@ export const ScrapbookDecorDebugPanel = () => {
                   step="0.05"
                   value={selectedAsset.mobile?.opacity ?? ""}
                   onChange={(event) => updateComponentMobileField("opacity", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileWidth</span>
+                <input
+                  value={selectedAsset.mobile?.width ?? ""}
+                  onChange={(event) => updateComponentMobileField("width", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileMaxWidth</span>
+                <input
+                  value={selectedAsset.mobile?.maxWidth ?? ""}
+                  onChange={(event) => updateComponentMobileField("maxWidth", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobileRotate</span>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={selectedAsset.mobile?.rotate ?? ""}
+                  onChange={(event) => updateComponentMobileField("rotate", event.target.value)}
                 />
               </label>
               <label className={styles.assetDebugField}>

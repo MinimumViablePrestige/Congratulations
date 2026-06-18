@@ -314,7 +314,10 @@
 
 .componentAssetFrame {
   position: relative;
+  width: var(--component-asset-width, auto);
+  max-width: var(--component-asset-max-width, none);
   min-height: var(--component-asset-min-height, auto);
+  transform: rotate(var(--component-asset-rotate, 0deg));
   padding:
     var(--component-asset-padding-top, 0)
     var(--component-asset-padding-right, 0)
@@ -342,7 +345,10 @@
 
 @media (max-width: 780px) {
   .componentAssetFrame {
+    width: var(--component-asset-mobile-width, var(--component-asset-width, auto));
+    max-width: var(--component-asset-mobile-max-width, var(--component-asset-max-width, none));
     min-height: var(--component-asset-mobile-min-height, var(--component-asset-min-height, auto));
+    transform: rotate(var(--component-asset-mobile-rotate, var(--component-asset-rotate, 0deg)));
     padding:
       var(--component-asset-mobile-padding-top, var(--component-asset-padding-top, 0))
       var(--component-asset-mobile-padding-right, var(--component-asset-padding-right, 0))
@@ -959,7 +965,7 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  transform: rotate(-0.7deg);
+  transform: rotate(var(--component-asset-rotate, -0.7deg));
 }
 
 .paper-birthday .summaryPanel::before {
@@ -1011,8 +1017,10 @@
 }
 
 .paper-birthday .qualityChipFrame {
-  width: 220px;
-  min-width: 220px;
+  width: var(--component-asset-width, 220px);
+  min-width: var(--component-asset-width, 220px);
+  max-width: var(--component-asset-max-width, 220px);
+  transform: rotate(var(--component-asset-rotate, 0deg));
 }
 
 .paper-birthday .qualityChipContent {
@@ -1041,26 +1049,6 @@
   background: transparent;
   box-shadow:
     none;
-}
-
-.paper-birthday .qualityChipFrame:nth-child(5n + 1) {
-  transform: rotate(-3deg);
-}
-
-.paper-birthday .qualityChipFrame:nth-child(5n + 2) {
-  transform: rotate(2deg);
-}
-
-.paper-birthday .qualityChipFrame:nth-child(5n + 3) {
-  transform: rotate(-1deg);
-}
-
-.paper-birthday .qualityChipFrame:nth-child(5n + 4) {
-  transform: rotate(2.8deg);
-}
-
-.paper-birthday .qualityChipFrame:nth-child(5n) {
-  transform: rotate(-2deg);
 }
 
 .paper-birthday .messages::before,
