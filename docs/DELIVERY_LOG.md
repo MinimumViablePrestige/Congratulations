@@ -420,3 +420,9 @@
 
 1. Restored `paperRight` tuning for component paper layers by letting `auto` paper sizes stretch between the configured paper offsets.
 2. Cleaned generated public scrapbook paper assets so checkerboard backgrounds around torn sheets, tags, quote cards, and greeting cards render as transparent pixels.
+
+## Update 2026-06-18 Scrapbook Paper Config Import
+
+1. Applied the tuned Hero Paper debug values to the source scrapbook visual config.
+2. Gave Summary Paper and AI Summary Paper explicit paper-layer sizes and offsets so their torn-paper sheets render reliably like Hero Paper.
+3. Added a small debug-config migration so older locally saved `auto` paper sizes are restored to the current sized defaults on load.

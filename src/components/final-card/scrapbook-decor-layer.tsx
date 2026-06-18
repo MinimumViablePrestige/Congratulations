@@ -128,7 +128,7 @@ const safePaperSize = (value?: string) => {
 const defaultFloatingAssetsById = new Map(scrapbookFloatingAssets.map((asset) => [asset.id, asset]));
 const defaultComponentAssetsById = new Map(scrapbookComponentAssets.map((asset) => [asset.id, asset]));
 const LOCAL_CONFIG_STORAGE_KEY = "scrapbook-visual-config";
-const protectedPaperLayerIds = new Set(["heroPaper", "summaryPaper", "aiSummaryPaper"]);
+const paperAssetsWithSizedDefaults = new Set(["heroPaper", "summaryPaper", "aiSummaryPaper"]);
 
 const parseVisualConfig = (payload: unknown): StoredVisualConfig | null => {
   if (!payload || typeof payload !== "object") {
@@ -156,48 +156,36 @@ const mergeAssetList = <T extends ScrapbookVisualAsset>(defaultAssets: T[], inco
   return [...mergedDefaults, ...customAssets] as T[];
 };
 
-const parsePixelValue = (value?: string) => {
-  if (!value) {
-    return null;
-  }
-
-  const match = value.trim().match(/^(-?\d+(?:\.\d+)?)px$/);
-
-  return match ? Number(match[1]) : null;
-};
-
-const sanitizeComponentAsset = (asset: ScrapbookComponentAsset): ScrapbookComponentAsset => {
-  if (!protectedPaperLayerIds.has(asset.id)) {
+const restoreSizedPaperDefaults = (asset: ScrapbookComponentAsset): ScrapbookComponentAsset => {
+  if (!paperAssetsWithSizedDefaults.has(asset.id)) {
     return asset;
   }
 
-  const nextAsset = { ...asset };
+  const defaultAsset = defaultComponentAssetsById.get(asset.id);
+  const hasCollapsedPaperSize =
+    !asset.paperWidth || asset.paperWidth === "auto" || !asset.paperHeight || asset.paperHeight === "auto";
 
-  if (parsePixelValue(nextAsset.paperWidth) !== null || parsePixelValue(nextAsset.paperHeight) !== null) {
-    nextAsset.paperWidth = "auto";
-    nextAsset.paperHeight = "auto";
+  if (!defaultAsset || !hasCollapsedPaperSize) {
+    return asset;
   }
 
-  const paperOffsets = [nextAsset.paperTop, nextAsset.paperLeft, nextAsset.paperRight, nextAsset.paperBottom];
-  const hasLargePaperInset = paperOffsets.some((value) => {
-    const parsedValue = parsePixelValue(value);
-
-    return parsedValue !== null && Math.abs(parsedValue) >= 24;
-  });
-
-  if (hasLargePaperInset) {
-    nextAsset.paperTop = "0px";
-    nextAsset.paperLeft = "0px";
-    nextAsset.paperRight = "0px";
-    nextAsset.paperBottom = "0px";
-  }
-
-  return nextAsset;
+  return {
+    ...asset,
+    backgroundSize: defaultAsset.backgroundSize,
+    backgroundPositionX: defaultAsset.backgroundPositionX,
+    backgroundPositionY: defaultAsset.backgroundPositionY,
+    paperTop: defaultAsset.paperTop,
+    paperLeft: defaultAsset.paperLeft,
+    paperRight: defaultAsset.paperRight,
+    paperBottom: defaultAsset.paperBottom,
+    paperWidth: defaultAsset.paperWidth,
+    paperHeight: defaultAsset.paperHeight
+  };
 };
 
 const mergeVisualConfig = (config: StoredVisualConfig): StoredVisualConfig => ({
   floatingAssets: mergeAssetList(scrapbookFloatingAssets, config.floatingAssets),
-  componentAssets: mergeAssetList(scrapbookComponentAssets, config.componentAssets).map(sanitizeComponentAsset)
+  componentAssets: mergeAssetList(scrapbookComponentAssets, config.componentAssets).map(restoreSizedPaperDefaults)
 });
 
 const readLocalVisualConfig = (debugEnabled: boolean): { config: StoredVisualConfig | null; raw: string } => {
