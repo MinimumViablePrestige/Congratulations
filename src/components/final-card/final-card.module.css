@@ -227,9 +227,7 @@
 }
 
 .paper-birthday .canvas::before {
-  inset: 16px;
-  border-color: rgba(126, 82, 49, 0.1);
-  border-radius: 8px;
+  content: none;
 }
 
 .paper-birthday .canvas::after {
@@ -325,7 +323,12 @@
 .componentAssetFrame::before {
   content: "";
   position: absolute;
-  inset: 0;
+  top: var(--component-asset-paper-top, 0);
+  left: var(--component-asset-paper-left, 0);
+  right: var(--component-asset-paper-right, 0);
+  bottom: var(--component-asset-paper-bottom, 0);
+  width: var(--component-asset-paper-width, auto);
+  height: var(--component-asset-paper-height, auto);
   z-index: 0;
   pointer-events: none;
   background-image: var(--component-asset-image, none);
@@ -372,6 +375,12 @@
     background-position:
       var(--component-asset-mobile-bg-position-x, var(--component-asset-bg-position-x, center))
       var(--component-asset-mobile-bg-position-y, var(--component-asset-bg-position-y, center));
+    top: var(--component-asset-mobile-paper-top, var(--component-asset-paper-top, 0));
+    left: var(--component-asset-mobile-paper-left, var(--component-asset-paper-left, 0));
+    right: var(--component-asset-mobile-paper-right, var(--component-asset-paper-right, 0));
+    bottom: var(--component-asset-mobile-paper-bottom, var(--component-asset-paper-bottom, 0));
+    width: var(--component-asset-mobile-paper-width, var(--component-asset-paper-width, auto));
+    height: var(--component-asset-mobile-paper-height, var(--component-asset-paper-height, auto));
     opacity: var(--component-asset-mobile-opacity, var(--component-asset-opacity, 1));
     transform: rotate(var(--component-asset-mobile-rotate, var(--component-asset-rotate, 0deg)));
   }
@@ -1132,30 +1141,6 @@
   box-shadow: 0 8px 18px rgba(92, 58, 34, 0.1);
 }
 
-.paper-birthday .messageColumnPage .card:nth-child(4n + 1) {
-  background:
-    linear-gradient(rgba(255, 228, 226, 0.18), rgba(255, 240, 229, 0.18)),
-    var(--scrapbook-greeting-pink) center / 100% 100% no-repeat;
-}
-
-.paper-birthday .messageColumnPage .card:nth-child(4n + 2) {
-  background:
-    linear-gradient(rgba(255, 243, 211, 0.18), rgba(255, 236, 212, 0.18)),
-    var(--scrapbook-greeting-cream) center / 100% 100% no-repeat;
-}
-
-.paper-birthday .messageColumnPage .card:nth-child(4n + 3) {
-  background:
-    linear-gradient(rgba(226, 238, 250, 0.18), rgba(255, 241, 226, 0.18)),
-    var(--scrapbook-greeting-blue) center / 100% 100% no-repeat;
-}
-
-.paper-birthday .messageColumnPage .card:nth-child(4n) {
-  background:
-    linear-gradient(rgba(255, 233, 203, 0.18), rgba(255, 242, 226, 0.18)),
-    var(--scrapbook-greeting-cream) center / 100% 100% no-repeat;
-}
-
 .paper-birthday .quotes::before {
   left: -20px;
   top: 18px;
@@ -1665,8 +1650,7 @@
 .paper-birthday .mediaCardPortrait,
 .paper-birthday .mediaCardLandscape {
   border-radius: 7px;
-  background:
-    linear-gradient(180deg, rgba(255, 250, 239, 0.98), rgba(255, 245, 229, 0.98));
+  background: transparent;
   transform: rotate(-2deg);
   border: 0;
   box-shadow: none;
@@ -1696,17 +1680,11 @@
 
 .paper-birthday .mediaCardPortrait::after,
 .paper-birthday .mediaCardLandscape::after {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  z-index: 2;
-  pointer-events: none;
-  background: var(--scrapbook-polaroid-horizontal) center / 100% 100% no-repeat;
-  filter: drop-shadow(0 12px 18px rgba(92, 58, 34, 0.16));
+  content: none;
 }
 
 .paper-birthday .mediaCardPortrait::after {
-  background-image: var(--scrapbook-polaroid-vertical);
+  content: none;
 }
 
 .paper-birthday .mediaCardLandscape .mediaImage,
@@ -1904,6 +1882,10 @@
 .paper-birthday .componentAssetFrame.memories,
 .paper-birthday .componentAssetFrame.closing,
 .paper-birthday .componentAssetFrame.quoteCard,
+.paper-birthday .componentAssetFrame.card,
+.paper-birthday .componentAssetFrame.mediaCardLandscape,
+.paper-birthday .componentAssetFrame.mediaCardPortrait,
+.paper-birthday .componentAssetFrame.memoryPhotoCard,
 .paper-birthday .componentAssetFrame.qualityChipFrame,
 .paper-birthday .componentAssetFrame.qualitiesTitleFrame {
   border: 0;
@@ -1919,6 +1901,13 @@
 .paper-birthday .componentAssetFrame.messages,
 .paper-birthday .componentAssetFrame.memories,
 .paper-birthday .componentAssetFrame.closing {
+  padding: 0;
+}
+
+.paper-birthday .componentAssetFrame.card,
+.paper-birthday .componentAssetFrame.mediaCardLandscape,
+.paper-birthday .componentAssetFrame.mediaCardPortrait,
+.paper-birthday .componentAssetFrame.memoryPhotoCard {
   padding: 0;
 }
 
@@ -1972,12 +1961,10 @@
 }
 
 .paper-birthday .memoryPhotoCard {
-  padding: 12px 12px 18px;
-  background: #fff7ea;
+  padding: 0;
+  background: transparent;
   transform: rotate(-2deg);
-  box-shadow:
-    0 16px 26px rgba(92, 58, 34, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  box-shadow: none;
   border: 0;
   isolation: isolate;
 }
@@ -1996,13 +1983,7 @@
 }
 
 .paper-birthday .memoryPhotoCard::after {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  z-index: 2;
-  pointer-events: none;
-  background: var(--scrapbook-polaroid-horizontal) center / 100% 100% no-repeat;
-  filter: drop-shadow(0 12px 18px rgba(92, 58, 34, 0.16));
+  content: none;
 }
 
 .paper-birthday .memoryPhotoImage,

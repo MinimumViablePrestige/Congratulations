@@ -55,25 +55,41 @@ const getQuoteAssetId = (index: number) => {
   return cycle[index % cycle.length];
 };
 
-const renderMessageCard = (item: Contribution, index: number, maxChars: number) => (
-  <article
-    key={item.id}
-    className={`${styles.card} ${index === 0 ? styles.cardSpotlight : index % 3 === 0 ? styles.cardAccent : ""}`}
-  >
-    <div className={styles.cardHeader}>
-      <span className={styles.author}>{item.authorName}</span>
-      {item.authorRole ? <span className={styles.role}>{item.authorRole}</span> : null}
-    </div>
-    <p className={styles.message}>{trimMessage(item.message, maxChars)}</p>
-  </article>
-);
+const getGreetingAssetId = (index: number) => {
+  const cycle = ["greetingCardPink", "greetingCardCream", "greetingCardBlue", "greetingCardCream"] as const;
+  return cycle[index % cycle.length];
+};
+
+const renderMessageCard = (item: Contribution, index: number, maxChars: number, isPaperBirthday = false) => {
+  const className = `${styles.card} ${index === 0 ? styles.cardSpotlight : index % 3 === 0 ? styles.cardAccent : ""}`;
+  const content = (
+    <>
+      <div className={styles.cardHeader}>
+        <span className={styles.author}>{item.authorName}</span>
+        {item.authorRole ? <span className={styles.role}>{item.authorRole}</span> : null}
+      </div>
+      <p className={styles.message}>{trimMessage(item.message, maxChars)}</p>
+    </>
+  );
+
+  return isPaperBirthday ? (
+    <ScrapbookComponentFrame key={item.id} as="article" assetId={getGreetingAssetId(index)} className={className}>
+      {content}
+    </ScrapbookComponentFrame>
+  ) : (
+    <article key={item.id} className={className}>
+      {content}
+    </article>
+  );
+};
 
 const renderMediaFigure = (
   asset: CardMediaAsset | undefined,
   slot: CardMediaAsset["slot"],
   title: string,
   fallbackText: string,
-  className: string
+  className: string,
+  isPaperBirthday = false
 ) => {
   const frameClassName =
     slot === "portrait"
@@ -82,8 +98,8 @@ const renderMediaFigure = (
         ? `${className} ${styles.mediaFrameTiltRight}`
         : `${className} ${styles.mediaFrameTiltLeft}`;
 
-  return (
-    <figure className={frameClassName}>
+  const content = (
+    <>
       {asset ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -105,7 +121,21 @@ const renderMediaFigure = (
           <p className={styles.mediaHint}>{fallbackText}</p>
         </>
       )}
-    </figure>
+    </>
+  );
+
+  if (!isPaperBirthday) {
+    return <figure className={frameClassName}>{content}</figure>;
+  }
+
+  return (
+    <ScrapbookComponentFrame
+      as="figure"
+      assetId={slot === "portrait" ? "messagePolaroidPortrait" : "messagePolaroidLandscape"}
+      className={frameClassName}
+    >
+      {content}
+    </ScrapbookComponentFrame>
   );
 };
 
@@ -124,14 +154,16 @@ const renderMediaRail = (model: FinalCardViewModel) => {
           "landscape-a",
           "Горизонтальное фото A",
           "Здесь может появиться первое горизонтальное фото.",
-          styles.mediaCardLandscape
+          styles.mediaCardLandscape,
+          model.style === "paper-birthday"
         )}
         {renderMediaFigure(
           messageMediaAssets[1],
           "landscape-b",
           "Горизонтальное фото B",
           "Здесь может появиться второе горизонтальное фото.",
-          styles.mediaCardLandscape
+          styles.mediaCardLandscape,
+          model.style === "paper-birthday"
         )}
         {model.messageMediaLayout === "landscape-trio"
           ? renderMediaFigure(
@@ -139,7 +171,8 @@ const renderMediaRail = (model: FinalCardViewModel) => {
               "landscape-c",
               "Горизонтальное фото C",
               "Здесь может появиться третье горизонтальное фото.",
-              styles.mediaCardLandscape
+              styles.mediaCardLandscape,
+              model.style === "paper-birthday"
             )
           : null}
       </div>
@@ -153,7 +186,8 @@ const renderMediaRail = (model: FinalCardViewModel) => {
         "portrait",
         "Вертикальное фото",
         "Здесь предусмотрено место под одно заметное вертикальное фото.",
-        styles.mediaCardPortrait
+        styles.mediaCardPortrait,
+        model.style === "paper-birthday"
       )}
     </div>
   );
@@ -167,7 +201,9 @@ const renderMessagesLayout = (model: FinalCardViewModel) => {
       <div className={styles.messageSplitFixed}>
         <div className={styles.messageColumnScroller}>
           <div className={styles.messageColumnPage}>
-            {model.contributions.map((item, itemIndex) => renderMessageCard(item, itemIndex, profile.maxChars))}
+            {model.contributions.map((item, itemIndex) =>
+              renderMessageCard(item, itemIndex, profile.maxChars, model.style === "paper-birthday")
+            )}
           </div>
         </div>
         {renderMediaRail(model)}
@@ -185,7 +221,9 @@ const renderMessagesLayout = (model: FinalCardViewModel) => {
   return (
     <div className={styles.messagesStage}>
       <div className={scrollerClassName}>
-        {model.contributions.map((item, itemIndex) => renderMessageCard(item, itemIndex, profile.maxChars))}
+        {model.contributions.map((item, itemIndex) =>
+          renderMessageCard(item, itemIndex, profile.maxChars, model.style === "paper-birthday")
+        )}
       </div>
     </div>
   );
@@ -382,13 +420,12 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
                   <p className={styles.sectionText}>{model.memoryDescription}</p>
                 </article>
                 {memoryAssets.length > 0
-                  ? memoryAssets.map((asset, index) => (
-                      <article
-                        key={asset.id}
-                        className={`${styles.memoryPhotoCard} ${
-                          index % 2 === 0 ? styles.memoryCardTilt : styles.memoryCardTiltAlt
-                        }`}
-                      >
+                  ? memoryAssets.map((asset, index) => {
+                      const className = `${styles.memoryPhotoCard} ${
+                        index % 2 === 0 ? styles.memoryCardTilt : styles.memoryCardTiltAlt
+                      }`;
+                      const content = (
+                        <>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={asset.publicUrl}
@@ -403,8 +440,24 @@ export const FinalCard = ({ model, debugAssets = false }: Props) => {
                             {asset.captionSubtitle || asset.captionTitle || "Фото для открытки"}
                           </p>
                         </div>
-                      </article>
-                    ))
+                        </>
+                      );
+
+                      return isPaperBirthday ? (
+                        <ScrapbookComponentFrame
+                          key={asset.id}
+                          as="article"
+                          assetId="memoryPolaroidFrame"
+                          className={className}
+                        >
+                          {content}
+                        </ScrapbookComponentFrame>
+                      ) : (
+                        <article key={asset.id} className={className}>
+                          {content}
+                        </article>
+                      );
+                    })
                   : model.memories.map((item, index) => (
                       <article
                         key={item.id}

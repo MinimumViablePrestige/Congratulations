@@ -16,6 +16,12 @@ export type ScrapbookComponentAssetMobileOverrides = {
   backgroundPositionX?: string;
   backgroundPositionY?: string;
   opacity?: number;
+  paperTop?: string;
+  paperLeft?: string;
+  paperRight?: string;
+  paperBottom?: string;
+  paperWidth?: string;
+  paperHeight?: string;
   width?: string;
   maxWidth?: string;
   rotate?: number;
@@ -45,6 +51,7 @@ export const SCRAPBOOK_VISUAL_GROUPS = [
   "Background",
   "Paper layers",
   "Quality tags",
+  "Greeting cards",
   "Quote cards",
   "Stickers",
   "Photo frames",
@@ -81,13 +88,19 @@ export type ScrapbookComponentAsset = {
   type: "component";
   id: string;
   label: string;
-  group: Extract<ScrapbookVisualGroup, "Paper layers" | "Quality tags" | "Quote cards">;
+  group: Extract<ScrapbookVisualGroup, "Paper layers" | "Quality tags" | "Greeting cards" | "Quote cards" | "Photo frames">;
   src: string;
   visible: boolean;
   backgroundSize: string;
   backgroundPositionX: string;
   backgroundPositionY: string;
   opacity: number;
+  paperTop?: string;
+  paperLeft?: string;
+  paperRight?: string;
+  paperBottom?: string;
+  paperWidth?: string;
+  paperHeight?: string;
   width?: string;
   maxWidth?: string;
   rotate?: number;
@@ -339,12 +352,18 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Paper layers",
     src: "/templates/scrapbook-clean/torn-paper-section1.png",
     visible: true,
-    backgroundSize: "120% 228%",
+    backgroundSize: "100% 228%",
     backgroundPositionX: "70px",
-    backgroundPositionY: "55%",
+    backgroundPositionY: "100%",
     opacity: 1,
-    width: "1100px",
-    maxWidth: "1100px",
+    paperTop: "0px",
+    paperLeft: "0px",
+    paperRight: "0px",
+    paperBottom: "0px",
+    paperWidth: "auto",
+    paperHeight: "auto",
+    width: "1000px",
+    maxWidth: "1000px",
     rotate: 0,
     paddingTop: "58px",
     paddingRight: "86px",
@@ -372,13 +391,19 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     backgroundPositionX: "center",
     backgroundPositionY: "center",
     opacity: 1,
+    paperTop: "-10px",
+    paperLeft: "-16px",
+    paperRight: "-16px",
+    paperBottom: "-12px",
+    paperWidth: "auto",
+    paperHeight: "auto",
     width: "92%",
     maxWidth: "980px",
     rotate: 0,
     paddingTop: "20px",
     paddingRight: "40px",
     paddingBottom: "30px",
-    paddingLeft: "40px",
+    paddingLeft: "70px",
     minHeight: "126px",
     mobile: {
       backgroundSize: "118% 118%",
@@ -517,6 +542,132 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
   },
   {
     type: "component",
+    id: "greetingCardPink",
+    label: "Greeting Card Pink",
+    group: "Greeting cards",
+    src: "/templates/scrapbook-clean/greeting-card-pink.png",
+    visible: true,
+    backgroundSize: "100% 100%",
+    backgroundPositionX: "center",
+    backgroundPositionY: "center",
+    opacity: 1,
+    paperTop: "0px",
+    paperLeft: "0px",
+    paperRight: "0px",
+    paperBottom: "0px",
+    paddingTop: "16px",
+    paddingRight: "18px",
+    paddingBottom: "16px",
+    paddingLeft: "18px",
+    minHeight: "190px"
+  },
+  {
+    type: "component",
+    id: "greetingCardCream",
+    label: "Greeting Card Cream",
+    group: "Greeting cards",
+    src: "/templates/scrapbook-clean/greeting-card-cream.png",
+    visible: true,
+    backgroundSize: "100% 100%",
+    backgroundPositionX: "center",
+    backgroundPositionY: "center",
+    opacity: 1,
+    paperTop: "0px",
+    paperLeft: "0px",
+    paperRight: "0px",
+    paperBottom: "0px",
+    paddingTop: "16px",
+    paddingRight: "18px",
+    paddingBottom: "16px",
+    paddingLeft: "18px",
+    minHeight: "190px"
+  },
+  {
+    type: "component",
+    id: "greetingCardBlue",
+    label: "Greeting Card Blue",
+    group: "Greeting cards",
+    src: "/templates/scrapbook-clean/greeting-card-blue.png",
+    visible: true,
+    backgroundSize: "100% 100%",
+    backgroundPositionX: "center",
+    backgroundPositionY: "center",
+    opacity: 1,
+    paperTop: "0px",
+    paperLeft: "0px",
+    paperRight: "0px",
+    paperBottom: "0px",
+    paddingTop: "16px",
+    paddingRight: "18px",
+    paddingBottom: "16px",
+    paddingLeft: "18px",
+    minHeight: "190px"
+  },
+  {
+    type: "component",
+    id: "messagePolaroidLandscape",
+    label: "Message Photo Polaroid Landscape",
+    group: "Photo frames",
+    src: "/templates/scrapbook-clean/polaroid-frame-horizontal.png",
+    visible: true,
+    backgroundSize: "100% 100%",
+    backgroundPositionX: "center",
+    backgroundPositionY: "center",
+    opacity: 1,
+    paperTop: "-8px",
+    paperLeft: "-8px",
+    paperRight: "-8px",
+    paperBottom: "-8px",
+    paddingTop: "12px",
+    paddingRight: "12px",
+    paddingBottom: "18px",
+    paddingLeft: "12px",
+    minHeight: "auto"
+  },
+  {
+    type: "component",
+    id: "messagePolaroidPortrait",
+    label: "Message Photo Polaroid Portrait",
+    group: "Photo frames",
+    src: "/templates/scrapbook-clean/polaroid-frame-vertical.png",
+    visible: true,
+    backgroundSize: "100% 100%",
+    backgroundPositionX: "center",
+    backgroundPositionY: "center",
+    opacity: 1,
+    paperTop: "-8px",
+    paperLeft: "-8px",
+    paperRight: "-8px",
+    paperBottom: "-8px",
+    paddingTop: "12px",
+    paddingRight: "12px",
+    paddingBottom: "18px",
+    paddingLeft: "12px",
+    minHeight: "auto"
+  },
+  {
+    type: "component",
+    id: "memoryPolaroidFrame",
+    label: "Memory Polaroid Frame",
+    group: "Photo frames",
+    src: "/templates/scrapbook-clean/polaroid-frame-horizontal.png",
+    visible: true,
+    backgroundSize: "100% 100%",
+    backgroundPositionX: "center",
+    backgroundPositionY: "center",
+    opacity: 1,
+    paperTop: "-8px",
+    paperLeft: "-8px",
+    paperRight: "-8px",
+    paperBottom: "-8px",
+    paddingTop: "12px",
+    paddingRight: "12px",
+    paddingBottom: "18px",
+    paddingLeft: "12px",
+    minHeight: "auto"
+  },
+  {
+    type: "component",
     id: "messagesPaper",
     label: "Messages Paper",
     group: "Paper layers",
@@ -539,14 +690,14 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Paper layers",
     src: "/templates/scrapbook-clean/torn-paper-section1.png",
     visible: true,
-    backgroundSize: "108% 130%",
-    backgroundPositionX: "center",
+    backgroundSize: "111% 130%",
+    backgroundPositionX: "-70px",
     backgroundPositionY: "center",
     opacity: 0.62,
     paddingTop: "24px",
     paddingRight: "28px",
     paddingBottom: "26px",
-    paddingLeft: "28px",
+    paddingLeft: "20px",
     minHeight: "auto"
   },
   {
@@ -557,13 +708,13 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     src: "/templates/scrapbook-clean/torn-paper-summary.png",
     visible: true,
     backgroundSize: "100% 100%",
-    backgroundPositionX: "center",
+    backgroundPositionX: "-10px",
     backgroundPositionY: "center",
     opacity: 1,
     paddingTop: "30px",
-    paddingRight: "38px",
+    paddingRight: "78px",
     paddingBottom: "34px",
-    paddingLeft: "38px",
+    paddingLeft: "75px",
     minHeight: "150px"
   },
   {
@@ -573,8 +724,8 @@ export const scrapbookComponentAssets: ScrapbookComponentAsset[] = [
     group: "Paper layers",
     src: "/templates/scrapbook-clean/torn-paper-section1.png",
     visible: true,
-    backgroundSize: "104% 130%",
-    backgroundPositionX: "center",
+    backgroundSize: "111% 130%",
+    backgroundPositionX: "-70px",
     backgroundPositionY: "center",
     opacity: 0.72,
     paddingTop: "28px",

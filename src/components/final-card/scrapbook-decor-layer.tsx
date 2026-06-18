@@ -55,6 +55,12 @@ type ComponentField =
   | "backgroundPositionX"
   | "backgroundPositionY"
   | "opacity"
+  | "paperTop"
+  | "paperLeft"
+  | "paperRight"
+  | "paperBottom"
+  | "paperWidth"
+  | "paperHeight"
   | "width"
   | "maxWidth"
   | "rotate"
@@ -187,6 +193,12 @@ const toComponentAssetStyle = (asset: ScrapbookComponentAsset) =>
     "--component-asset-bg-position-x": asset.backgroundPositionX,
     "--component-asset-bg-position-y": asset.backgroundPositionY,
     "--component-asset-opacity": String(asset.visible ? asset.opacity : 0),
+    "--component-asset-paper-top": asset.paperTop ?? "0",
+    "--component-asset-paper-left": asset.paperLeft ?? "0",
+    "--component-asset-paper-right": asset.paperRight ?? "0",
+    "--component-asset-paper-bottom": asset.paperBottom ?? "0",
+    "--component-asset-paper-width": asset.paperWidth ?? "auto",
+    "--component-asset-paper-height": asset.paperHeight ?? "auto",
     "--component-asset-width": asset.width ?? "auto",
     "--component-asset-max-width": asset.maxWidth ?? "none",
     "--component-asset-rotate": `${asset.rotate ?? 0}deg`,
@@ -201,6 +213,12 @@ const toComponentAssetStyle = (asset: ScrapbookComponentAsset) =>
     "--component-asset-mobile-bg-position-x": asset.mobile?.backgroundPositionX ?? asset.backgroundPositionX,
     "--component-asset-mobile-bg-position-y": asset.mobile?.backgroundPositionY ?? asset.backgroundPositionY,
     "--component-asset-mobile-opacity": String(asset.mobile?.visible === false ? 0 : asset.mobile?.opacity ?? asset.opacity),
+    "--component-asset-mobile-paper-top": asset.mobile?.paperTop ?? asset.paperTop ?? "0",
+    "--component-asset-mobile-paper-left": asset.mobile?.paperLeft ?? asset.paperLeft ?? "0",
+    "--component-asset-mobile-paper-right": asset.mobile?.paperRight ?? asset.paperRight ?? "0",
+    "--component-asset-mobile-paper-bottom": asset.mobile?.paperBottom ?? asset.paperBottom ?? "0",
+    "--component-asset-mobile-paper-width": asset.mobile?.paperWidth ?? asset.paperWidth ?? "auto",
+    "--component-asset-mobile-paper-height": asset.mobile?.paperHeight ?? asset.paperHeight ?? "auto",
     "--component-asset-mobile-width": asset.mobile?.width ?? asset.width ?? "auto",
     "--component-asset-mobile-max-width": asset.mobile?.maxWidth ?? asset.maxWidth ?? "none",
     "--component-asset-mobile-rotate": `${asset.mobile?.rotate ?? asset.rotate ?? 0}deg`,
@@ -849,6 +867,48 @@ export const ScrapbookDecorDebugPanel = () => {
               />
             </label>
             <label className={styles.assetDebugField}>
+              <span>paperTop</span>
+              <input
+                value={selectedAsset.paperTop ?? ""}
+                onChange={(event) => updateComponentField("paperTop", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>paperLeft</span>
+              <input
+                value={selectedAsset.paperLeft ?? ""}
+                onChange={(event) => updateComponentField("paperLeft", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>paperRight</span>
+              <input
+                value={selectedAsset.paperRight ?? ""}
+                onChange={(event) => updateComponentField("paperRight", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>paperBottom</span>
+              <input
+                value={selectedAsset.paperBottom ?? ""}
+                onChange={(event) => updateComponentField("paperBottom", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>paperWidth</span>
+              <input
+                value={selectedAsset.paperWidth ?? ""}
+                onChange={(event) => updateComponentField("paperWidth", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
+              <span>paperHeight</span>
+              <input
+                value={selectedAsset.paperHeight ?? ""}
+                onChange={(event) => updateComponentField("paperHeight", event.target.value)}
+              />
+            </label>
+            <label className={styles.assetDebugField}>
               <span>width</span>
               <input
                 value={selectedAsset.width ?? ""}
@@ -958,6 +1018,48 @@ export const ScrapbookDecorDebugPanel = () => {
                   step="0.05"
                   value={selectedAsset.mobile?.opacity ?? ""}
                   onChange={(event) => updateComponentMobileField("opacity", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePaperTop</span>
+                <input
+                  value={selectedAsset.mobile?.paperTop ?? ""}
+                  onChange={(event) => updateComponentMobileField("paperTop", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePaperLeft</span>
+                <input
+                  value={selectedAsset.mobile?.paperLeft ?? ""}
+                  onChange={(event) => updateComponentMobileField("paperLeft", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePaperRight</span>
+                <input
+                  value={selectedAsset.mobile?.paperRight ?? ""}
+                  onChange={(event) => updateComponentMobileField("paperRight", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePaperBottom</span>
+                <input
+                  value={selectedAsset.mobile?.paperBottom ?? ""}
+                  onChange={(event) => updateComponentMobileField("paperBottom", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePaperWidth</span>
+                <input
+                  value={selectedAsset.mobile?.paperWidth ?? ""}
+                  onChange={(event) => updateComponentMobileField("paperWidth", event.target.value)}
+                />
+              </label>
+              <label className={styles.assetDebugField}>
+                <span>mobilePaperHeight</span>
+                <input
+                  value={selectedAsset.mobile?.paperHeight ?? ""}
+                  onChange={(event) => updateComponentMobileField("paperHeight", event.target.value)}
                 />
               </label>
               <label className={styles.assetDebugField}>

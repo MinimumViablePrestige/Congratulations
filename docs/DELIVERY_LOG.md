@@ -10,6 +10,7 @@
 6. Сохранены актуальные настройки scrapbook из debug-конфига и добавлены paper layers для `messages`, `memories`, `ai-summary` и `closing`.
 7. Локальный debug-конфиг теперь сливается с дефолтом, чтобы новые ассеты не пропадали после старого `Paste config`.
 8. Убраны конфликтующие старые подложки у component-ассетов scrapbook: листы `hero`, `summary`, `messages`, `memories`, `ai-summary` и `closing` теперь настраиваются единым бумажным слоем.
+9. В `debugAssets=1` добавлены отдельные настройки внутреннего бумажного слоя `paperTop/Left/Right/Bottom/Width/Height`, а также component-ассеты для карточек поздравлений и polaroid-рамок фото.
 
 ## Сделано
 
