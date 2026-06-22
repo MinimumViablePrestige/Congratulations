@@ -8,12 +8,8 @@
 </p>
 
 <p>
-  <a href="https://store.steampowered.com/app/4693030/Congratulations_On_Your_Purchase/">
-    <img src="https://img.shields.io/badge/AVAILABLE%20ON%20STEAM-000000?style=for-the-badge&logo=steam&logoColor=F5E7A1&labelColor=C9A227&color=000000" alt="Available on Steam">
-  </a>
-  <a href="https://github.com/MinimumViablePrestige">
-    <img src="https://img.shields.io/badge/DEVELOPER-MINIMUM%20VIABLE%20PRESTIGE-000000?style=for-the-badge&logo=github&logoColor=F5E7A1&labelColor=9F7A1C&color=000000" alt="Developer GitHub">
-  </a>
+  <a href="https://store.steampowered.com/app/4693030/Congratulations_On_Your_Purchase/"><img src="https://img.shields.io/badge/AVAILABLE%20ON%20STEAM-000000?style=for-the-badge&logo=steam&logoColor=F5E7A1&labelColor=C9A227&color=000000" alt="Available on Steam"></a>&nbsp;
+  <a href="https://github.com/MinimumViablePrestige"><img src="https://img.shields.io/badge/DEVELOPER-MINIMUM%20VIABLE%20PRESTIGE-000000?style=for-the-badge&logo=github&logoColor=F5E7A1&labelColor=9F7A1C&color=000000" alt="Developer GitHub"></a>
 </p>
 
 ### *A first-person luxury experience set inside a palace.*
